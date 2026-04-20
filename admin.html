@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>MG · Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Unbounded:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --green:#0f7a3f; --green-deep:#0a5a2e; --green-soft:#e8f5ec;
+    --orange:#ea580c; --orange-soft:#fff4ec;
+    --ink:#101418; --muted:#6b7280; --line:#e5e7eb;
+    --bg:#f3efe7; --card:#ffffff; --danger:#dc2626;
+    --radius:14px;
+    --sh: 0 10px 25px -12px rgba(0,0,0,.15), 0 4px 8px -4px rgba(0,0,0,.08);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+  html,body{background:var(--bg);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif}
+  body{
+    background-image:
+      radial-gradient(circle at 10% 0%, rgba(15,122,63,.06), transparent 40%),
+      radial-gradient(circle at 90% 100%, rgba(234,88,12,.06), transparent 40%);
+    min-height:100vh;
+    padding:40px 20px 80px;
+  }
+  .logo-mark{display:inline-block;flex-shrink:0;line-height:0}
+  .logo-mark svg{width:100%;height:100%;display:block;overflow:visible}
+  .logo-mark-md{width:48px;height:58px}
+  .hero{max-width:1400px;margin:0 auto 30px;text-align:center}
+  .hero .eyebrow{display:inline-block;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);font-weight:700;padding:6px 14px;border:1px solid var(--orange);border-radius:999px;background:rgba(234,88,12,.06);margin-bottom:14px}
+  .hero h1{font-family:'Bricolage Grotesque',serif;font-weight:800;letter-spacing:-.03em;font-size:clamp(28px,4vw,44px);line-height:1.02;display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap}
+  .hero h1 em{font-style:italic;color:var(--orange);font-weight:700}
+  .hero h1 small{display:block;font-family:'Plus Jakarta Sans';font-size:14px;color:var(--muted);font-weight:600;letter-spacing:0}
+  .card{background:var(--card);border-radius:var(--radius);padding:24px;box-shadow:var(--sh);margin-bottom:18px;max-width:1400px;margin-left:auto;margin-right:auto}
+  .grid{display:grid;gap:16px;max-width:1400px;margin:0 auto 18px}
+  .grid-3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+  input,select{width:100%;padding:11px 14px;border:1px solid var(--line);border-radius:10px;font-size:14px;font-family:inherit;margin-bottom:10px;background:#fff}
+  input:focus,select:focus{outline:none;border-color:var(--green)}
+  label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em}
+  .btn{padding:11px 20px;border-radius:10px;border:none;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;transition:.2s}
+  .btn-primary{background:var(--green);color:#fff}
+  .btn-primary:hover{background:var(--green-deep)}
+  .btn-ghost{background:#f3f4f6;color:var(--ink)}
+  .btn-danger{background:var(--danger);color:#fff}
+  .btn-sm{padding:6px 12px;font-size:12px}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .tag{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700}
+  .tag-green{background:var(--green-soft);color:var(--green)}
+  .tag-gray{background:#f3f4f6;color:var(--muted)}
+  .kpi{background:#fff;padding:20px;border-radius:var(--radius);box-shadow:var(--sh)}
+  .kpi-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:700;letter-spacing:.08em}
+  .kpi-val{font-family:'Bricolage Grotesque',serif;font-size:34px;font-weight:800;color:var(--green);margin-top:6px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{text-align:left;padding:12px 14px;background:#f9fafb;color:var(--muted);font-size:11px;text-transform:uppercase;font-weight:700;letter-spacing:.05em}
+  td{padding:14px;border-top:1px solid var(--line);vertical-align:middle}
+  .muted{color:var(--muted);font-size:13px}
+  .auth-box{max-width:420px;margin:0 auto}
+  .hidden{display:none!important}
+  .toast{position:fixed;top:20px;right:20px;background:var(--ink);color:#fff;padding:14px 20px;border-radius:10px;z-index:9999;box-shadow:var(--sh);font-size:14px;font-weight:500}
+  .toast.ok{background:var(--green)}
+  .toast.err{background:var(--danger)}
+  .note{max-width:1400px;margin:30px auto 0;text-align:center;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+
+<div id="toast" class="toast hidden"></div>
+
+<div class="hero">
+  <span class="eyebrow">Panel privado · Solo administradores</span>
+  <h1>
+    <span class="logo-mark logo-mark-md">
+      <svg viewBox="0 -22 100 122">
+        <path d="M 32 2 Q 32 -18 50 -18 Q 68 -18 68 2" fill="none" stroke="#0f7a3f" stroke-width="7" stroke-linecap="round"/>
+        <rect x="0" y="0" width="100" height="100" rx="22" fill="#0f7a3f"/>
+        <path d="M70 0 L100 0 L100 30 L88 30 A18 18 0 0 0 70 12 Z" fill="#ea580c"/>
+        <text x="50" y="66" text-anchor="middle" font-family="Unbounded, sans-serif" font-size="38" font-weight="900" fill="#fff" letter-spacing="-1">MG</text>
+      </svg>
+    </span>
+    <span>Mercado <em>Guerrero</em><small>Admin</small></span>
+  </h1>
+</div>
+
+<!-- LOGIN -->
+<div id="login-view" class="card auth-box">
+  <h2 style="font-family:'Bricolage Grotesque',serif;font-size:22px;margin-bottom:6px">Acceso administrador</h2>
+  <p class="muted" style="margin-bottom:18px">Solo cuentas con rol <code>admin</code>.</p>
+  <label>Email</label><input type="email" id="email" placeholder="admin@ejemplo.com">
+  <label>Contraseña</label><input type="password" id="pass">
+  <button class="btn btn-primary" onclick="doLogin()" style="width:100%">Entrar</button>
+</div>
+
+<!-- PANEL -->
+<div id="panel-view" class="hidden">
+  <div class="row" style="max-width:1400px;margin:0 auto 20px;justify-content:space-between">
+    <span id="user-info" class="tag tag-green"></span>
+    <div class="row">
+      <a href="index.html" class="btn btn-ghost btn-sm">← Ver app pública</a>
+      <button class="btn btn-ghost btn-sm" onclick="doLogout()">Cerrar sesión</button>
+    </div>
+  </div>
+
+  <div class="grid grid-3">
+    <div class="kpi"><div class="kpi-lbl">Negocios totales</div><div class="kpi-val" id="kpi-negocios">—</div></div>
+    <div class="kpi"><div class="kpi-lbl">Suscripciones activas</div><div class="kpi-val" id="kpi-subs">—</div></div>
+    <div class="kpi"><div class="kpi-lbl">Ofertas publicadas</div><div class="kpi-val" id="kpi-ofertas">—</div></div>
+  </div>
+
+  <div class="card" style="background:var(--orange-soft);border:1px dashed var(--orange)">
+    <div class="row" style="justify-content:space-between">
+      <div>
+        <h3 style="font-family:'Bricolage Grotesque',serif;font-size:17px;font-weight:700">🌱 Datos de ejemplo</h3>
+        <p class="muted" style="margin-top:4px">Carga 3 negocios demo (Pollos El Güero, Tacos Lupita, Ferretería San José) con productos para ver cómo se verá la app. Luego los editas o borras desde aquí.</p>
+      </div>
+      <div class="row">
+        <button class="btn btn-primary btn-sm" onclick="cargarDemo()">+ Cargar ejemplos</button>
+        <button class="btn btn-danger btn-sm" onclick="borrarDemo()">Borrar ejemplos</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="font-family:'Bricolage Grotesque',serif;font-size:20px;font-weight:700;margin-bottom:14px">Todos los negocios</h3>
+    <div style="overflow-x:auto"><table id="tabla-admin"></table></div>
+  </div>
+
+  <div class="card">
+    <h3 style="font-family:'Bricolage Grotesque',serif;font-size:20px;font-weight:700;margin-bottom:14px">Pagos / Suscripciones</h3>
+    <div style="overflow-x:auto"><table id="tabla-pagos"></table></div>
+  </div>
+</div>
+
+<div class="note">Mercado Guerrero · Admin · Vicente Guerrero, Dgo.</div>
+
+<script>
+const SUPABASE_URL = 'https://djddsqbmaxgpryabvktt.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqZGRzcWJtYXhncHJ5YWJ2a3R0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2MzUxMTEsImV4cCI6MjA5MjIxMTExMX0.3JO1RU1_NY4cTCO23_QanF0kFBE8VWPqzsU6yTvLx1c';
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+function toast(msg, type='ok'){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast ' + type;
+  setTimeout(()=>t.classList.add('hidden'), 3000);
+}
+
+async function doLogin(){
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('pass').value;
+  const { data, error } = await db.auth.signInWithPassword({ email, password });
+  if(error) return toast(error.message, 'err');
+  await verificarAdmin();
+}
+
+async function doLogout(){ await db.auth.signOut(); location.reload(); }
+
+async function verificarAdmin(){
+  const { data:{ session } } = await db.auth.getSession();
+  if(!session){ mostrarLogin(); return; }
+  const { data: prof } = await db.from('profiles').select('*').eq('id', session.user.id).single();
+  if(prof?.rol !== 'admin'){
+    toast('Tu cuenta no tiene permisos de admin', 'err');
+    await db.auth.signOut();
+    mostrarLogin();
+    return;
+  }
+  document.getElementById('login-view').classList.add('hidden');
+  document.getElementById('panel-view').classList.remove('hidden');
+  document.getElementById('user-info').textContent = '👤 ' + (prof.nombre || session.user.email) + ' · Admin';
+  cargarDatos();
+}
+
+function mostrarLogin(){
+  document.getElementById('login-view').classList.remove('hidden');
+  document.getElementById('panel-view').classList.add('hidden');
+}
+
+async function cargarDatos(){
+  const [{count:nC}, {count:oC}, {data:negs}, {data:pagos}] = await Promise.all([
+    db.from('negocios').select('*',{count:'exact',head:true}),
+    db.from('ofertas').select('*',{count:'exact',head:true}),
+    db.from('negocios').select('*, profiles(nombre)'),
+    db.from('pagos').select('*, negocios(nombre)').order('creado',{ascending:false})
+  ]);
+
+  document.getElementById('kpi-negocios').textContent = nC || 0;
+  document.getElementById('kpi-subs').textContent = (negs||[]).filter(n=>n.suscripcion_activa).length;
+  document.getElementById('kpi-ofertas').textContent = oC || 0;
+
+  document.getElementById('tabla-admin').innerHTML = `
+    <thead><tr><th>Nombre</th><th>Categoría</th><th>Plan</th><th>Sub</th><th>Estado</th><th>Acciones</th></tr></thead>
+    <tbody>${(negs||[]).map(n => `
+      <tr>
+        <td><strong>${n.nombre}</strong>${n.is_demo?' <span class="tag tag-orange">DEMO</span>':''}<br><span class="muted" style="font-size:11px">${n.telefono||''}</span></td>
+        <td>${n.categoria||'—'}</td>
+        <td><span class="tag tag-gray">${n.plan_id||'free'}</span></td>
+        <td>${n.suscripcion_activa?'<span class="tag tag-green">Activa</span>':'<span class="tag tag-gray">Trial</span>'}</td>
+        <td>${n.activo?'<span class="tag tag-green">Activo</span>':'<span class="tag tag-gray">Pausado</span>'}</td>
+        <td>
+          <button class="btn btn-sm btn-ghost" onclick="adminToggle('${n.id}',${!n.activo})">${n.activo?'Pausar':'Activar'}</button>
+          <button class="btn btn-sm btn-primary" onclick="adminActivarSub('${n.id}')">Activar sub 30d</button>
+          <button class="btn btn-sm btn-danger" onclick="adminEliminar('${n.id}')">🗑</button>
+        </td>
+      </tr>
+    `).join('')}</tbody>`;
+
+  document.getElementById('tabla-pagos').innerHTML = `
+    <thead><tr><th>Negocio</th><th>Plan</th><th>Monto</th><th>Estado MP</th><th>Fecha</th></tr></thead>
+    <tbody>${(pagos||[]).map(p => `
+      <tr>
+        <td>${p.negocios?.nombre||'—'}</td>
+        <td><span class="tag tag-gray">${p.plan_id}</span></td>
+        <td>$${p.monto}</td>
+        <td>${p.mp_status}</td>
+        <td class="muted">${new Date(p.creado).toLocaleDateString('es-MX')}</td>
+      </tr>
+    `).join('') || '<tr><td colspan="5" class="muted" style="text-align:center;padding:20px">Sin pagos aún</td></tr>'}</tbody>`;
+}
+
+async function adminToggle(id, estado){
+  await db.from('negocios').update({activo: estado}).eq('id', id);
+  toast('Estado actualizado', 'ok'); cargarDatos();
+}
+
+async function adminActivarSub(id){
+  const vence = new Date(); vence.setMonth(vence.getMonth()+1);
+  await db.from('negocios').update({suscripcion_activa: true, suscripcion_vence: vence.toISOString()}).eq('id', id);
+  toast('Suscripción activa 30 días', 'ok'); cargarDatos();
+}
+
+async function adminEliminar(id){
+  if(!confirm('¿Eliminar este negocio y todos sus datos?')) return;
+  await db.from('negocios').delete().eq('id', id);
+  toast('Eliminado', 'ok'); cargarDatos();
+}
+
+// Datos de ejemplo — marcados con is_demo=true para poder borrarlos en lote
+const DEMO_NEGOCIOS = [
+  {
+    nombre: 'Pollos El Güero',
+    categoria: 'Comida',
+    telefono: '6181234567',
+    whatsapp: '5216181234567',
+    direccion: 'Calle Juárez #45, Col. Centro',
+    horario: '12:00 - 20:00',
+    descripcion: 'Pollo asado a la leña. Responde rápido. ⭐ 4.8',
+    imagen_url: 'https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=600',
+    ofertas: [
+      { titulo: 'Pollo Entero Asado', precio: 150, precio_antes: 180, imagen_url: 'https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=400' },
+      { titulo: 'Medio Pollo', precio: 95, imagen_url: 'https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=400' }
+    ]
+  },
+  {
+    nombre: 'Tacos Lupita',
+    categoria: 'Comida',
+    telefono: '6182345678',
+    whatsapp: '5216182345678',
+    direccion: 'Av. Hidalgo #120',
+    horario: '18:00 - 23:00',
+    descripcion: 'Tacos y antojitos mexicanos. ⭐ 4.6',
+    imagen_url: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=600',
+    ofertas: [
+      { titulo: 'Orden de Tacos', precio: 60, imagen_url: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=400' },
+      { titulo: 'Tacopletas 3x2', precio: 120, precio_antes: 180, imagen_url: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=400' }
+    ]
+  },
+  {
+    nombre: 'Ferretería San José',
+    categoria: 'Ferretería',
+    telefono: '6183456789',
+    whatsapp: '5216183456789',
+    direccion: 'Blvd. Revolución #300',
+    horario: '08:00 - 19:00',
+    descripcion: 'Todo para construcción y hogar. ⭐ 4.7',
+    imagen_url: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=600',
+    ofertas: [
+      { titulo: 'Cable Eléctrico #12', precio: 15, imagen_url: 'https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?w=400' },
+      { titulo: 'Cable 100m', precio: 1200, precio_antes: 1500, imagen_url: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=400' }
+    ]
+  }
+];
+
+async function cargarDemo(){
+  const { data:{ session } } = await db.auth.getSession();
+  if(!session) return toast('Sesión expirada', 'err');
+
+  for(const n of DEMO_NEGOCIOS){
+    const { ofertas, ...negData } = n;
+    const payload = { ...negData, user_id: session.user.id, is_demo: true, activo: true, suscripcion_activa: true };
+    const { data: neg, error } = await db.from('negocios').insert(payload).select().single();
+    if(error){ toast('Error: ' + error.message, 'err'); console.error(error); return; }
+    const ofertasPayload = ofertas.map(o => ({ ...o, negocio_id: neg.id, activa: true }));
+    await db.from('ofertas').insert(ofertasPayload);
+  }
+  toast('3 negocios demo cargados ✓', 'ok');
+  cargarDatos();
+}
+
+async function borrarDemo(){
+  if(!confirm('¿Borrar todos los negocios marcados como demo?')) return;
+  const { error } = await db.from('negocios').delete().eq('is_demo', true);
+  if(error) return toast(error.message, 'err');
+  toast('Demos eliminados', 'ok');
+  cargarDatos();
+}
+
+(async () => { await verificarAdmin(); })();
+</script>
+</body>
+</html>
