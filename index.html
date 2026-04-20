@@ -270,7 +270,7 @@ db.auth.onAuthStateChange((event, session) => {
 
 let negociosCache = [];
 async function cargarNegociosPublicos(){
-  const { data, error } = await db.from('negocios').select('*, ofertas(id,titulo,precio,imagen_url,activa)').eq('activo', true);
+  const { data, error } = await db.from('negocios').select('*').eq('activo', true);
   if(error){ console.error(error); return; }
   negociosCache = data || [];
   renderNegocios(negociosCache);
