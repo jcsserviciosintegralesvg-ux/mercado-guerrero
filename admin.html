@@ -182,7 +182,7 @@ async function cargarDatos(){
   const [{count:nC}, {count:oC}, {data:negs}, {data:pagos}] = await Promise.all([
     db.from('negocios').select('*',{count:'exact',head:true}),
     db.from('ofertas').select('*',{count:'exact',head:true}),
-    db.from('negocios').select('*, profiles(nombre)'),
+    db.from('negocios').select('*'),
     db.from('pagos').select('*, negocios(nombre)').order('creado',{ascending:false})
   ]);
 
