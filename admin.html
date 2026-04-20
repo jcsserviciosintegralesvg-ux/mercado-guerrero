@@ -10,304 +10,568 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Unbounded:wght@700;800;900&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --green:#0f7a3f; --green-deep:#0a5a2e; --green-soft:#e8f5ec;
-    --orange:#ea580c; --orange-soft:#fff4ec;
-    --ink:#101418; --muted:#6b7280; --line:#e5e7eb;
-    --bg:#f3efe7; --card:#ffffff; --danger:#dc2626;
-    --radius:14px;
-    --sh: 0 10px 25px -12px rgba(0,0,0,.15), 0 4px 8px -4px rgba(0,0,0,.08);
-  }
-  *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
-  html,body{background:var(--bg);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif}
-  body{
-    background-image:
-      radial-gradient(circle at 10% 0%, rgba(15,122,63,.06), transparent 40%),
-      radial-gradient(circle at 90% 100%, rgba(234,88,12,.06), transparent 40%);
-    min-height:100vh;
-    padding:40px 20px 80px;
-  }
-  .logo-mark{display:inline-block;flex-shrink:0;line-height:0}
-  .logo-mark svg{width:100%;height:100%;display:block;overflow:visible}
-  .logo-mark-md{width:48px;height:58px}
-  .hero{max-width:1400px;margin:0 auto 30px;text-align:center}
-  .hero .eyebrow{display:inline-block;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);font-weight:700;padding:6px 14px;border:1px solid var(--orange);border-radius:999px;background:rgba(234,88,12,.06);margin-bottom:14px}
-  .hero h1{font-family:'Bricolage Grotesque',serif;font-weight:800;letter-spacing:-.03em;font-size:clamp(28px,4vw,44px);line-height:1.02;display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap}
-  .hero h1 em{font-style:italic;color:var(--orange);font-weight:700}
-  .hero h1 small{display:block;font-family:'Plus Jakarta Sans';font-size:14px;color:var(--muted);font-weight:600;letter-spacing:0}
-  .card{background:var(--card);border-radius:var(--radius);padding:24px;box-shadow:var(--sh);margin-bottom:18px;max-width:1400px;margin-left:auto;margin-right:auto}
-  .grid{display:grid;gap:16px;max-width:1400px;margin:0 auto 18px}
-  .grid-3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
-  input,select{width:100%;padding:11px 14px;border:1px solid var(--line);border-radius:10px;font-size:14px;font-family:inherit;margin-bottom:10px;background:#fff}
-  input:focus,select:focus{outline:none;border-color:var(--green)}
-  label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em}
-  .btn{padding:11px 20px;border-radius:10px;border:none;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;transition:.2s}
-  .btn-primary{background:var(--green);color:#fff}
-  .btn-primary:hover{background:var(--green-deep)}
-  .btn-ghost{background:#f3f4f6;color:var(--ink)}
-  .btn-danger{background:var(--danger);color:#fff}
-  .btn-sm{padding:6px 12px;font-size:12px}
-  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  .tag{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700}
-  .tag-green{background:var(--green-soft);color:var(--green)}
-  .tag-gray{background:#f3f4f6;color:var(--muted)}
-  .kpi{background:#fff;padding:20px;border-radius:var(--radius);box-shadow:var(--sh)}
-  .kpi-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:700;letter-spacing:.08em}
-  .kpi-val{font-family:'Bricolage Grotesque',serif;font-size:34px;font-weight:800;color:var(--green);margin-top:6px}
-  table{width:100%;border-collapse:collapse;font-size:13px}
-  th{text-align:left;padding:12px 14px;background:#f9fafb;color:var(--muted);font-size:11px;text-transform:uppercase;font-weight:700;letter-spacing:.05em}
-  td{padding:14px;border-top:1px solid var(--line);vertical-align:middle}
-  .muted{color:var(--muted);font-size:13px}
-  .auth-box{max-width:420px;margin:0 auto}
-  .hidden{display:none!important}
-  .toast{position:fixed;top:20px;right:20px;background:var(--ink);color:#fff;padding:14px 20px;border-radius:10px;z-index:9999;box-shadow:var(--sh);font-size:14px;font-weight:500}
-  .toast.ok{background:var(--green)}
-  .toast.err{background:var(--danger)}
-  .note{max-width:1400px;margin:30px auto 0;text-align:center;color:var(--muted);font-size:12px}
+:root{
+  --green:#0f7a3f;--green-deep:#0a5a2e;--green-soft:#e8f5ec;
+  --orange:#ea580c;--orange-soft:#fff4ec;--orange-deep:#c2410c;
+  --ink:#101418;--muted:#6b7280;--line:#e5e7eb;
+  --bg:#f9fafb;--card:#ffffff;--danger:#dc2626;
+  --radius:12px;--sh:0 1px 3px rgba(0,0,0,.08),0 4px 12px rgba(0,0,0,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+html,body{background:var(--bg);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;height:100%}
+.app{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:240px;background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;flex-shrink:0}
+.sidebar-logo{padding:20px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.sidebar-logo .mark{width:36px;height:36px;flex-shrink:0}
+.sidebar-logo .name{font-family:'Bricolage Grotesque',serif;font-size:16px;font-weight:800;letter-spacing:-.02em}
+.sidebar-logo .name em{color:var(--orange);font-style:italic}
+.sidebar-logo .sub{font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+.nav{flex:1;padding:12px 8px;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;transition:.15s;margin-bottom:2px;border:none;background:transparent;width:100%;text-align:left;font-family:inherit}
+.nav-item:hover{background:#f3f4f6;color:var(--ink)}
+.nav-item.active{background:var(--green);color:#fff}
+.nav-item .ico{font-size:16px;width:20px;text-align:center;flex-shrink:0}
+.nav-badge{margin-left:auto;background:var(--orange);color:#fff;font-size:10px;font-weight:800;border-radius:999px;padding:2px 7px}
+.nav-item.active .nav-badge{background:#fff;color:var(--orange)}
+.sidebar-user{border-top:1px solid var(--line);padding:14px 16px;display:flex;align-items:center;gap:10px}
+.sidebar-user .ava{width:34px;height:34px;border-radius:50%;background:var(--orange);color:#fff;display:grid;place-items:center;font-size:14px;font-weight:700;flex-shrink:0}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:#fff;border-bottom:1px solid var(--line);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.topbar-title{font-family:'Bricolage Grotesque',serif;font-size:20px;font-weight:700}
+.topbar-sub{font-size:12px;color:var(--muted);margin-top:1px}
+.content{flex:1;overflow-y:auto;padding:24px}
+.section{display:none}
+.section.active{display:block}
+.card{background:#fff;border-radius:var(--radius);border:1px solid var(--line);margin-bottom:16px;overflow:hidden}
+.card-head{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.card-head h2{font-family:'Bricolage Grotesque',serif;font-size:16px;font-weight:700}
+.card-head p{font-size:12px;color:var(--muted);margin-top:2px}
+.card-body{padding:20px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:20px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px}
+.kpi-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:700;letter-spacing:.08em;margin-bottom:6px}
+.kpi-val{font-family:'Bricolage Grotesque',serif;font-size:30px;font-weight:800;color:var(--ink);line-height:1}
+.kpi-sub{font-size:11px;margin-top:6px;font-weight:600;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:10px 16px;background:#f9fafb;color:var(--muted);font-size:11px;text-transform:uppercase;font-weight:700;letter-spacing:.05em;border-bottom:1px solid var(--line)}
+td{padding:13px 16px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafafa}
+.tag{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700}
+.tag-green{background:var(--green-soft);color:var(--green)}
+.tag-orange{background:var(--orange-soft);color:var(--orange)}
+.tag-gray{background:#f3f4f6;color:var(--muted)}
+.tag-red{background:#fef2f2;color:var(--danger)}
+.tag-blue{background:#dbeafe;color:#1e40af}
+.btn{padding:8px 14px;border-radius:9px;border:none;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;transition:.15s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--green);color:#fff}
+.btn-primary:hover{background:var(--green-deep)}
+.btn-orange{background:var(--orange);color:#fff}
+.btn-ghost{background:#f3f4f6;color:var(--ink)}
+.btn-ghost:hover{background:#e5e7eb}
+.btn-danger{background:#fef2f2;color:var(--danger);border:1px solid #fecaca}
+.btn-ink{background:var(--ink);color:#fff}
+.btn-sm{padding:5px 10px;font-size:11px;border-radius:7px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.field input,.field select,.field textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font-size:13px;font-family:inherit;background:#fff}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--green)}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid-dash{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.muted{color:var(--muted);font-size:13px}
+.hidden{display:none!important}
+.biz-dot{width:32px;height:32px;border-radius:8px;background:#eee;object-fit:cover;flex-shrink:0}
+.biz-cell{display:flex;align-items:center;gap:10px;font-weight:600}
+.empty{padding:40px;text-align:center;color:var(--muted);font-size:13px}
+.toast{position:fixed;top:20px;right:20px;background:var(--ink);color:#fff;padding:12px 18px;border-radius:10px;z-index:9999;font-size:13px;font-weight:600;box-shadow:var(--sh)}
+.toast.ok{background:var(--green)}
+.toast.err{background:var(--danger)}
+.login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg)}
+.login-box{background:#fff;border-radius:var(--radius);border:1px solid var(--line);padding:32px;width:100%;max-width:400px;box-shadow:var(--sh)}
+.login-box h2{font-family:'Bricolage Grotesque',serif;font-size:22px;font-weight:700;margin-bottom:6px}
+.switch{position:relative;display:inline-block;width:38px;height:22px}
+.switch input{opacity:0;width:0;height:0}
+.switch span{position:absolute;cursor:pointer;inset:0;background:#e5e7eb;border-radius:999px;transition:.2s}
+.switch span::before{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;background:#fff;border-radius:50%;transition:.2s}
+.switch input:checked+span{background:var(--green)}
+.switch input:checked+span::before{transform:translateX(16px)}
+.act-row{display:flex;align-items:flex-start;gap:12px;padding:12px 20px;border-bottom:1px solid var(--line)}
+.act-row:last-child{border-bottom:none}
+.act-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.act-time{font-size:11px;color:var(--muted);margin-top:2px}
+.alert-row{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line)}
+.alert-row:last-child{border-bottom:none}
+.alert-row.warning{background:#fffbeb}
+.alert-row.critical{background:#fef2f2}
+@media(max-width:768px){
+  .sidebar{width:60px}
+  .sidebar-logo .name,.sidebar-logo .sub,.nav-item span:not(.ico),.nav-badge,.sidebar-user>div{display:none}
+  .nav-item{justify-content:center}
+  .content{padding:16px}
+  .grid-2,.grid-dash{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
 
 <div id="toast" class="toast hidden"></div>
 
-<div class="hero">
-  <span class="eyebrow">Panel privado · Solo administradores</span>
-  <h1>
-    <span class="logo-mark logo-mark-md">
-      <svg viewBox="0 -22 100 122">
+<!-- LOGIN -->
+<div id="login-wrap" class="login-wrap">
+  <div class="login-box">
+    <div style="text-align:center;margin-bottom:20px">
+      <svg width="52" height="52" viewBox="0 -22 100 122">
         <path d="M 32 2 Q 32 -18 50 -18 Q 68 -18 68 2" fill="none" stroke="#0f7a3f" stroke-width="7" stroke-linecap="round"/>
         <rect x="0" y="0" width="100" height="100" rx="22" fill="#0f7a3f"/>
         <path d="M70 0 L100 0 L100 30 L88 30 A18 18 0 0 0 70 12 Z" fill="#ea580c"/>
         <text x="50" y="66" text-anchor="middle" font-family="Unbounded, sans-serif" font-size="38" font-weight="900" fill="#fff" letter-spacing="-1">MG</text>
       </svg>
-    </span>
-    <span>Mercado <em>Guerrero</em><small>Admin</small></span>
-  </h1>
-</div>
-
-<!-- LOGIN -->
-<div id="login-view" class="card auth-box">
-  <h2 style="font-family:'Bricolage Grotesque',serif;font-size:22px;margin-bottom:6px">Acceso administrador</h2>
-  <p class="muted" style="margin-bottom:18px">Solo cuentas con rol <code>admin</code>.</p>
-  <label>Email</label><input type="email" id="email" placeholder="admin@ejemplo.com">
-  <label>Contraseña</label><input type="password" id="pass">
-  <button class="btn btn-primary" onclick="doLogin()" style="width:100%">Entrar</button>
-</div>
-
-<!-- PANEL -->
-<div id="panel-view" class="hidden">
-  <div class="row" style="max-width:1400px;margin:0 auto 20px;justify-content:space-between">
-    <span id="user-info" class="tag tag-green"></span>
-    <div class="row">
-      <a href="index.html" class="btn btn-ghost btn-sm">← Ver app pública</a>
-      <button class="btn btn-ghost btn-sm" onclick="doLogout()">Cerrar sesión</button>
     </div>
+    <h2>Panel Admin</h2>
+    <p class="muted" style="margin-bottom:20px">Solo cuentas con rol <code>admin</code></p>
+    <div class="field"><label>Email</label><input type="email" id="l-email" placeholder="admin@ejemplo.com"></div>
+    <div class="field"><label>Contraseña</label><input type="password" id="l-pass" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="btn btn-primary" onclick="doLogin()" style="width:100%;justify-content:center;padding:12px;font-size:14px">Entrar al panel</button>
   </div>
+</div>
 
-  <div class="grid grid-3">
-    <div class="kpi"><div class="kpi-lbl">Negocios totales</div><div class="kpi-val" id="kpi-negocios">—</div></div>
-    <div class="kpi"><div class="kpi-lbl">Suscripciones activas</div><div class="kpi-val" id="kpi-subs">—</div></div>
-    <div class="kpi"><div class="kpi-lbl">Ofertas publicadas</div><div class="kpi-val" id="kpi-ofertas">—</div></div>
-  </div>
-
-  <div class="card" style="background:var(--orange-soft);border:1px dashed var(--orange)">
-    <div class="row" style="justify-content:space-between">
+<!-- APP -->
+<div id="app" class="app hidden">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <svg class="mark" viewBox="0 -22 100 122">
+        <path d="M 32 2 Q 32 -18 50 -18 Q 68 -18 68 2" fill="none" stroke="#0f7a3f" stroke-width="7" stroke-linecap="round"/>
+        <rect x="0" y="0" width="100" height="100" rx="22" fill="#0f7a3f"/>
+        <path d="M70 0 L100 0 L100 30 L88 30 A18 18 0 0 0 70 12 Z" fill="#ea580c"/>
+        <text x="50" y="66" text-anchor="middle" font-family="Unbounded, sans-serif" font-size="38" font-weight="900" fill="#fff" letter-spacing="-1">MG</text>
+      </svg>
+      <div><div class="name">Mercado <em>Guerrero</em></div><div class="sub">Admin</div></div>
+    </div>
+    <nav class="nav">
+      <button class="nav-item active" onclick="ir('dashboard')"><span class="ico">📊</span><span>Dashboard</span></button>
+      <button class="nav-item" onclick="ir('aprobaciones')"><span class="ico">⏳</span><span>Aprobaciones</span><span class="nav-badge" id="badge-apro">0</span></button>
+      <button class="nav-item" onclick="ir('negocios')"><span class="ico">🏪</span><span>Negocios</span></button>
+      <button class="nav-item" onclick="ir('productos')"><span class="ico">📦</span><span>Productos</span></button>
+      <button class="nav-item" onclick="ir('promos')"><span class="ico">🔥</span><span>Promos del Día</span></button>
+      <button class="nav-item" onclick="ir('suscripciones')"><span class="ico">💳</span><span>Suscripciones</span></button>
+      <button class="nav-item" onclick="ir('clientes')"><span class="ico">👥</span><span>Clientes</span></button>
+      <button class="nav-item" onclick="ir('configuracion')"><span class="ico">⚙️</span><span>Configuración</span></button>
+    </nav>
+    <div class="sidebar-user">
+      <div class="ava" id="user-ava">A</div>
       <div>
-        <h3 style="font-family:'Bricolage Grotesque',serif;font-size:17px;font-weight:700">🌱 Datos de ejemplo</h3>
-        <p class="muted" style="margin-top:4px">Carga 3 negocios demo (Pollos El Güero, Tacos Lupita, Ferretería San José) con productos para ver cómo se verá la app. Luego los editas o borras desde aquí.</p>
+        <div style="font-size:13px;font-weight:700" id="user-name">Admin</div>
+        <div style="font-size:11px;color:var(--muted)">Super Admin</div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title" id="page-title">Dashboard</div>
+        <div class="topbar-sub">Vicente Guerrero, Durango</div>
       </div>
       <div class="row">
-        <button class="btn btn-primary btn-sm" onclick="cargarDemo()">+ Cargar ejemplos</button>
-        <button class="btn btn-danger btn-sm" onclick="borrarDemo()">Borrar ejemplos</button>
+        <a href="index.html" class="btn btn-ghost btn-sm">← App pública</a>
+        <button class="btn btn-ghost btn-sm" onclick="doLogout()">Cerrar sesión</button>
       </div>
     </div>
-  </div>
 
-  <div class="card">
-    <h3 style="font-family:'Bricolage Grotesque',serif;font-size:20px;font-weight:700;margin-bottom:14px">Todos los negocios</h3>
-    <div style="overflow-x:auto"><table id="tabla-admin"></table></div>
-  </div>
+    <div class="content">
 
-  <div class="card">
-    <h3 style="font-family:'Bricolage Grotesque',serif;font-size:20px;font-weight:700;margin-bottom:14px">Pagos / Suscripciones</h3>
-    <div style="overflow-x:auto"><table id="tabla-pagos"></table></div>
+      <!-- DASHBOARD -->
+      <div class="section active" id="sec-dashboard">
+        <div class="kpis">
+          <div class="kpi"><div class="kpi-lbl">Negocios activos</div><div class="kpi-val" id="kpi-negocios">—</div><div class="kpi-sub" id="kpi-nsub"></div></div>
+          <div class="kpi"><div class="kpi-lbl">Suscripciones activas</div><div class="kpi-val" id="kpi-subs">—</div></div>
+          <div class="kpi"><div class="kpi-lbl">Ofertas publicadas</div><div class="kpi-val" id="kpi-ofertas">—</div></div>
+          <div class="kpi"><div class="kpi-lbl">Usuarios registrados</div><div class="kpi-val" id="kpi-users">—</div></div>
+        </div>
+
+        <div class="card" style="border:1px dashed var(--orange);background:var(--orange-soft)">
+          <div class="card-head" style="border:none">
+            <div><h2>🌱 Datos de ejemplo</h2><p>Carga 3 negocios demo con productos para probar la app</p></div>
+            <div class="row">
+              <button class="btn btn-primary btn-sm" onclick="cargarDemo()">+ Cargar ejemplos</button>
+              <button class="btn btn-sm btn-danger" onclick="borrarDemo()">Borrar ejemplos</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-dash">
+          <div class="card">
+            <div class="card-head"><h2>⚠️ Alertas de pago</h2></div>
+            <div id="lista-alertas"><div class="empty">Sin alertas</div></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h2>📈 Actividad reciente</h2></div>
+            <div id="lista-actividad">
+              <div class="act-row"><span class="act-dot" style="background:var(--green)"></span><div><div style="font-size:13px">Panel cargado correctamente</div><div class="act-time">Ahora</div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- APROBACIONES -->
+      <div class="section" id="sec-aprobaciones">
+        <div class="card">
+          <div class="card-head"><div><h2>⏳ Aprobaciones pendientes</h2><p>Cambios de negocios que esperan tu revisión</p></div></div>
+          <div id="cont-aprobaciones"><div class="empty">Sin aprobaciones pendientes ✓</div></div>
+        </div>
+      </div>
+
+      <!-- NEGOCIOS -->
+      <div class="section" id="sec-negocios">
+        <div class="card">
+          <div class="card-head">
+            <div><h2>🏪 Todos los negocios</h2><p id="negocios-count">—</p></div>
+            <div class="row">
+              <input type="text" id="buscar-neg" placeholder="Buscar..." style="width:180px;margin:0;padding:8px 12px;font-size:12px" oninput="filtrarNegs()">
+              <button class="btn btn-primary btn-sm" onclick="nuevoNegocio()">+ Nuevo</button>
+            </div>
+          </div>
+          <div style="overflow-x:auto"><table id="tabla-negocios"><tr><td class="empty">Cargando...</td></tr></table></div>
+        </div>
+      </div>
+
+      <!-- PRODUCTOS -->
+      <div class="section" id="sec-productos">
+        <div class="card">
+          <div class="card-head">
+            <div><h2>📦 Todas las ofertas</h2><p>Productos y ofertas de todos los negocios</p></div>
+            <button class="btn btn-ghost btn-sm" onclick="cargarOfertas()">🔄 Actualizar</button>
+          </div>
+          <div style="overflow-x:auto"><table id="tabla-ofertas"><tr><td class="empty">Cargando...</td></tr></table></div>
+        </div>
+      </div>
+
+      <!-- PROMOS -->
+      <div class="section" id="sec-promos">
+        <div class="card">
+          <div class="card-head"><h2>🔥 Promos del Día activas</h2></div>
+          <div id="cont-promos"><div class="empty">Sin promos activas</div></div>
+        </div>
+      </div>
+
+      <!-- SUSCRIPCIONES -->
+      <div class="section" id="sec-suscripciones">
+        <div class="card">
+          <div class="card-head"><h2>💳 Estado de suscripciones</h2></div>
+          <div style="overflow-x:auto"><table id="tabla-subs"><tr><td class="empty">Cargando...</td></tr></table></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h2>💰 Historial de pagos</h2></div>
+          <div style="overflow-x:auto"><table id="tabla-pagos"><tr><td class="empty">Sin pagos registrados</td></tr></table></div>
+        </div>
+      </div>
+
+      <!-- CLIENTES -->
+      <div class="section" id="sec-clientes">
+        <div class="card">
+          <div class="card-head"><div><h2>👥 Usuarios registrados</h2><p id="clientes-count">—</p></div></div>
+          <div style="overflow-x:auto"><table id="tabla-clientes"><tr><td class="empty">Cargando...</td></tr></table></div>
+        </div>
+      </div>
+
+      <!-- CONFIGURACION -->
+      <div class="section" id="sec-configuracion">
+        <div class="card">
+          <div class="card-head"><h2>⚙️ Configuración general</h2></div>
+          <div class="card-body">
+            <div class="grid-2">
+              <div class="field"><label>Nombre de la app</label><input value="Mercado Guerrero"></div>
+              <div class="field"><label>Ciudad</label><input value="Vicente Guerrero, Dgo."></div>
+              <div class="field"><label>WhatsApp soporte</label><input value="+52 674 000 0000"></div>
+              <div class="field"><label>Email soporte</label><input value="soporte@mercadoguerrero.com"></div>
+            </div>
+            <h3 style="font-size:14px;font-weight:700;margin:20px 0 14px">Permisos de negocios</h3>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border:1px solid var(--line);border-radius:10px">
+                <div><div style="font-weight:600;font-size:13px">Publicar productos sin aprobación</div><div class="muted">Los negocios publican directo</div></div>
+                <label class="switch"><input type="checkbox"><span></span></label>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border:1px solid var(--line);border-radius:10px">
+                <div><div style="font-weight:600;font-size:13px">Cambiar precios sin aprobación</div><div class="muted">Edición directa de precios</div></div>
+                <label class="switch"><input type="checkbox" checked><span></span></label>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border:1px solid var(--line);border-radius:10px">
+                <div><div style="font-weight:600;font-size:13px">Crear promos sin aprobación</div><div class="muted">Promos activas al instante</div></div>
+                <label class="switch"><input type="checkbox"><span></span></label>
+              </div>
+            </div>
+            <button class="btn btn-primary" style="margin-top:20px" onclick="toast('Configuración guardada ✓','ok')">Guardar cambios</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
 </div>
-
-<div class="note">Mercado Guerrero · Admin · Vicente Guerrero, Dgo.</div>
 
 <script>
 const SUPABASE_URL = 'https://djddsqbmaxgpryabvktt.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqZGRzcWJtYXhncHJ5YWJ2a3R0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2MzUxMTEsImV4cCI6MjA5MjIxMTExMX0.3JO1RU1_NY4cTCO23_QanF0kFBE8VWPqzsU6yTvLx1c';
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let negociosCache = [];
 
 function toast(msg, type='ok'){
   const t = document.getElementById('toast');
-  t.textContent = msg; t.className = 'toast ' + type;
+  t.textContent = msg; t.className = 'toast '+type;
+  t.classList.remove('hidden');
   setTimeout(()=>t.classList.add('hidden'), 3000);
 }
 
+function ir(sec){
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  document.getElementById('sec-'+sec).classList.add('active');
+  const titles = {dashboard:'Dashboard',aprobaciones:'Aprobaciones',negocios:'Negocios',productos:'Productos / Ofertas',promos:'Promos del Día',suscripciones:'Suscripciones',clientes:'Clientes',configuracion:'Configuración'};
+  document.getElementById('page-title').textContent = titles[sec]||sec;
+  if(sec==='negocios') cargarNegocios();
+  if(sec==='productos') cargarOfertas();
+  if(sec==='suscripciones') cargarSuscripciones();
+  if(sec==='clientes') cargarClientes();
+  if(sec==='promos') cargarPromos();
+}
+
 async function doLogin(){
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('pass').value;
-  const { data, error } = await db.auth.signInWithPassword({ email, password });
-  if(error) return toast(error.message, 'err');
+  const email = document.getElementById('l-email').value.trim();
+  const pass = document.getElementById('l-pass').value;
+  const {error} = await db.auth.signInWithPassword({email, password:pass});
+  if(error) return toast(error.message,'err');
   await verificarAdmin();
 }
 
 async function doLogout(){ await db.auth.signOut(); location.reload(); }
 
 async function verificarAdmin(){
-  const { data:{ session } } = await db.auth.getSession();
-  if(!session){ mostrarLogin(); return; }
-  const { data: prof } = await db.from('profiles').select('*').eq('id', session.user.id).single();
+  const {data:{session}} = await db.auth.getSession();
+  if(!session) return;
+  const {data:prof} = await db.from('profiles').select('*').eq('id',session.user.id).single();
   if(prof?.rol !== 'admin'){
-    toast('Tu cuenta no tiene permisos de admin', 'err');
-    await db.auth.signOut();
-    mostrarLogin();
-    return;
+    toast('Sin permisos de admin','err');
+    await db.auth.signOut(); return;
   }
-  document.getElementById('login-view').classList.add('hidden');
-  document.getElementById('panel-view').classList.remove('hidden');
-  document.getElementById('user-info').textContent = '👤 ' + (prof.nombre || session.user.email) + ' · Admin';
-  cargarDatos();
+  document.getElementById('login-wrap').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  const nombre = prof.nombre || session.user.email;
+  document.getElementById('user-name').textContent = nombre;
+  document.getElementById('user-ava').textContent = nombre[0].toUpperCase();
+  cargarDashboard();
 }
 
-function mostrarLogin(){
-  document.getElementById('login-view').classList.remove('hidden');
-  document.getElementById('panel-view').classList.add('hidden');
-}
-
-async function cargarDatos(){
-  const [{count:nC}, {count:oC}, {data:negs}, {data:pagos}] = await Promise.all([
+async function cargarDashboard(){
+  const [{count:nC},{count:oC},{count:uC},{data:negs}] = await Promise.all([
     db.from('negocios').select('*',{count:'exact',head:true}),
     db.from('ofertas').select('*',{count:'exact',head:true}),
-    db.from('negocios').select('*'),
+    db.from('profiles').select('*',{count:'exact',head:true}),
+    db.from('negocios').select('*')
+  ]);
+  negociosCache = negs||[];
+  document.getElementById('kpi-negocios').textContent = nC||0;
+  document.getElementById('kpi-subs').textContent = (negs||[]).filter(n=>n.suscripcion_activa).length;
+  document.getElementById('kpi-ofertas').textContent = oC||0;
+  document.getElementById('kpi-users').textContent = uC||0;
+  const trial = (negs||[]).filter(n=>!n.suscripcion_activa);
+  document.getElementById('kpi-nsub').textContent = trial.length ? `${trial.length} sin suscripción` : '';
+  const al = document.getElementById('lista-alertas');
+  if(trial.length){
+    al.innerHTML = trial.map(n=>`
+      <div class="alert-row warning">
+        <span style="font-size:18px">⚠️</span>
+        <div style="flex:1"><div style="font-weight:600;font-size:13px">${n.nombre}</div><div class="muted">Sin suscripción activa</div></div>
+        <button class="btn btn-sm btn-primary" onclick="activarSub('${n.id}')">Activar 30d</button>
+      </div>`).join('');
+  } else {
+    al.innerHTML = '<div class="empty">Sin alertas ✓</div>';
+  }
+}
+
+async function cargarNegocios(){
+  const {data,error} = await db.from('negocios').select('*').order('created_at',{ascending:false});
+  if(error) return toast(error.message,'err');
+  negociosCache = data||[];
+  renderNegs(negociosCache);
+  document.getElementById('negocios-count').textContent = `${negociosCache.length} negocios`;
+}
+
+function filtrarNegs(){
+  const q = document.getElementById('buscar-neg').value.toLowerCase();
+  renderNegs(negociosCache.filter(n=>n.nombre?.toLowerCase().includes(q)||n.categoria?.toLowerCase().includes(q)));
+}
+
+function renderNegs(list){
+  const t = document.getElementById('tabla-negocios');
+  if(!list.length){t.innerHTML='<tr><td colspan="7" class="empty">Sin negocios</td></tr>';return;}
+  t.innerHTML=`<thead><tr><th>Negocio</th><th>Categoría</th><th>Teléfono</th><th>Plan</th><th>Suscripción</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>`+
+  list.map(n=>`<tr>
+    <td><div class="biz-cell">${n.imagen_url?`<img src="${n.imagen_url}" class="biz-dot">`:'<div class="biz-dot"></div>'}
+    <div><strong>${n.nombre}</strong>${n.is_demo?' <span class="tag tag-orange" style="font-size:9px">DEMO</span>':''}<br><span class="muted" style="font-size:11px">${n.direccion||''}</span></div></div></td>
+    <td>${n.categoria||'—'}</td>
+    <td class="muted">${n.telefono||'—'}</td>
+    <td><span class="tag tag-gray">${n.plan_id||'free'}</span></td>
+    <td>${n.suscripcion_activa?'<span class="tag tag-green">● Activa</span>':'<span class="tag tag-gray">● Trial</span>'}</td>
+    <td>${n.activo?'<span class="tag tag-green">Activo</span>':'<span class="tag tag-gray">Pausado</span>'}</td>
+    <td><div class="row">
+      <button class="btn btn-sm btn-ghost" onclick="toggleNeg('${n.id}',${!n.activo})">${n.activo?'Pausar':'Activar'}</button>
+      <button class="btn btn-sm btn-primary" onclick="activarSub('${n.id}')">+30d</button>
+      <button class="btn btn-sm btn-danger" onclick="eliminarNeg('${n.id}')">🗑</button>
+    </div></td>
+  </tr>`).join('')+'</tbody>';
+}
+
+async function toggleNeg(id,estado){
+  await db.from('negocios').update({activo:estado}).eq('id',id);
+  toast(estado?'Activado':'Pausado','ok'); cargarNegocios();
+}
+
+async function activarSub(id){
+  const v=new Date(); v.setMonth(v.getMonth()+1);
+  await db.from('negocios').update({suscripcion_activa:true,suscripcion_vence:v.toISOString()}).eq('id',id);
+  toast('Suscripción activa 30 días ✓','ok'); cargarNegocios(); cargarDashboard();
+}
+
+async function eliminarNeg(id){
+  if(!confirm('¿Eliminar este negocio y sus ofertas?')) return;
+  await db.from('ofertas').delete().eq('negocio_id',id);
+  await db.from('negocios').delete().eq('id',id);
+  toast('Eliminado','ok'); cargarNegocios(); cargarDashboard();
+}
+
+async function nuevoNegocio(){
+  const nombre = prompt('Nombre del negocio:'); if(!nombre) return;
+  const cat = prompt('Categoría:');
+  const tel = prompt('Teléfono / WhatsApp:');
+  const {error} = await db.from('negocios').insert({nombre,categoria:cat,telefono:tel,whatsapp:tel,activo:true,suscripcion_activa:false});
+  if(error) return toast(error.message,'err');
+  toast('Negocio creado ✓','ok'); cargarNegocios();
+}
+
+async function cargarOfertas(){
+  const {data,error} = await db.from('ofertas').select('*, negocios(nombre)').order('created_at',{ascending:false});
+  if(error) return toast(error.message,'err');
+  const t = document.getElementById('tabla-ofertas');
+  if(!data?.length){t.innerHTML='<tr><td colspan="6" class="empty">Sin ofertas</td></tr>';return;}
+  t.innerHTML=`<thead><tr><th>Título</th><th>Negocio</th><th>Precio</th><th>Antes</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>`+
+  data.map(o=>`<tr>
+    <td><strong>${o.titulo||'Sin título'}</strong></td>
+    <td class="muted">${o.negocios?.nombre||'—'}</td>
+    <td style="color:var(--orange);font-weight:700">$${o.precio||0}</td>
+    <td class="muted">${o.precio_antes?`<s>$${o.precio_antes}</s>`:'—'}</td>
+    <td>${o.activa?'<span class="tag tag-green">Activa</span>':'<span class="tag tag-gray">Pausada</span>'}</td>
+    <td><div class="row">
+      <button class="btn btn-sm btn-ghost" onclick="toggleOferta('${o.id}',${!o.activa})">${o.activa?'Pausar':'Activar'}</button>
+      <button class="btn btn-sm btn-danger" onclick="eliminarOferta('${o.id}')">🗑</button>
+    </div></td>
+  </tr>`).join('')+'</tbody>';
+}
+
+async function toggleOferta(id,estado){
+  await db.from('ofertas').update({activa:estado}).eq('id',id);
+  toast('Actualizado','ok'); cargarOfertas();
+}
+async function eliminarOferta(id){
+  if(!confirm('¿Eliminar esta oferta?')) return;
+  await db.from('ofertas').delete().eq('id',id);
+  toast('Eliminada','ok'); cargarOfertas();
+}
+
+async function cargarPromos(){
+  const {data} = await db.from('ofertas').select('*, negocios(nombre)').eq('activa',true).not('precio_antes','is',null);
+  const cont = document.getElementById('cont-promos');
+  if(!data?.length){cont.innerHTML='<div class="empty">Sin promos activas</div>';return;}
+  cont.innerHTML='<div style="padding:16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px">'+
+  data.map(o=>`<div style="border:2px solid var(--orange);border-radius:12px;overflow:hidden">
+    <div style="background:var(--orange);color:#fff;font-size:11px;font-weight:700;padding:5px 12px">${o.negocios?.nombre||'Negocio'}</div>
+    <div style="padding:14px">
+      ${o.imagen_url?`<img src="${o.imagen_url}" style="width:100%;height:90px;object-fit:cover;border-radius:8px;margin-bottom:10px">`:''}
+      <div style="font-weight:700;margin-bottom:6px">${o.titulo}</div>
+      <div class="row">
+        <span style="color:var(--orange);font-size:18px;font-weight:800">$${o.precio}</span>
+        <span class="muted"><s>$${o.precio_antes}</s></span>
+        <span class="tag tag-orange">${Math.round((1-o.precio/o.precio_antes)*100)}% OFF</span>
+      </div>
+      <button class="btn btn-sm btn-danger" style="margin-top:10px;width:100%;justify-content:center" onclick="toggleOferta('${o.id}',false);cargarPromos()">Pausar promo</button>
+    </div>
+  </div>`).join('')+'</div>';
+}
+
+async function cargarSuscripciones(){
+  const [{data:negs},{data:pagos}] = await Promise.all([
+    db.from('negocios').select('*').order('nombre'),
     db.from('pagos').select('*, negocios(nombre)').order('creado',{ascending:false})
   ]);
-
-  document.getElementById('kpi-negocios').textContent = nC || 0;
-  document.getElementById('kpi-subs').textContent = (negs||[]).filter(n=>n.suscripcion_activa).length;
-  document.getElementById('kpi-ofertas').textContent = oC || 0;
-
-  document.getElementById('tabla-admin').innerHTML = `
-    <thead><tr><th>Nombre</th><th>Categoría</th><th>Plan</th><th>Sub</th><th>Estado</th><th>Acciones</th></tr></thead>
-    <tbody>${(negs||[]).map(n => `
-      <tr>
-        <td><strong>${n.nombre}</strong>${n.is_demo?' <span class="tag tag-orange">DEMO</span>':''}<br><span class="muted" style="font-size:11px">${n.telefono||''}</span></td>
-        <td>${n.categoria||'—'}</td>
-        <td><span class="tag tag-gray">${n.plan_id||'free'}</span></td>
-        <td>${n.suscripcion_activa?'<span class="tag tag-green">Activa</span>':'<span class="tag tag-gray">Trial</span>'}</td>
-        <td>${n.activo?'<span class="tag tag-green">Activo</span>':'<span class="tag tag-gray">Pausado</span>'}</td>
-        <td>
-          <button class="btn btn-sm btn-ghost" onclick="adminToggle('${n.id}',${!n.activo})">${n.activo?'Pausar':'Activar'}</button>
-          <button class="btn btn-sm btn-primary" onclick="adminActivarSub('${n.id}')">Activar sub 30d</button>
-          <button class="btn btn-sm btn-danger" onclick="adminEliminar('${n.id}')">🗑</button>
-        </td>
-      </tr>
-    `).join('')}</tbody>`;
-
-  document.getElementById('tabla-pagos').innerHTML = `
-    <thead><tr><th>Negocio</th><th>Plan</th><th>Monto</th><th>Estado MP</th><th>Fecha</th></tr></thead>
-    <tbody>${(pagos||[]).map(p => `
-      <tr>
-        <td>${p.negocios?.nombre||'—'}</td>
-        <td><span class="tag tag-gray">${p.plan_id}</span></td>
-        <td>$${p.monto}</td>
-        <td>${p.mp_status}</td>
-        <td class="muted">${new Date(p.creado).toLocaleDateString('es-MX')}</td>
-      </tr>
-    `).join('') || '<tr><td colspan="5" class="muted" style="text-align:center;padding:20px">Sin pagos aún</td></tr>'}</tbody>`;
+  const ts = document.getElementById('tabla-subs');
+  ts.innerHTML=`<thead><tr><th>Negocio</th><th>Plan</th><th>Estado</th><th>Vence</th><th>Acciones</th></tr></thead><tbody>`+
+  (negs||[]).map(n=>`<tr>
+    <td><strong>${n.nombre}</strong></td>
+    <td><span class="tag tag-gray">${n.plan_id||'free'}</span></td>
+    <td>${n.suscripcion_activa?'<span class="tag tag-green">● Activa</span>':'<span class="tag tag-red">● Inactiva</span>'}</td>
+    <td class="muted">${n.suscripcion_vence?new Date(n.suscripcion_vence).toLocaleDateString('es-MX'):'—'}</td>
+    <td><button class="btn btn-sm btn-primary" onclick="activarSub('${n.id}')">+30 días</button></td>
+  </tr>`).join('')+'</tbody>';
+  const tp = document.getElementById('tabla-pagos');
+  if(!pagos?.length){tp.innerHTML='<tr><td colspan="5" class="empty">Sin pagos aún</td></tr>';return;}
+  tp.innerHTML=`<thead><tr><th>Negocio</th><th>Plan</th><th>Monto</th><th>Estado</th><th>Fecha</th></tr></thead><tbody>`+
+  pagos.map(p=>`<tr>
+    <td>${p.negocios?.nombre||'—'}</td>
+    <td><span class="tag tag-gray">${p.plan_id}</span></td>
+    <td style="font-weight:700">$${p.monto}</td>
+    <td>${p.mp_status}</td>
+    <td class="muted">${new Date(p.creado).toLocaleDateString('es-MX')}</td>
+  </tr>`).join('')+'</tbody>';
 }
 
-async function adminToggle(id, estado){
-  await db.from('negocios').update({activo: estado}).eq('id', id);
-  toast('Estado actualizado', 'ok'); cargarDatos();
+async function cargarClientes(){
+  const {data,count} = await db.from('profiles').select('*',{count:'exact'}).order('created_at',{ascending:false});
+  document.getElementById('clientes-count').textContent = `${count||0} usuarios`;
+  const t = document.getElementById('tabla-clientes');
+  if(!data?.length){t.innerHTML='<tr><td colspan="4" class="empty">Sin clientes</td></tr>';return;}
+  t.innerHTML=`<thead><tr><th>Nombre</th><th>Rol</th><th>Registro</th><th>Acción</th></tr></thead><tbody>`+
+  data.map(c=>`<tr>
+    <td><strong>${c.nombre||'Sin nombre'}</strong></td>
+    <td><span class="tag ${c.rol==='admin'?'tag-orange':c.rol==='negocio'?'tag-green':'tag-gray'}">${c.rol||'cliente'}</span></td>
+    <td class="muted">${c.created_at?new Date(c.created_at).toLocaleDateString('es-MX'):'—'}</td>
+    <td><button class="btn btn-sm btn-ghost" onclick="toast('En desarrollo','ok')">Ver</button></td>
+  </tr>`).join('')+'</tbody>';
 }
 
-async function adminActivarSub(id){
-  const vence = new Date(); vence.setMonth(vence.getMonth()+1);
-  await db.from('negocios').update({suscripcion_activa: true, suscripcion_vence: vence.toISOString()}).eq('id', id);
-  toast('Suscripción activa 30 días', 'ok'); cargarDatos();
-}
-
-async function adminEliminar(id){
-  if(!confirm('¿Eliminar este negocio y todos sus datos?')) return;
-  await db.from('negocios').delete().eq('id', id);
-  toast('Eliminado', 'ok'); cargarDatos();
-}
-
-// Datos de ejemplo — marcados con is_demo=true para poder borrarlos en lote
-const DEMO_NEGOCIOS = [
-  {
-    nombre: 'Pollos El Güero',
-    categoria: 'Comida',
-    telefono: '6181234567',
-    whatsapp: '5216181234567',
-    direccion: 'Calle Juárez #45, Col. Centro',
-    horario: '12:00 - 20:00',
-    descripcion: 'Pollo asado a la leña. Responde rápido. ⭐ 4.8',
-    imagen_url: 'https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=600',
-    ofertas: [
-      { titulo: 'Pollo Entero Asado', precio: 150, precio_antes: 180, imagen_url: 'https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=400' },
-      { titulo: 'Medio Pollo', precio: 95, imagen_url: 'https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=400' }
-    ]
-  },
-  {
-    nombre: 'Tacos Lupita',
-    categoria: 'Comida',
-    telefono: '6182345678',
-    whatsapp: '5216182345678',
-    direccion: 'Av. Hidalgo #120',
-    horario: '18:00 - 23:00',
-    descripcion: 'Tacos y antojitos mexicanos. ⭐ 4.6',
-    imagen_url: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=600',
-    ofertas: [
-      { titulo: 'Orden de Tacos', precio: 60, imagen_url: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=400' },
-      { titulo: 'Tacopletas 3x2', precio: 120, precio_antes: 180, imagen_url: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=400' }
-    ]
-  },
-  {
-    nombre: 'Ferretería San José',
-    categoria: 'Ferretería',
-    telefono: '6183456789',
-    whatsapp: '5216183456789',
-    direccion: 'Blvd. Revolución #300',
-    horario: '08:00 - 19:00',
-    descripcion: 'Todo para construcción y hogar. ⭐ 4.7',
-    imagen_url: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=600',
-    ofertas: [
-      { titulo: 'Cable Eléctrico #12', precio: 15, imagen_url: 'https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?w=400' },
-      { titulo: 'Cable 100m', precio: 1200, precio_antes: 1500, imagen_url: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=400' }
-    ]
-  }
+// DEMO DATA
+const DEMO = [
+  {nombre:'Pollos El Güero',categoria:'Comida',telefono:'6181234567',whatsapp:'5216181234567',direccion:'Calle Juárez #45',horario:'12:00-20:00',descripcion:'Pollo asado a la leña ⭐ 4.8',imagen_url:'https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=600',ofertas:[{titulo:'Pollo Entero Asado',precio:150,precio_antes:180,imagen_url:'https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=400'},{titulo:'Medio Pollo',precio:95,imagen_url:'https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=400'}]},
+  {nombre:'Tacos Lupita',categoria:'Comida',telefono:'6182345678',whatsapp:'5216182345678',direccion:'Av. Hidalgo #120',horario:'18:00-23:00',descripcion:'Tacos y antojitos mexicanos ⭐ 4.6',imagen_url:'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=600',ofertas:[{titulo:'Orden de Tacos',precio:60,imagen_url:'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=400'},{titulo:'Tacopletas 3x2',precio:120,precio_antes:180,imagen_url:'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=400'}]},
+  {nombre:'Ferretería San José',categoria:'Ferretería',telefono:'6183456789',whatsapp:'5216183456789',direccion:'Blvd. Revolución #300',horario:'08:00-19:00',descripcion:'Todo para construcción y hogar ⭐ 4.7',imagen_url:'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=600',ofertas:[{titulo:'Cable Eléctrico #12',precio:15,imagen_url:'https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?w=400'},{titulo:'Cable 100m',precio:1200,precio_antes:1500,imagen_url:'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=400'}]}
 ];
 
 async function cargarDemo(){
-  const { data:{ session } } = await db.auth.getSession();
-  if(!session) return toast('Sesión expirada', 'err');
-
-  for(const n of DEMO_NEGOCIOS){
-    const { ofertas, ...negData } = n;
-    const payload = { ...negData, user_id: session.user.id, is_demo: true, activo: true, suscripcion_activa: true };
-    const { data: neg, error } = await db.from('negocios').insert(payload).select().single();
-    if(error){ toast('Error: ' + error.message, 'err'); console.error(error); return; }
-    const ofertasPayload = ofertas.map(o => ({ ...o, negocio_id: neg.id, activa: true }));
-    await db.from('ofertas').insert(ofertasPayload);
+  const {data:{session}} = await db.auth.getSession();
+  if(!session) return toast('Sesión expirada','err');
+  for(const n of DEMO){
+    const {ofertas,...nd} = n;
+    const {data:neg,error} = await db.from('negocios').insert({...nd,user_id:session.user.id,is_demo:true,activo:true,suscripcion_activa:true}).select().single();
+    if(error){toast('Error: '+error.message,'err');return;}
+    await db.from('ofertas').insert(ofertas.map(o=>({...o,negocio_id:neg.id,activa:true})));
   }
-  toast('3 negocios demo cargados ✓', 'ok');
-  cargarDatos();
+  toast('3 negocios demo cargados ✓','ok'); cargarDashboard();
 }
 
 async function borrarDemo(){
-  if(!confirm('¿Borrar todos los negocios marcados como demo?')) return;
-  const { error } = await db.from('negocios').delete().eq('is_demo', true);
-  if(error) return toast(error.message, 'err');
-  toast('Demos eliminados', 'ok');
-  cargarDatos();
+  if(!confirm('¿Borrar todos los negocios demo?')) return;
+  const {data:demos} = await db.from('negocios').select('id').eq('is_demo',true);
+  if(demos?.length){
+    for(const d of demos) await db.from('ofertas').delete().eq('negocio_id',d.id);
+    await db.from('negocios').delete().eq('is_demo',true);
+  }
+  toast('Demos eliminados','ok'); cargarDashboard();
 }
 
-(async () => { await verificarAdmin(); })();
+(async()=>{
+  const {data:{session}} = await db.auth.getSession();
+  if(session) await verificarAdmin();
+})();
 </script>
 </body>
 </html>
