@@ -51,7 +51,7 @@
   .search-box { background: #f3f4f6; border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
   .search-box input { background: transparent; border: none; outline: none; width: 100%; font-family: inherit; font-size: 14px; }
   .chips { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
-  .chip { padding: 8px 16px; border-radius: 999px; background: #f3f4f6; color: var(--ink); font-size: 13px; font-weight: 600; white-space: nowrap; cursor: pointer; }
+  .chip { padding: 8px 16px; border-radius: 999px; background: #f3f4f6; color: var(--ink); font-size: 13px; font-weight: 600; white-space: nowrap; cursor: pointer; transition: 0.2s;}
   .chip.active { background: var(--green); color: #fff; }
   
   /* CARDS */
@@ -124,14 +124,14 @@
     <div class="app-body">
       <div class="search-box">
         <span>🔍</span>
-        <input type="text" id="buscar" placeholder="Buscar negocios, comida..." oninput="filtrarNegocios()">
+        <input type="text" id="buscar" placeholder="Buscar negocios, comida..." oninput="aplicarFiltros()">
       </div>
       
-      <div class="chips">
-        <div class="chip active">Todos</div>
-        <div class="chip">Comida</div>
-        <div class="chip">Ferretería</div>
-        <div class="chip">Servicios</div>
+      <div class="chips" id="category-chips">
+        <div class="chip active" onclick="filtrarPorCategoria('Todos', this)">Todos</div>
+        <div class="chip" onclick="filtrarPorCategoria('Comida', this)">Comida</div>
+        <div class="chip" onclick="filtrarPorCategoria('Ferretería', this)">Ferretería</div>
+        <div class="chip" onclick="filtrarPorCategoria('Servicios', this)">Servicios</div>
       </div>
 
       <h3 style="font-family:'Bricolage Grotesque'; font-size:18px; margin: 20px 0 10px;">Directorio Local</h3>
@@ -150,7 +150,7 @@
   <div id="panel-cuenta" class="panel">
     <div class="app-header"><div class="app-header-title">Mi Cuenta</div></div>
     
-    <div class="app-body" id="cuenta-contenido" style="display:flex; flex-direction:column; justify-content:center;">
+    <div class="app-body" id="cuenta-contenido" style="display:flex; flex-direction:column;">
       <p style="text-align:center; padding:20px; color:var(--muted)">Cargando cuenta...</p>
     </div>
 
@@ -285,6 +285,7 @@ let currentUser = null;
 let currentProfile = null;
 let negocioTempID = null; 
 let negociosCache = [];
+let categoriaActual = 'Todos'; // Para los filtros
 
 // ==========================================
 // UTILIDADES
@@ -314,8 +315,7 @@ db.auth.onAuthStateChange(async (event, session) => {
     currentProfile = prof;
     
     if(prof?.rol === 'negocio' && document.getElementById('panel-inicio').classList.contains('active')) {
-       navegar('biz-dash');
-       cargarDashNegocio();
+       // Opcional: Mandarlo directo al dash si quieres. Por ahora lo dejamos libre.
     }
   } else {
     currentProfile = null;
@@ -329,6 +329,8 @@ function renderizarPantallaCuenta() {
   if(!cont) return; 
   
   if (!currentUser) {
+    // ESTADO: NO LOGUEADO (Igual que antes)
+    cont.style.justifyContent = 'center';
     cont.innerHTML = `
       <div class="emoji-big">👋</div>
       <h2 style="font-family:'Bricolage Grotesque'; font-size:24px; text-align:center; margin-bottom:20px;">Inicia sesión</h2>
@@ -343,16 +345,51 @@ function renderizarPantallaCuenta() {
       </div>
     `;
   } else {
+    // ESTADO: LOGUEADO (Menú completo tipo prototipo)
+    cont.style.justifyContent = 'flex-start'; // Para que se alinee arriba
+    
+    const botonNegocio = currentProfile?.rol === 'negocio' 
+      ? `<div style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid var(--green); border-radius:12px; cursor:pointer; background:var(--green-soft);" onclick="navegar('biz-dash'); cargarDashNegocio();">
+          <span style="font-size:20px;">🏪</span>
+          <span style="flex:1; font-size:15px; font-weight:700; color:var(--green-deep)">Ir a mi Panel de Negocio</span>
+          <span style="color:var(--green-deep)">›</span>
+        </div>`
+      : `<div style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid var(--orange); border-radius:12px; cursor:pointer; background:var(--orange-soft);" onclick="navegar('onb-1')">
+          <span style="font-size:20px;">🏪</span>
+          <span style="flex:1; font-size:15px; font-weight:700; color:var(--orange-deep)">Registrar mi negocio</span>
+          <span style="color:var(--orange-deep)">›</span>
+        </div>`;
+
     cont.innerHTML = `
-      <div class="emoji-big" style="font-size:48px; background:var(--green-soft); width:80px; height:80px; border-radius:50%; margin:0 auto 16px; display:grid; place-items:center;">👤</div>
-      <h2 style="font-family:'Bricolage Grotesque'; font-size:22px; text-align:center;">Hola, ${currentProfile?.nombre || 'Usuario'}</h2>
-      <p style="text-align:center; color:var(--muted); font-size:13px; margin-bottom:30px;">${currentProfile?.rol === 'negocio' ? 'Cuenta de Negocio' : 'Cuenta de Cliente'}</p>
-      
-      ${currentProfile?.rol === 'negocio' 
-        ? `<button class="btn-save" style="margin-bottom:14px" onclick="navegar('biz-dash'); cargarDashNegocio();">Ir a Panel de Negocio</button>` 
-        : ''}
-      
-      <button class="btn-save btn-outline" style="color:var(--danger); border-color:var(--danger)" onclick="doLogout()">Cerrar Sesión</button>
+      <div style="background:linear-gradient(135deg,var(--green),var(--green-deep)); color:#fff; padding:24px 16px; border-radius:16px; display:flex; align-items:center; gap:16px; margin-bottom:20px;">
+        <div style="width:56px; height:56px; border-radius:50%; background:#fff; display:grid; place-items:center; font-size:24px;">👤</div>
+        <div>
+          <h3 style="font-family:'Bricolage Grotesque'; font-size:20px; margin-bottom:4px;">Hola, ${currentProfile?.nombre || 'Usuario'}</h3>
+          <small style="opacity:0.85; font-size:13px;">${currentProfile?.rol === 'negocio' ? 'Cuenta de Negocio' : 'Cuenta de Cliente'}</small>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <div style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid var(--line); border-radius:12px; cursor:pointer;" onclick="toast('En desarrollo', 'ok')">
+          <span style="font-size:20px;">📦</span>
+          <span style="flex:1; font-size:15px; font-weight:600;">Mis pedidos</span>
+          <span style="color:var(--muted)">›</span>
+        </div>
+        
+        <div style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid var(--line); border-radius:12px; cursor:pointer; margin-bottom:12px;" onclick="toast('En desarrollo', 'ok')">
+          <span style="font-size:20px;">♥</span>
+          <span style="flex:1; font-size:15px; font-weight:600;">Mis Favoritos</span>
+          <span style="color:var(--muted)">›</span>
+        </div>
+
+        ${botonNegocio}
+
+        <div style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid #fecaca; border-radius:12px; cursor:pointer; background:#fef2f2; margin-top:20px;" onclick="doLogout()">
+          <span style="font-size:20px;">🚪</span>
+          <span style="flex:1; font-size:15px; font-weight:700; color:var(--danger)">Cerrar sesión</span>
+          <span style="color:var(--danger)">›</span>
+        </div>
+      </div>
     `;
   }
 }
@@ -374,7 +411,7 @@ async function doLogout(){
 }
 
 // ==========================================
-// VISTA CLIENTE (INICIO)
+// VISTA CLIENTE (INICIO) Y FILTROS
 // ==========================================
 async function cargarNegociosPublicos(){
   const { data, error } = await db.from('negocios').select('*');
@@ -384,13 +421,43 @@ async function cargarNegociosPublicos(){
     return; 
   }
   negociosCache = data || [];
-  renderNegocios(negociosCache);
+  aplicarFiltros(); // En lugar de render directo, aplicamos filtros por defecto
+}
+
+function filtrarPorCategoria(cat, elementoHtml) {
+  categoriaActual = cat;
+  
+  // Cambiar color de los botones
+  document.querySelectorAll('#category-chips .chip').forEach(c => c.classList.remove('active'));
+  if(elementoHtml) elementoHtml.classList.add('active');
+  
+  aplicarFiltros();
+}
+
+function aplicarFiltros(){
+  const q = document.getElementById('buscar').value.toLowerCase();
+  let filtrados = negociosCache;
+
+  // 1. Filtrar por categoría (pestañas)
+  if(categoriaActual !== 'Todos') {
+    filtrados = filtrados.filter(n => (n.categoria || '').includes(categoriaActual));
+  }
+
+  // 2. Filtrar por búsqueda de texto
+  if(q) {
+    filtrados = filtrados.filter(n =>
+      n.nombre.toLowerCase().includes(q) ||
+      (n.categoria||'').toLowerCase().includes(q)
+    );
+  }
+
+  renderNegocios(filtrados);
 }
 
 function renderNegocios(list){
   const cont = document.getElementById('lista-negocios');
   if(!cont) return;
-  if(!list.length){ cont.innerHTML = '<p style="text-align:center; color:var(--muted)">No hay negocios registrados aún.</p>'; return; }
+  if(!list.length){ cont.innerHTML = '<p style="text-align:center; padding:30px; color:var(--muted)">No se encontraron negocios con esos filtros.</p>'; return; }
   
   cont.innerHTML = list.map(n => `
     <div class="product-card" style="flex-direction:column; align-items:stretch; gap:10px;">
@@ -408,14 +475,6 @@ function renderNegocios(list){
       </div>
     </div>
   `).join('');
-}
-
-function filtrarNegocios(){
-  const q = document.getElementById('buscar').value.toLowerCase();
-  renderNegocios(negociosCache.filter(n =>
-    n.nombre.toLowerCase().includes(q) ||
-    (n.categoria||'').toLowerCase().includes(q)
-  ));
 }
 
 // ==========================================
