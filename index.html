@@ -282,7 +282,7 @@ const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let currentUser = null;
 let currentProfile = null;
-let negocioTempID = null; // Para guardar el ID del negocio durante el registro
+let negocioTempID = null; 
 let negociosCache = [];
 
 // ==========================================
@@ -312,7 +312,6 @@ db.auth.onAuthStateChange(async (event, session) => {
     const { data: prof } = await db.from('profiles').select('*').eq('id', currentUser.id).single();
     currentProfile = prof;
     
-    // Si acaba de iniciar sesión normalmente (no en el onboarding) y es negocio, mandarlo al dash
     if(prof?.rol === 'negocio' && document.getElementById('panel-inicio').classList.contains('active')) {
        navegar('biz-dash');
        cargarDashNegocio();
@@ -326,9 +325,9 @@ db.auth.onAuthStateChange(async (event, session) => {
 
 function renderizarPantallaCuenta() {
   const cont = document.getElementById('cuenta-contenido');
+  if(!cont) return; // Por si acaso la página no ha cargado
   
   if (!currentUser) {
-    // ESTADO: NO LOGUEADO
     cont.innerHTML = `
       <div class="emoji-big">👋</div>
       <h2 style="font-family:'Bricolage Grotesque'; font-size:24px; text-align:center; margin-bottom:20px;">Inicia sesión</h2>
@@ -343,7 +342,6 @@ function renderizarPantallaCuenta() {
       </div>
     `;
   } else {
-    // ESTADO: LOGUEADO
     cont.innerHTML = `
       <div class="emoji-big" style="font-size:48px; background:var(--green-soft); width:80px; height:80px; border-radius:50%; margin:0 auto 16px; display:grid; place-items:center;">👤</div>
       <h2 style="font-family:'Bricolage Grotesque'; font-size:22px; text-align:center;">Hola, ${currentProfile?.nombre || 'Usuario'}</h2>
@@ -366,7 +364,6 @@ async function doLogin(){
   toast('Iniciando...', 'ok');
   const { error } = await db.auth.signInWithPassword({ email, password });
   if(error) return toast(error.message, 'err');
-  // El onAuthStateChange hará el resto
 }
 
 async function doLogout(){ 
@@ -379,14 +376,20 @@ async function doLogout(){
 // VISTA CLIENTE (INICIO)
 // ==========================================
 async function cargarNegociosPublicos(){
-  const { data, error } = await db.from('negocios').select('*').eq('activo', true);
-  if(error){ console.error(error); return; }
+  // NOTA: Quité el .eq('activo', true) temporalmente para ver si es problema de datos
+  const { data, error } = await db.from('negocios').select('*');
+  if(error){ 
+    console.error("Error cargando negocios:", error); 
+    toast("Error cargando negocios", "err");
+    return; 
+  }
   negociosCache = data || [];
   renderNegocios(negociosCache);
 }
 
 function renderNegocios(list){
   const cont = document.getElementById('lista-negocios');
+  if(!cont) return;
   if(!list.length){ cont.innerHTML = '<p style="text-align:center; color:var(--muted)">No hay negocios registrados aún.</p>'; return; }
   
   cont.innerHTML = list.map(n => `
@@ -427,7 +430,6 @@ async function onboardingPaso1() {
   if(!email || !password || !nombre || !cat) return toast('Completa todos los campos', 'err');
   
   toast('Creando cuenta...', 'ok');
-  // Registramos al usuario como "negocio"
   const { error } = await db.auth.signUp({ 
     email, password, 
     options:{ data:{ nombre, rol: 'negocio' } } 
@@ -443,41 +445,40 @@ async function onboardingPaso2() {
   const wa = document.getElementById('onb-wa').value.trim();
   const dir = document.getElementById('onb-dir').value.trim();
   const horario = document.getElementById('onb-horario').value.trim();
-  const nombre = document.getElementById('onb-nombre').value.trim(); // Del paso 1
-  const cat = document.getElementById('onb-categoria').value; // Del paso 1
+  const nombre = document.getElementById('onb-nombre').value.trim(); 
+  const cat = document.getElementById('onb-categoria').value; 
   
   if(!wa || !dir) return toast('Falta WhatsApp o Dirección', 'err');
   if(!currentUser) return toast('Espera a que inicie sesión...', 'err');
 
   toast('Guardando datos...', 'ok');
   
-  // Guardamos el negocio en Supabase
   const payload = {
     user_id: currentUser.id,
     nombre: nombre,
     categoria: cat,
     whatsapp: wa,
-    telefono: wa, // Guardamos el mismo
+    telefono: wa, 
     direccion: dir,
     horario: horario,
-    activo: true, // Visible desde ya
-    suscripcion_activa: false // Hasta que elija plan
+    activo: true, 
+    suscripcion_activa: false 
   };
 
   const { data, error } = await db.from('negocios').insert(payload).select().single();
   if(error) return toast(error.message, 'err');
   
-  negocioTempID = data.id; // Lo guardamos para asignarle el plan en el Paso 3
+  negocioTempID = data.id; 
   
-  // Cargar planes y pasar al paso 3
   await cargarPlanes();
   navegar('onb-3');
 }
 
 async function cargarPlanes(){
-  const { data } = await db.from('planes').select('*').order('precio');
+  const { data, error } = await db.from('planes').select('*').order('precio');
   const cont = document.getElementById('planes-container');
-  if(!data) { cont.innerHTML = 'Error al cargar planes'; return; }
+  if(error) { cont.innerHTML = 'Error al cargar planes: ' + error.message; return; }
+  if(!data) return;
   
   cont.innerHTML = data.map(p => `
     <div class="plan-card ${p.id==='pro' ? 'featured' : ''}">
@@ -498,16 +499,12 @@ async function cargarPlanes(){
 
 async function seleccionarPlan(planId) {
   toast('Configurando tu plan...', 'ok');
-  
-  // Actualizamos el negocio con el plan elegido
   await db.from('negocios').update({
     plan_id: planId,
-    suscripcion_activa: planId === 'gratis' ? true : false // Si es gratis, se activa. Si es de pago, asume que falta pagar (MP).
+    suscripcion_activa: planId === 'gratis' ? true : false 
   }).eq('id', negocioTempID);
   
   toast('¡Bienvenido! Tu negocio está listo.', 'ok');
-  
-  // Refrescar publicos y mandar al dashboard
   cargarNegociosPublicos();
   cargarDashNegocio();
   navegar('biz-dash');
@@ -526,10 +523,22 @@ async function cargarDashNegocio() {
 }
 
 // ==========================================
-// INICIO AUTOMÁTICO
+// INICIO AUTOMÁTICO SEGURO
 // ==========================================
-cargarNegociosPublicos();
-
+window.onload = async () => {
+  try {
+    const { data: { session } } = await db.auth.getSession();
+    currentUser = session?.user || null;
+    if (currentUser) {
+      const { data: prof } = await db.from('profiles').select('*').eq('id', currentUser.id).single();
+      currentProfile = prof;
+    }
+    renderizarPantallaCuenta();
+    await cargarNegociosPublicos();
+  } catch (error) {
+    console.error("Error arrancando la app:", error);
+  }
+};
 </script>
 </body>
 </html>
