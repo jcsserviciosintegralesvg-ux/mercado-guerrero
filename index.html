@@ -4,7 +4,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mercado Guerrero</title>
+<title>Mercado Guerrero · App</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Unbounded:wght@700;800;900&display=swap" rel="stylesheet">
@@ -19,256 +19,365 @@
     --sh: 0 10px 25px -12px rgba(0,0,0,.15), 0 4px 8px -4px rgba(0,0,0,.08);
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
-  html,body{background:var(--bg);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif}
-  body{
-    background-image:
-      radial-gradient(circle at 10% 0%, rgba(15,122,63,.06), transparent 40%),
-      radial-gradient(circle at 90% 100%, rgba(234,88,12,.06), transparent 40%);
-    min-height:100vh;
-    padding:40px 20px 80px;
+  html,body{background:var(--bg);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;height:100%;}
+  
+  /* CONTENEDOR TIPO APP */
+  .app-layout {
+    max-width: 440px;
+    margin: 0 auto;
+    background: #fff;
+    min-height: 100vh;
+    box-shadow: 0 0 40px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow-x: hidden;
   }
-  .logo-mark{display:inline-block;flex-shrink:0;line-height:0}
-  .logo-mark svg{width:100%;height:100%;display:block;overflow:visible}
-  .logo-mark-lg{width:72px;height:88px;filter:drop-shadow(0 6px 14px rgba(15,122,63,.25))}
-  .hero{max-width:1400px;margin:0 auto 40px;text-align:center}
-  .hero .eyebrow{display:inline-block;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--green);font-weight:700;padding:6px 14px;border:1px solid var(--green);border-radius:999px;background:rgba(15,122,63,.06);margin-bottom:18px}
-  .hero h1{font-family:'Bricolage Grotesque',serif;font-weight:800;letter-spacing:-.03em;font-size:clamp(36px,5vw,64px);line-height:1.02;color:var(--ink)}
-  .hero h1 em{font-style:italic;color:var(--orange);font-weight:700}
-  .hero p{color:var(--muted);margin-top:12px;font-size:16px;max-width:640px;margin-left:auto;margin-right:auto}
-  .session-bar{margin-top:18px}
-  .tabs{max-width:1400px;margin:30px auto 36px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap;padding:6px;background:#fff;border-radius:999px;box-shadow:var(--sh);width:fit-content}
-  .tab{padding:10px 22px;border-radius:999px;font-size:14px;font-weight:600;cursor:pointer;color:var(--muted);border:none;background:transparent;transition:all .25s ease;font-family:inherit}
-  .tab:hover{color:var(--ink)}
-  .tab.active{background:var(--ink);color:#fff}
-  .section{display:none;max-width:1400px;margin:0 auto}
-  .section.active{display:block}
-  .section-title{font-family:'Bricolage Grotesque',serif;font-size:28px;font-weight:700;letter-spacing:-.02em;margin:0 0 8px}
-  .section-sub{color:var(--muted);margin-bottom:24px}
-  .card{background:var(--card);border-radius:var(--radius);padding:24px;box-shadow:var(--sh);margin-bottom:18px}
-  .grid{display:grid;gap:16px}
-  .grid-2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
-  .grid-3{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
-  input,select,textarea{width:100%;padding:11px 14px;border:1px solid var(--line);border-radius:10px;font-size:14px;font-family:inherit;margin-bottom:10px;background:#fff}
-  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--green)}
-  label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em}
-  .btn{padding:11px 20px;border-radius:10px;border:none;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;transition:.2s}
-  .btn-primary{background:var(--green);color:#fff}
-  .btn-primary:hover{background:var(--green-deep)}
-  .btn-orange{background:var(--orange);color:#fff}
-  .btn-orange:hover{background:var(--orange-deep)}
-  .btn-ghost{background:#f3f4f6;color:var(--ink)}
-  .btn-danger{background:var(--danger);color:#fff}
-  .btn-sm{padding:6px 12px;font-size:12px}
-  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  .tag{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700}
-  .tag-green{background:var(--green-soft);color:var(--green)}
-  .tag-orange{background:var(--orange-soft);color:var(--orange)}
-  .tag-gray{background:#f3f4f6;color:var(--muted)}
-  .biz-card{background:#fff;border-radius:var(--radius);padding:18px;box-shadow:var(--sh);transition:.2s}
-  .biz-card:hover{transform:translateY(-2px)}
-  .biz-thumb{width:100%;height:140px;background:var(--bg-warm);border-radius:10px;margin-bottom:12px;object-fit:cover;display:block}
-  .muted{color:var(--muted);font-size:13px}
-  .hidden{display:none!important}
-  .auth-box{max-width:440px;margin:0 auto}
-  .plan-card{border:2px solid var(--line);border-radius:var(--radius);padding:24px;text-align:center;background:#fff}
-  .plan-card.featured{border-color:var(--orange);background:var(--orange-soft);transform:scale(1.03)}
-  .plan-price{font-family:'Bricolage Grotesque',serif;font-size:40px;font-weight:800;color:var(--green);margin:10px 0}
-  .plan-price small{font-size:14px;color:var(--muted);font-weight:500}
-  .note{max-width:1400px;margin:40px auto 0;text-align:center;color:var(--muted);font-size:12px}
-  .toast{position:fixed;top:20px;right:20px;background:var(--ink);color:#fff;padding:14px 20px;border-radius:10px;z-index:9999;box-shadow:var(--sh);font-size:14px;font-weight:500}
-  .toast.ok{background:var(--green)}
-  .toast.err{background:var(--danger)}
+
+  .panel { display: none; flex: 1; flex-direction: column; overflow-y: auto; background: #fff; padding-bottom: 70px; }
+  .panel.active { display: flex; }
+  
+  /* HEADERS */
+  .app-header { background: var(--green); color: #fff; padding: 14px 16px 16px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; position: sticky; top: 0; z-index: 10; }
+  .app-header.orange { background: var(--orange); }
+  .app-header .logo { font-family: 'Bricolage Grotesque', serif; font-weight: 800; font-size: 20px; letter-spacing: -.02em; display:flex; align-items:center; gap:8px;}
+  .app-header .logo em { font-style: italic; color: #ffd9a8; }
+  .app-header-title { font-weight: 700; font-size: 17px; flex: 1; text-align: center; }
+  .back-btn { cursor: pointer; font-size: 24px; line-height: 1; opacity: .9; padding: 0 10px; margin-left: -10px; }
+  
+  .app-body { padding: 16px; flex: 1; }
+  
+  /* SEARCH & CHIPS */
+  .search-box { background: #f3f4f6; border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+  .search-box input { background: transparent; border: none; outline: none; width: 100%; font-family: inherit; font-size: 14px; }
+  .chips { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+  .chip { padding: 8px 16px; border-radius: 999px; background: #f3f4f6; color: var(--ink); font-size: 13px; font-weight: 600; white-space: nowrap; cursor: pointer; }
+  .chip.active { background: var(--green); color: #fff; }
+  
+  /* CARDS */
+  .product-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; margin-bottom: 12px; display: flex; align-items: center; gap: 14px; padding: 12px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+  .product-img { width: 80px; height: 80px; border-radius: 10px; background: var(--bg-warm); flex-shrink: 0; background-size: cover; background-position: center; }
+  .product-info { flex: 1; min-width: 0; }
+  .product-name { font-weight: 700; font-size: 15px; line-height: 1.2; margin-bottom: 4px; }
+  .product-biz { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 4px; }
+  .verify { color: var(--green); font-size: 11px; font-weight: 800; }
+  
+  /* BOTTOM NAV */
+  .bottom-nav { background: #fff; border-top: 1px solid var(--line); display: flex; padding: 10px 0 16px; position: absolute; bottom: 0; width: 100%; z-index: 20; }
+  .nav-item { flex: 1; text-align: center; font-size: 11px; font-weight: 600; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
+  .nav-item.active { color: var(--green); }
+  .nav-item .ico { font-size: 22px; line-height: 1; }
+
+  /* FORMS & BUTTONS */
+  .field { margin-bottom: 16px; }
+  .field label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; display: block; }
+  .field input, .field select, .field textarea { width: 100%; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-family: inherit; font-size: 15px; background: #fff; outline: none; }
+  .field input:focus { border-color: var(--green); }
+  .btn-save { width: 100%; background: var(--green); color: #fff; border: none; border-radius: 12px; padding: 16px; font-weight: 800; font-size: 15px; font-family: inherit; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; }
+  .btn-orange { background: var(--orange); }
+  .btn-outline { background: #fff; color: var(--ink); border: 1px solid var(--line); }
+
+  /* ONBOARDING / PLANES */
+  .onb-header { padding: 20px 16px 10px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; background: #fff; position: sticky; top:0; z-index:10;}
+  .progress-bar { height: 6px; background: #e5e7eb; border-radius: 999px; flex: 1; overflow: hidden; }
+  .progress-bar .fill { height: 100%; background: var(--green); border-radius: 999px; transition: 0.3s; }
+  .onb-body { padding: 10px 20px 30px; flex: 1; }
+  .onb-body h2 { font-family: 'Bricolage Grotesque', serif; font-size: 26px; font-weight: 700; line-height: 1.15; margin-bottom: 8px; }
+  .onb-body .sub { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+  
+  .plan-card { border: 2px solid var(--line); border-radius: var(--radius); padding: 16px; margin-bottom: 14px; background: #fff; position: relative; }
+  .plan-card.featured { border-color: var(--orange); background: linear-gradient(to bottom, #fff, var(--orange-soft)); }
+  .plan-card .rib { position: absolute; top: -10px; right: 12px; background: var(--orange); color: #fff; font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 999px; text-transform: uppercase; letter-spacing: .08em; }
+  .plan-card .pname { font-family: 'Bricolage Grotesque', serif; font-size: 20px; font-weight: 700; }
+  .plan-card .pprice { font-size: 24px; font-weight: 800; margin: 4px 0 8px; }
+  .plan-card .pprice small { font-size: 13px; color: var(--muted); font-weight: 500; }
+  .plan-feats { list-style: none; font-size: 13px; line-height: 2; margin-bottom: 14px; }
+  .plan-feats li::before { content: '✓ '; color: var(--green); font-weight: 800; }
+
+  /* UTILS */
+  .emoji-big { font-size: 64px; margin-bottom: 16px; text-align: center; }
+  .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 14px 24px; border-radius: 999px; z-index: 9999; font-size: 14px; font-weight: 600; box-shadow: var(--sh); transition: 0.3s; white-space: nowrap; }
+  .toast.hidden { top: -60px; opacity: 0; }
+  .toast.err { background: var(--danger); }
+  .toast.ok { background: var(--green); }
 </style>
 </head>
 <body>
 
 <div id="toast" class="toast hidden"></div>
 
-<div class="hero">
-  <span class="eyebrow">Directorio local · Vicente Guerrero, Dgo.</span>
-  <h1 style="display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap">
-    <span class="logo-mark logo-mark-lg">
-      <svg viewBox="0 -22 100 122">
-        <path d="M 32 2 Q 32 -18 50 -18 Q 68 -18 68 2" fill="none" stroke="#0f7a3f" stroke-width="7" stroke-linecap="round"/>
-        <rect x="0" y="0" width="100" height="100" rx="22" fill="#0f7a3f"/>
-        <path d="M70 0 L100 0 L100 30 L88 30 A18 18 0 0 0 70 12 Z" fill="#ea580c"/>
-        <text x="50" y="66" text-anchor="middle" font-family="Unbounded, sans-serif" font-size="38" font-weight="900" fill="#fff" letter-spacing="-1">MG</text>
-      </svg>
-    </span>
-    Mercado <em>Guerrero</em>
-  </h1>
-  <p>Directorio local con WhatsApp. Encuentra comida, servicios y negocios cerca de ti.</p>
-  <div id="session-bar" class="session-bar"></div>
-</div>
+<div class="app-layout">
 
-<div class="tabs">
-  <button class="tab active" data-section="cliente">Vista Cliente</button>
-  <button class="tab" data-section="negocio">Panel Negocio</button>
-  <button class="tab" data-section="planes">Planes</button>
-</div>
-
-<!-- CLIENTE -->
-<section class="section active" id="cliente">
-  <div class="card">
-    <input id="buscar" placeholder="🔍 Buscar negocios, comida, servicios..." oninput="filtrarNegocios()">
-  </div>
-  <h2 class="section-title">Negocios destacados</h2>
-  <p class="section-sub">Lo mejor de Vicente Guerrero a un clic de WhatsApp.</p>
-  <div id="lista-negocios" class="grid grid-3"></div>
-</section>
-
-<!-- NEGOCIO -->
-<section class="section" id="negocio">
-  <div id="negocio-auth" class="auth-box card">
-    <h2 class="section-title" style="font-size:22px">Panel de Negocio</h2>
-    <p class="muted" style="margin-bottom:18px">Inicia sesión o regístrate para publicar tu negocio.</p>
-    <div id="form-login">
-      <label>Email</label><input type="email" id="login-email" placeholder="correo@ejemplo.com">
-      <label>Contraseña</label><input type="password" id="login-pass">
-      <button class="btn btn-primary" onclick="doLogin()" style="width:100%">Entrar</button>
-      <p class="muted" style="text-align:center;margin-top:12px;font-size:13px">
-        ¿No tienes cuenta? <a href="#" onclick="toggleAuth();return false" style="color:var(--green);font-weight:700">Regístrate</a>
-      </p>
+  <div id="panel-inicio" class="panel active">
+    <div class="app-header">
+      <div class="logo">
+        <svg width="24" height="24" viewBox="0 -22 100 122">
+          <path d="M 32 2 Q 32 -18 50 -18 Q 68 -18 68 2" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/>
+          <rect x="0" y="0" width="100" height="100" rx="22" fill="#fff"/>
+          <path d="M70 0 L100 0 L100 30 L88 30 A18 18 0 0 0 70 12 Z" fill="#ea580c"/>
+          <text x="50" y="66" text-anchor="middle" font-family="Unbounded" font-size="38" font-weight="900" fill="#0f7a3f" letter-spacing="-1">MG</text>
+        </svg>
+        Mercado <em>Guerrero</em>
+      </div>
     </div>
-    <div id="form-signup" class="hidden">
-      <label>Nombre</label><input id="sign-nombre" placeholder="Tu nombre o del negocio">
-      <label>Email</label><input type="email" id="sign-email">
-      <label>Contraseña</label><input type="password" id="sign-pass" placeholder="Mínimo 6 caracteres">
-      <label>Tipo de cuenta</label>
-      <select id="sign-rol">
-        <option value="cliente">Cliente (busco negocios)</option>
-        <option value="negocio">Negocio (quiero publicar)</option>
-      </select>
-      <button class="btn btn-primary" onclick="doSignup()" style="width:100%">Crear cuenta</button>
-      <p class="muted" style="text-align:center;margin-top:12px;font-size:13px">
-        ¿Ya tienes cuenta? <a href="#" onclick="toggleAuth();return false" style="color:var(--green);font-weight:700">Inicia sesión</a>
-      </p>
+    
+    <div class="app-body">
+      <div class="search-box">
+        <span>🔍</span>
+        <input type="text" id="buscar" placeholder="Buscar negocios, comida..." oninput="filtrarNegocios()">
+      </div>
+      
+      <div class="chips">
+        <div class="chip active">Todos</div>
+        <div class="chip">Comida</div>
+        <div class="chip">Ferretería</div>
+        <div class="chip">Servicios</div>
+      </div>
+
+      <h3 style="font-family:'Bricolage Grotesque'; font-size:18px; margin: 20px 0 10px;">Directorio Local</h3>
+      <div id="lista-negocios">
+        <p style="text-align:center; padding:20px; color:var(--muted)">Cargando negocios...</p>
+      </div>
+    </div>
+
+    <div class="bottom-nav">
+      <div class="nav-item active" onclick="navegar('inicio')"><span class="ico">🏠</span>Inicio</div>
+      <div class="nav-item" onclick="navegar('cuenta')"><span class="ico">👤</span>Mi Cuenta</div>
     </div>
   </div>
 
-  <div id="negocio-panel" class="hidden">
-    <div class="card">
-      <h2 class="section-title" style="font-size:22px">Mi negocio</h2>
-      <p class="section-sub">Información visible para los clientes.</p>
-      <div class="grid grid-2">
-        <div><label>Nombre</label><input id="n-nombre"></div>
-        <div><label>Categoría</label>
-          <select id="n-categoria">
-            <option value="">Seleccionar...</option>
-            <option>Comida</option><option>Abarrotes</option>
-            <option>Ferretería</option><option>Salud</option>
-            <option>Servicios</option><option>Ropa</option><option>Otros</option>
-          </select>
+
+  <div id="panel-cuenta" class="panel">
+    <div class="app-header"><div class="app-header-title">Mi Cuenta</div></div>
+    
+    <div class="app-body" id="cuenta-contenido" style="display:flex; flex-direction:column; justify-content:center;">
+      </div>
+
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="navegar('inicio')"><span class="ico">🏠</span>Inicio</div>
+      <div class="nav-item active" onclick="navegar('cuenta')"><span class="ico">👤</span>Mi Cuenta</div>
+    </div>
+  </div>
+
+
+  <div id="panel-onb-1" class="panel">
+    <div class="onb-header">
+      <div class="back-btn" onclick="navegar('cuenta')">‹</div>
+      <div class="progress-bar"><div class="fill" style="width:33%"></div></div>
+      <span style="font-size:12px;color:var(--muted)">1/3</span>
+    </div>
+    <div class="onb-body">
+      <h2>Cuéntanos de tu negocio</h2>
+      <p class="sub">Paso 1 de 3 · Crear cuenta y datos básicos</p>
+      
+      <div class="field"><label>Correo Electrónico</label><input type="email" id="onb-email" placeholder="correo@ejemplo.com"></div>
+      <div class="field"><label>Contraseña</label><input type="password" id="onb-pass" placeholder="Crea una contraseña (min 6 letras)"></div>
+      <div class="field"><label>Nombre del negocio</label><input type="text" id="onb-nombre" placeholder="Ej: Pollos El Güero"></div>
+      <div class="field">
+        <label>Tipo de negocio</label>
+        <select id="onb-categoria">
+          <option value="">Selecciona una categoría</option>
+          <option>Comida</option><option>Ferretería</option><option>Servicios</option><option>Abarrotes</option><option>Otros</option>
+        </select>
+      </div>
+      
+      <button class="btn-save" style="margin-top:20px" onclick="onboardingPaso1()">Continuar</button>
+    </div>
+  </div>
+
+
+  <div id="panel-onb-2" class="panel">
+    <div class="onb-header">
+      <div class="back-btn" onclick="navegar('onb-1')">‹</div>
+      <div class="progress-bar"><div class="fill" style="width:66%"></div></div>
+      <span style="font-size:12px;color:var(--muted)">2/3</span>
+    </div>
+    <div class="onb-body">
+      <h2>WhatsApp y ubicación</h2>
+      <p class="sub">Aquí te contactarán tus clientes</p>
+      
+      <div class="field"><label>WhatsApp del negocio</label><input type="number" id="onb-wa" placeholder="Ej: 6741234567"></div>
+      <div style="background:var(--green-soft);padding:12px;border-radius:12px;font-size:12px;color:var(--green-deep);margin-bottom:20px;line-height:1.4">
+        💡 Al tocar "Pedir", el cliente te escribirá directo a este número.
+      </div>
+      
+      <div class="field"><label>Dirección</label><input type="text" id="onb-dir" placeholder="Calle, número, colonia"></div>
+      <div class="field"><label>Horario</label><input type="text" id="onb-horario" placeholder="Ej: Lun a Sab, 9am a 6pm"></div>
+      
+      <button class="btn-save" style="margin-top:20px" onclick="onboardingPaso2()">Continuar</button>
+    </div>
+  </div>
+
+
+  <div id="panel-onb-3" class="panel">
+    <div class="onb-header">
+      <div class="back-btn" onclick="navegar('onb-2')">‹</div>
+      <div class="progress-bar"><div class="fill" style="width:100%"></div></div>
+      <span style="font-size:12px;color:var(--muted)">3/3</span>
+    </div>
+    <div class="onb-body">
+      <h2>Elige tu plan</h2>
+      <p class="sub">Puedes cambiar o cancelar cuando quieras</p>
+      
+      <div id="planes-container">Cargando planes...</div>
+      
+    </div>
+  </div>
+
+
+  <div id="panel-biz-dash" class="panel">
+    <div class="app-header">
+      <div class="app-header-title">Panel de Negocio</div>
+      <div class="icon-btn" style="cursor:pointer" onclick="doLogout()">🚪</div>
+    </div>
+    <div class="app-body">
+      <div style="text-align:center; margin-bottom:20px;">
+        <h2 id="dash-nombre" style="font-family:'Bricolage Grotesque'; font-size:24px; font-weight:700">Mi Negocio</h2>
+        <span id="dash-plan" style="display:inline-block; background:var(--green-soft); color:var(--green-deep); font-size:12px; font-weight:700; padding:4px 12px; border-radius:999px; margin-top:6px;">Plan Activo</span>
+      </div>
+
+      <div class="product-card" onclick="toast('Ir a editar info (En desarrollo)','ok')">
+        <div style="font-size:24px; padding:10px;">✏️</div>
+        <div class="product-info">
+          <div class="product-name">Editar Info del Negocio</div>
+          <div class="product-biz">Horario, WhatsApp, Dirección</div>
         </div>
-        <div><label>Teléfono</label><input id="n-telefono"></div>
-        <div><label>WhatsApp</label><input id="n-whatsapp" placeholder="52XXXXXXXXXX"></div>
-        <div><label>Dirección</label><input id="n-direccion"></div>
-        <div><label>Horario</label><input id="n-horario" placeholder="L-V 9:00-20:00"></div>
+        <div style="color:var(--muted)">›</div>
       </div>
-      <label>Descripción</label><textarea id="n-descripcion" rows="2"></textarea>
-      <label>URL de imagen (logo/portada)</label><input id="n-imagen" placeholder="https://...">
-      <div class="row">
-        <button class="btn btn-primary" onclick="guardarNegocio()">💾 Guardar</button>
-        <span id="plan-tag" class="tag tag-gray">Plan: —</span>
+
+      <div class="product-card" onclick="toast('Ir a productos (En desarrollo)','ok')">
+        <div style="font-size:24px; padding:10px;">📦</div>
+        <div class="product-info">
+          <div class="product-name">Mis Ofertas y Productos</div>
+          <div class="product-biz">Agrega o pausa productos</div>
+        </div>
+        <div style="color:var(--muted)">›</div>
+      </div>
+
+      <div class="product-card" onclick="toast('Ir a estadísticas (En desarrollo)','ok')">
+        <div style="font-size:24px; padding:10px;">📊</div>
+        <div class="product-info">
+          <div class="product-name">Estadísticas</div>
+          <div class="product-biz">Vistas y clics de tus clientes</div>
+        </div>
+        <div style="color:var(--muted)">›</div>
       </div>
     </div>
-
-    <div class="card">
-      <div class="row" style="justify-content:space-between;margin-bottom:14px">
-        <h3 style="font-family:'Bricolage Grotesque',serif;font-size:20px;font-weight:700">Mis ofertas</h3>
-        <button class="btn btn-orange btn-sm" onclick="nuevaOferta()">+ Nueva oferta</button>
-      </div>
-      <div id="mis-ofertas"></div>
+    
+    <div class="bottom-nav">
+      <div class="nav-item active"><span class="ico">🏪</span>Mi Negocio</div>
+      <div class="nav-item" onclick="navegar('inicio')"><span class="ico">👁️</span>Ver App</div>
     </div>
   </div>
-</section>
 
-<!-- PLANES -->
-<section class="section" id="planes">
-  <h2 class="section-title" style="text-align:center">Elige tu plan</h2>
-  <p class="section-sub" style="text-align:center">Cancela cuando quieras · Pagos seguros con MercadoPago</p>
-  <div id="planes-grid" class="grid grid-3"></div>
-</section>
-
-<div class="note">Mercado Guerrero · Vicente Guerrero, Dgo.</div>
+</div>
 
 <script>
+// ==========================================
+// CONFIGURACIÓN SUPABASE
+// ==========================================
 const SUPABASE_URL = 'https://djddsqbmaxgpryabvktt.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqZGRzcWJtYXhncHJ5YWJ2a3R0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2MzUxMTEsImV4cCI6MjA5MjIxMTExMX0.3JO1RU1_NY4cTCO23_QanF0kFBE8VWPqzsU6yTvLx1c';
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-let currentUser = null, currentProfile = null, currentNegocio = null;
+let currentUser = null;
+let currentProfile = null;
+let negocioTempID = null; // Para guardar el ID del negocio durante el registro
+let negociosCache = [];
 
+// ==========================================
+// UTILIDADES
+// ==========================================
 function toast(msg, type='ok'){
   const t = document.getElementById('toast');
-  t.textContent = msg; t.className = 'toast ' + type;
+  t.textContent = msg; 
+  t.className = 'toast ' + type;
+  t.classList.remove('hidden');
   setTimeout(()=>t.classList.add('hidden'), 3000);
 }
 
-document.querySelectorAll('.tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    tab.classList.add('active');
-    document.getElementById(tab.dataset.section).classList.add('active');
-    if (tab.dataset.section === 'negocio' && currentUser) cargarMiNegocio();
-    window.scrollTo({top: 0, behavior: 'smooth'});
-  });
-});
-
-function toggleAuth(){
-  document.getElementById('form-login').classList.toggle('hidden');
-  document.getElementById('form-signup').classList.toggle('hidden');
+function navegar(panelId) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + panelId).classList.add('active');
+  window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
-async function doSignup(){
-  const email = document.getElementById('sign-email').value.trim();
-  const password = document.getElementById('sign-pass').value;
-  const nombre = document.getElementById('sign-nombre').value.trim();
-  const rol = document.getElementById('sign-rol').value;
-  if(!email || !password || !nombre) return toast('Completa todos los campos', 'err');
-  const { error } = await db.auth.signUp({ email, password, options:{ data:{ nombre, rol } } });
-  if(error) return toast(error.message, 'err');
-  toast('¡Cuenta creada! Revisa tu correo.', 'ok');
+// ==========================================
+// AUTENTICACIÓN Y ESTADO DE SESIÓN
+// ==========================================
+db.auth.onAuthStateChange(async (event, session) => {
+  currentUser = session?.user || null;
+  
+  if (currentUser) {
+    const { data: prof } = await db.from('profiles').select('*').eq('id', currentUser.id).single();
+    currentProfile = prof;
+    
+    // Si acaba de iniciar sesión normalmente (no en el onboarding) y es negocio, mandarlo al dash
+    if(prof?.rol === 'negocio' && document.getElementById('panel-inicio').classList.contains('active')) {
+       navegar('biz-dash');
+       cargarDashNegocio();
+    }
+  } else {
+    currentProfile = null;
+  }
+  
+  renderizarPantallaCuenta();
+});
+
+function renderizarPantallaCuenta() {
+  const cont = document.getElementById('cuenta-contenido');
+  
+  if (!currentUser) {
+    // ESTADO: NO LOGUEADO
+    cont.innerHTML = `
+      <div class="emoji-big">👋</div>
+      <h2 style="font-family:'Bricolage Grotesque'; font-size:24px; text-align:center; margin-bottom:20px;">Inicia sesión</h2>
+      <div class="field"><label>Email</label><input type="email" id="login-email" placeholder="correo@ejemplo.com"></div>
+      <div class="field"><label>Contraseña</label><input type="password" id="login-pass"></div>
+      <button class="btn-save" onclick="doLogin()">Entrar</button>
+      
+      <div style="margin-top:40px; border-top:1px solid var(--line); padding-top:30px; text-align:center;">
+        <h3 style="font-size:16px; margin-bottom:10px;">¿Tienes un negocio?</h3>
+        <p class="muted" style="margin-bottom:16px;">Súbelo a Mercado Guerrero y recibe pedidos por WhatsApp.</p>
+        <button class="btn-save btn-outline" onclick="navegar('onb-1')">Registrar mi negocio</button>
+      </div>
+    `;
+  } else {
+    // ESTADO: LOGUEADO
+    cont.innerHTML = `
+      <div class="emoji-big" style="font-size:48px; background:var(--green-soft); width:80px; height:80px; border-radius:50%; margin:0 auto 16px; display:grid; place-items:center;">👤</div>
+      <h2 style="font-family:'Bricolage Grotesque'; font-size:22px; text-align:center;">Hola, ${currentProfile?.nombre || 'Usuario'}</h2>
+      <p style="text-align:center; color:var(--muted); font-size:13px; margin-bottom:30px;">${currentProfile?.rol === 'negocio' ? 'Cuenta de Negocio' : 'Cuenta de Cliente'}</p>
+      
+      ${currentProfile?.rol === 'negocio' 
+        ? `<button class="btn-save" style="margin-bottom:14px" onclick="navegar('biz-dash'); cargarDashNegocio();">Ir a Panel de Negocio</button>` 
+        : ''}
+      
+      <button class="btn-save btn-outline" style="color:var(--danger); border-color:var(--danger)" onclick="doLogout()">Cerrar Sesión</button>
+    `;
+  }
 }
 
 async function doLogin(){
   const email = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-pass').value;
+  if(!email || !password) return toast('Llena tus datos', 'err');
+  
+  toast('Iniciando...', 'ok');
   const { error } = await db.auth.signInWithPassword({ email, password });
   if(error) return toast(error.message, 'err');
-  toast('Bienvenido', 'ok');
+  // El onAuthStateChange hará el resto
 }
 
-async function doLogout(){ await db.auth.signOut(); location.reload(); }
-
-async function renderSession(){
-  const bar = document.getElementById('session-bar');
-  if(!currentUser){
-    bar.innerHTML = '';
-    document.getElementById('negocio-auth').classList.remove('hidden');
-    document.getElementById('negocio-panel').classList.add('hidden');
-    return;
-  }
-  const { data: prof } = await db.from('profiles').select('*').eq('id', currentUser.id).single();
-  currentProfile = prof;
-  bar.innerHTML = `
-    <span class="tag tag-green">👤 ${prof?.nombre || currentUser.email}</span>
-    <button class="btn btn-ghost btn-sm" onclick="doLogout()" style="margin-left:8px">Cerrar sesión</button>
-  `;
-  if(prof?.rol === 'negocio' || prof?.rol === 'admin'){
-    document.getElementById('negocio-auth').classList.add('hidden');
-    document.getElementById('negocio-panel').classList.remove('hidden');
-    await cargarMiNegocio();
-  }
+async function doLogout(){ 
+  await db.auth.signOut(); 
+  navegar('inicio');
+  toast('Sesión cerrada', 'ok');
 }
 
-db.auth.onAuthStateChange((event, session) => {
-  currentUser = session?.user || null;
-  renderSession();
-});
-
-let negociosCache = [];
+// ==========================================
+// VISTA CLIENTE (INICIO)
+// ==========================================
 async function cargarNegociosPublicos(){
   const { data, error } = await db.from('negocios').select('*').eq('activo', true);
   if(error){ console.error(error); return; }
@@ -278,18 +387,22 @@ async function cargarNegociosPublicos(){
 
 function renderNegocios(list){
   const cont = document.getElementById('lista-negocios');
-  if(!list.length){ cont.innerHTML = '<p class="muted" style="grid-column:1/-1;text-align:center;padding:40px">No hay negocios registrados aún.</p>'; return; }
+  if(!list.length){ cont.innerHTML = '<p style="text-align:center; color:var(--muted)">No hay negocios registrados aún.</p>'; return; }
+  
   cont.innerHTML = list.map(n => `
-    <div class="biz-card">
-      ${n.imagen_url ? `<img src="${n.imagen_url}" class="biz-thumb">` : '<div class="biz-thumb"></div>'}
-      <h3 style="font-family:'Bricolage Grotesque',serif;font-size:18px;font-weight:700">${n.nombre}</h3>
-      <p class="muted" style="margin:4px 0">${n.categoria || 'Sin categoría'}${n.horario?' · '+n.horario:''}</p>
-      <p style="font-size:13px;margin-bottom:10px;color:var(--ink)">${n.descripcion || ''}</p>
-      <div class="row">
-        ${n.whatsapp ? `<a class="btn btn-primary btn-sm" href="https://wa.me/${n.whatsapp}" target="_blank">WhatsApp</a>` : ''}
-        ${n.telefono ? `<a class="btn btn-ghost btn-sm" href="tel:${n.telefono}">📞</a>` : ''}
+    <div class="product-card" style="flex-direction:column; align-items:stretch; gap:10px;">
+      <div style="display:flex; gap:12px; align-items:center;">
+        ${n.imagen_url ? `<div class="product-img" style="background-image:url('${n.imagen_url}')"></div>` : `<div class="product-img"></div>`}
+        <div class="product-info">
+          <div class="product-name">${n.nombre}</div>
+          <div class="product-biz"><span class="verify">✓</span> ${n.categoria || 'Negocio'}</div>
+          <div class="product-biz" style="margin-top:4px; font-size:11px;">📍 ${n.direccion || 'Vicente Guerrero'}</div>
+        </div>
       </div>
-      ${n.ofertas?.filter(o=>o.activa).length ? `<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--line)"><span class="tag tag-orange">🔥 ${n.ofertas.filter(o=>o.activa).length} ofertas</span></div>` : ''}
+      <div style="display:flex; gap:8px;">
+        ${n.whatsapp ? `<button class="btn-save" style="padding:10px; font-size:13px; border-radius:8px;" onclick="window.open('https://wa.me/${n.whatsapp}')">💬 WhatsApp</button>` : ''}
+        <button class="btn-save btn-outline" style="padding:10px; font-size:13px; border-radius:8px;" onclick="toast('Ver perfil en desarrollo','ok')">Ver Perfil</button>
+      </div>
     </div>
   `).join('');
 }
@@ -298,120 +411,125 @@ function filtrarNegocios(){
   const q = document.getElementById('buscar').value.toLowerCase();
   renderNegocios(negociosCache.filter(n =>
     n.nombre.toLowerCase().includes(q) ||
-    (n.categoria||'').toLowerCase().includes(q) ||
-    (n.descripcion||'').toLowerCase().includes(q)
+    (n.categoria||'').toLowerCase().includes(q)
   ));
 }
 
-async function cargarMiNegocio(){
-  const { data } = await db.from('negocios').select('*').eq('user_id', currentUser.id).maybeSingle();
-  currentNegocio = data;
-  if(data){
-    document.getElementById('n-nombre').value = data.nombre || '';
-    document.getElementById('n-categoria').value = data.categoria || '';
-    document.getElementById('n-telefono').value = data.telefono || '';
-    document.getElementById('n-whatsapp').value = data.whatsapp || '';
-    document.getElementById('n-direccion').value = data.direccion || '';
-    document.getElementById('n-horario').value = data.horario || '';
-    document.getElementById('n-descripcion').value = data.descripcion || '';
-    document.getElementById('n-imagen').value = data.imagen_url || '';
-    document.getElementById('plan-tag').textContent = 'Plan: ' + (data.plan_id || 'free') + (data.suscripcion_activa ? ' ✓' : ' (trial)');
-    await cargarMisOfertas();
-  }
+// ==========================================
+// FLUJO ONBOARDING (REGISTRO Y PLANES)
+// ==========================================
+async function onboardingPaso1() {
+  const email = document.getElementById('onb-email').value.trim();
+  const password = document.getElementById('onb-pass').value;
+  const nombre = document.getElementById('onb-nombre').value.trim();
+  const cat = document.getElementById('onb-categoria').value;
+  
+  if(!email || !password || !nombre || !cat) return toast('Completa todos los campos', 'err');
+  
+  toast('Creando cuenta...', 'ok');
+  // Registramos al usuario como "negocio"
+  const { error } = await db.auth.signUp({ 
+    email, password, 
+    options:{ data:{ nombre, rol: 'negocio' } } 
+  });
+  
+  if(error) return toast(error.message, 'err');
+  
+  toast('¡Cuenta creada! Paso 2...', 'ok');
+  navegar('onb-2');
 }
 
-async function guardarNegocio(){
+async function onboardingPaso2() {
+  const wa = document.getElementById('onb-wa').value.trim();
+  const dir = document.getElementById('onb-dir').value.trim();
+  const horario = document.getElementById('onb-horario').value.trim();
+  const nombre = document.getElementById('onb-nombre').value.trim(); // Del paso 1
+  const cat = document.getElementById('onb-categoria').value; // Del paso 1
+  
+  if(!wa || !dir) return toast('Falta WhatsApp o Dirección', 'err');
+  if(!currentUser) return toast('Espera a que inicie sesión...', 'err');
+
+  toast('Guardando datos...', 'ok');
+  
+  // Guardamos el negocio en Supabase
   const payload = {
     user_id: currentUser.id,
-    nombre: document.getElementById('n-nombre').value.trim(),
-    categoria: document.getElementById('n-categoria').value,
-    telefono: document.getElementById('n-telefono').value,
-    whatsapp: document.getElementById('n-whatsapp').value,
-    direccion: document.getElementById('n-direccion').value,
-    horario: document.getElementById('n-horario').value,
-    descripcion: document.getElementById('n-descripcion').value,
-    imagen_url: document.getElementById('n-imagen').value,
+    nombre: nombre,
+    categoria: cat,
+    whatsapp: wa,
+    telefono: wa, // Guardamos el mismo
+    direccion: dir,
+    horario: horario,
+    activo: true, // Visible desde ya
+    suscripcion_activa: false // Hasta que elija plan
   };
-  if(!payload.nombre) return toast('Falta el nombre', 'err');
-  const res = currentNegocio
-    ? await db.from('negocios').update(payload).eq('id', currentNegocio.id).select().single()
-    : await db.from('negocios').insert(payload).select().single();
-  if(res.error) return toast(res.error.message, 'err');
-  currentNegocio = res.data;
-  toast('Negocio guardado ✓', 'ok');
-  cargarNegociosPublicos();
-}
 
-async function cargarMisOfertas(){
-  if(!currentNegocio) return;
-  const { data } = await db.from('ofertas').select('*').eq('negocio_id', currentNegocio.id).order('creado', {ascending:false});
-  const cont = document.getElementById('mis-ofertas');
-  if(!data?.length){ cont.innerHTML = '<p class="muted">Sin ofertas aún.</p>'; return; }
-  cont.innerHTML = data.map(o => `
-    <div style="border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:10px;background:#fafafa">
-      <div class="grid grid-2">
-        <div><label>Título</label><input value="${o.titulo||''}" onchange="editarOferta('${o.id}','titulo',this.value)"></div>
-        <div><label>Precio</label><input type="number" value="${o.precio||''}" onchange="editarOferta('${o.id}','precio',this.value)"></div>
-        <div><label>Precio antes</label><input type="number" value="${o.precio_antes||''}" onchange="editarOferta('${o.id}','precio_antes',this.value)"></div>
-        <div><label>Imagen URL</label><input value="${o.imagen_url||''}" onchange="editarOferta('${o.id}','imagen_url',this.value)"></div>
-      </div>
-      <div class="row" style="margin-top:6px">
-        <button class="btn btn-sm ${o.activa?'btn-primary':'btn-ghost'}" onclick="editarOferta('${o.id}','activa',${!o.activa})">${o.activa?'✓ Activa':'Pausada'}</button>
-        <button class="btn btn-sm btn-danger" onclick="borrarOferta('${o.id}')">🗑 Eliminar</button>
-      </div>
-    </div>
-  `).join('');
-}
-
-async function nuevaOferta(){
-  if(!currentNegocio) return toast('Guarda tu negocio primero', 'err');
-  const { error } = await db.from('ofertas').insert({ negocio_id: currentNegocio.id, titulo: 'Nueva oferta', activa: true });
+  const { data, error } = await db.from('negocios').insert(payload).select().single();
   if(error) return toast(error.message, 'err');
-  cargarMisOfertas();
-}
-
-async function editarOferta(id, campo, valor){
-  await db.from('ofertas').update({[campo]: valor}).eq('id', id);
-  cargarMisOfertas(); cargarNegociosPublicos();
-}
-
-async function borrarOferta(id){
-  if(!confirm('¿Eliminar oferta?')) return;
-  await db.from('ofertas').delete().eq('id', id);
-  cargarMisOfertas();
+  
+  negocioTempID = data.id; // Lo guardamos para asignarle el plan en el Paso 3
+  
+  // Cargar planes y pasar al paso 3
+  await cargarPlanes();
+  navegar('onb-3');
 }
 
 async function cargarPlanes(){
   const { data } = await db.from('planes').select('*').order('precio');
-  const grid = document.getElementById('planes-grid');
-  if(!data) return;
-  grid.innerHTML = data.map(p => `
-    <div class="plan-card ${p.id==='basico'?'featured':''}">
-      <h3 style="font-family:'Bricolage Grotesque',serif;font-size:22px;font-weight:700">${p.nombre}</h3>
-      <div class="plan-price">$${p.precio}<small>/mes</small></div>
-      <p class="muted" style="margin-bottom:14px">${p.descripcion}</p>
-      <p style="margin-bottom:18px;font-size:13px"><strong>Hasta ${p.max_ofertas}</strong> ofertas activas</p>
-      ${p.precio > 0
-        ? `<button class="btn btn-orange" style="width:100%" onclick="suscribirse('${p.id}',${p.precio})">Suscribirme</button>`
-        : `<button class="btn btn-ghost" style="width:100%">Plan gratuito</button>`}
+  const cont = document.getElementById('planes-container');
+  if(!data) { cont.innerHTML = 'Error al cargar planes'; return; }
+  
+  cont.innerHTML = data.map(p => `
+    <div class="plan-card ${p.id==='pro' ? 'featured' : ''}">
+      ${p.id==='pro' ? '<div class="rib">⭐ Más popular</div>' : ''}
+      <div class="pname">${p.nombre}</div>
+      <div class="pprice">$${p.precio} <small>/ mes</small></div>
+      <ul class="plan-feats">
+        <li>Hasta ${p.max_ofertas} productos</li>
+        <li>${p.descripcion}</li>
+        <li>Botón de WhatsApp directo</li>
+      </ul>
+      <button class="btn-save ${p.id==='pro'?'btn-orange':'btn-outline'}" onclick="seleccionarPlan('${p.id}')">
+        ${p.precio === 0 ? 'Empezar Gratis' : 'Elegir Plan'}
+      </button>
     </div>
   `).join('');
 }
 
-async function suscribirse(planId, monto){
-  if(!currentUser) return toast('Inicia sesión primero', 'err');
-  if(!currentNegocio) return toast('Crea tu negocio primero', 'err');
-  toast('Integración MercadoPago en desarrollo', 'ok');
-  await db.from('pagos').insert({ negocio_id: currentNegocio.id, plan_id: planId, monto: monto, mp_status: 'pendiente' });
+async function seleccionarPlan(planId) {
+  toast('Configurando tu plan...', 'ok');
+  
+  // Actualizamos el negocio con el plan elegido
+  await db.from('negocios').update({
+    plan_id: planId,
+    suscripcion_activa: planId === 'gratis' ? true : false // Si es gratis, se activa. Si es de pago, asume que falta pagar (MP).
+  }).eq('id', negocioTempID);
+  
+  toast('¡Bienvenido! Tu negocio está listo.', 'ok');
+  
+  // Refrescar publicos y mandar al dashboard
+  cargarNegociosPublicos();
+  cargarDashNegocio();
+  navegar('biz-dash');
 }
 
-(async () => {
-  const { data: { session } } = await db.auth.getSession();
-  currentUser = session?.user || null;
-  await renderSession();
-  await cargarNegociosPublicos();
-  await cargarPlanes();
-})();
+// ==========================================
+// DASHBOARD DE NEGOCIO (BÁSICO)
+// ==========================================
+async function cargarDashNegocio() {
+  if(!currentUser) return;
+  const { data, error } = await db.from('negocios').select('*').eq('user_id', currentUser.id).maybeSingle();
+  if(data) {
+    document.getElementById('dash-nombre').textContent = data.nombre;
+    document.getElementById('dash-plan').textContent = 'Plan: ' + (data.plan_id || 'gratis').toUpperCase() + (data.suscripcion_activa ? ' ✓' : ' (Inactivo)');
+  }
+}
+
+// ==========================================
+// INICIO AUTOMÁTICO
+// ==========================================
+cargarNegociosPublicos();
+
 </script>
 </body>
 </html>
