@@ -419,47 +419,4 @@
       </div>
       
       <div style="padding:16px;">
-        <button class="btn-save" onclick="toast('Horarios guardados','ok'); navegar('biz-dash');">Guardar Cambios</button>
-      </div>
-    </div>
-  </div>
-
-
-</div>
-
-<script>
-// ==========================================
-// CONFIGURACIÓN SUPABASE
-// ==========================================
-const SUPABASE_URL = 'https://djddsqbmaxgpryabvktt.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqZGRzcWJtYXhncHJ5YWJ2a3R0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2MzUxMTEsImV4cCI6MjA5MjIxMTExMX0.3JO1RU1_NY4cTCO23_QanF0kFBE8VWPqzsU6yTvLx1c';
-const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-let currentUser = null;
-let currentProfile = null;
-let negocioActual = null; 
-let negocioTempID = null; 
-let negociosCache = [];
-let categoriaActual = 'Todos';
-
-// ==========================================
-// UTILIDADES
-// ==========================================
-function toast(msg, type='ok'){
-  const t = document.getElementById('toast');
-  t.textContent = msg; 
-  t.className = 'toast ' + type;
-  t.classList.remove('hidden');
-  setTimeout(()=>t.classList.add('hidden'), 3000);
-}
-
-function navegar(panelId) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('panel-' + panelId).classList.add('active');
-  window.scrollTo({top: 0, behavior: 'smooth'});
-}
-
-function toggleDia(elemento) {
-  const row = elemento.parentElement;
-  row.classList.toggle('closed');
-  const spanHora = row.querySelector('.h');
+        <button class="btn-save" onclick="toast('Horarios guardados','ok'); navegar('biz-dash');
