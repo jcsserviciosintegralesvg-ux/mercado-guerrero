@@ -68,9 +68,7 @@
   .btn-orange { background: var(--orange); }
   .btn-outline { background: #fff; color: var(--ink); border: 1px solid var(--line); }
 
-  /* ========================================================= */
-  /* CSS ESTILOS NEGOCIO Y STATS */
-  /* ========================================================= */
+  /* ESTILOS NEGOCIO Y STATS */
   .biz-dash-header { background: var(--green); color: #fff; padding: 24px 16px 18px; display: flex; align-items: center; gap: 14px; flex-shrink: 0; position: sticky; top: 0; z-index: 10;}
   .biz-dash-header .ava { width: 56px; height: 56px; border-radius: 50%; background: #fff; border: 2px solid #fff; display:grid; place-items:center; font-size:24px; color:var(--green); font-weight:bold; flex-shrink:0; background-size: cover; background-position: center;}
   .biz-dash-header h3 { font-family: 'Bricolage Grotesque', serif; font-size: 20px; font-weight: 700; margin-bottom:4px; }
@@ -174,7 +172,6 @@
     </div>
   </div>
 
-
   <div id="panel-cuenta" class="panel">
     <div class="app-header"><div class="app-header-title">Mi Cuenta</div></div>
     
@@ -187,7 +184,6 @@
       <div class="nav-item active" onclick="navegar('cuenta')"><span class="ico">👤</span>Mi Cuenta</div>
     </div>
   </div>
-
 
   <div id="panel-onb-1" class="panel">
     <div class="onb-header"><div class="back-btn" onclick="navegar('cuenta')">‹</div><div class="progress-bar"><div class="fill" style="width:33%"></div></div><span style="font-size:12px;color:var(--muted)">1/3</span></div>
@@ -220,7 +216,6 @@
       <div id="planes-container">Cargando planes...</div>
     </div>
   </div>
-
 
   <div id="panel-biz-dash" class="panel">
     <div class="biz-dash-header">
@@ -268,7 +263,6 @@
     </div>
   </div>
 
-
   <div id="panel-biz-productos" class="panel">
     <div class="app-header">
       <div class="back-btn" onclick="navegar('biz-dash')">‹</div>
@@ -286,7 +280,6 @@
       <div class="nav-item" onclick="navegar('biz-stats')"><span class="ico">📊</span>Estadísticas</div>
     </div>
   </div>
-
 
   <div id="panel-biz-add-producto" class="panel">
     <div class="app-header">
@@ -314,24 +307,9 @@
         </div>
       </div>
       
-      <div class="field">
-        <label>CATEGORÍA</label>
-        <select id="add-prod-cat">
-          <option>Comida · Pollería</option>
-          <option>Bebidas</option>
-          <option>Postres</option>
-        </select>
-      </div>
-      
-      <div class="field">
-        <label>DESCRIPCIÓN CORTA</label>
-        <textarea id="add-prod-desc" rows="3" placeholder="Medio pollo asado al carbón con tortillas y salsas"></textarea>
-      </div>
-      
       <button class="btn-save" onclick="guardarNuevoProducto()">Guardar producto</button>
     </div>
   </div>
-
 
   <div id="panel-biz-stats" class="panel">
     <div class="stats-header">
@@ -376,7 +354,6 @@
     </div>
   </div>
 
-
   <div id="panel-biz-horario" class="panel">
     <div class="app-header">
       <div class="back-btn" onclick="navegar('biz-dash')">‹</div>
@@ -419,4 +396,325 @@
       </div>
       
       <div style="padding:16px;">
-        <button class="btn-save" onclick="toast('Horarios guardados','ok'); navegar('biz-dash');
+        <button class="btn-save" onclick="toast('Horarios guardados','ok'); navegar('biz-dash');">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+console.log("✅ El cerebro de la app (JavaScript) se cargó correctamente.");
+
+// 1. CONFIGURACIÓN SUPABASE
+const SUPABASE_URL = 'https://djddsqbmaxgpryabvktt.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqZGRzcWJtYXhncHJ5YWJ2a3R0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2MzUxMTEsImV4cCI6MjA5MjIxMTExMX0.3JO1RU1_NY4cTCO23_QanF0kFBE8VWPqzsU6yTvLx1c';
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let currentUser = null;
+let currentProfile = null;
+let negocioActual = null; 
+let negocioTempID = null; 
+let negociosCache = [];
+let categoriaActual = 'Todos';
+
+// 2. UTILIDADES
+function toast(msg, type='ok'){
+  const t = document.getElementById('toast');
+  t.textContent = msg; 
+  t.className = 'toast ' + type;
+  t.classList.remove('hidden');
+  setTimeout(()=>t.classList.add('hidden'), 3000);
+}
+
+function navegar(panelId) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + panelId).classList.add('active');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function toggleDia(elemento) {
+  const row = elemento.parentElement;
+  row.classList.toggle('closed');
+  const spanHora = row.querySelector('.h');
+  if(row.classList.contains('closed')) {
+    spanHora.dataset.oldHora = spanHora.textContent;
+    spanHora.textContent = 'Cerrado';
+  } else {
+    spanHora.textContent = spanHora.dataset.oldHora || '09:00 · 18:00';
+  }
+}
+
+// 3. FUNCIONES DE VISTA Y SESIÓN
+function renderizarPantallaCuenta() {
+  const cont = document.getElementById('cuenta-contenido');
+  if(!cont) return; 
+  
+  if (!currentUser) {
+    cont.style.justifyContent = 'center';
+    cont.innerHTML = `
+      <div class="emoji-big">👋</div>
+      <h2 style="font-family:'Bricolage Grotesque'; font-size:24px; text-align:center; margin-bottom:20px;">Inicia sesión</h2>
+      <div class="field"><label>Email</label><input type="email" id="login-email" placeholder="correo@ejemplo.com"></div>
+      <div class="field"><label>Contraseña</label><input type="password" id="login-pass"></div>
+      <button class="btn-save" onclick="doLogin()">Entrar</button>
+      
+      <div style="margin-top:40px; border-top:1px solid var(--line); padding-top:30px; text-align:center;">
+        <h3 style="font-size:16px; margin-bottom:10px;">¿Tienes un negocio?</h3>
+        <p class="muted" style="margin-bottom:16px;">Súbelo a Mercado Guerrero y recibe pedidos por WhatsApp.</p>
+        <button class="btn-save btn-outline" onclick="navegar('onb-1')">Registrar mi negocio</button>
+      </div>
+    `;
+  } else {
+    cont.style.justifyContent = 'flex-start';
+    const botonNegocio = currentProfile?.rol === 'negocio' 
+      ? `<div style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid var(--green); border-radius:12px; cursor:pointer; background:var(--green-soft);" onclick="navegar('biz-dash'); cargarDashNegocio();">
+          <span style="font-size:20px;">🏪</span>
+          <span style="flex:1; font-size:15px; font-weight:700; color:var(--green-deep)">Ir a mi Panel de Negocio</span>
+          <span style="color:var(--green-deep)">›</span>
+        </div>`
+      : `<div style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid var(--orange); border-radius:12px; cursor:pointer; background:var(--orange-soft);" onclick="navegar('onb-1')">
+          <span style="font-size:20px;">🏪</span>
+          <span style="flex:1; font-size:15px; font-weight:700; color:var(--orange-deep)">Registrar mi negocio</span>
+          <span style="color:var(--orange-deep)">›</span>
+        </div>`;
+
+    cont.innerHTML = `
+      <div style="background:linear-gradient(135deg,var(--green),var(--green-deep)); color:#fff; padding:24px 16px; border-radius:16px; display:flex; align-items:center; gap:16px; margin-bottom:20px;">
+        <div style="width:56px; height:56px; border-radius:50%; background:#fff; display:grid; place-items:center; font-size:24px;">👤</div>
+        <div>
+          <h3 style="font-family:'Bricolage Grotesque'; font-size:20px; margin-bottom:4px;">Hola, ${currentProfile?.nombre || 'Usuario'}</h3>
+          <small style="opacity:0.85; font-size:13px;">${currentProfile?.rol === 'negocio' ? 'Cuenta de Negocio' : 'Cuenta de Cliente'}</small>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <div style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid var(--line); border-radius:12px; cursor:pointer;" onclick="toast('En desarrollo', 'ok')">
+          <span style="font-size:20px;">📦</span><span style="flex:1; font-size:15px; font-weight:600;">Mis pedidos</span><span style="color:var(--muted)">›</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid var(--line); border-radius:12px; cursor:pointer; margin-bottom:12px;" onclick="toast('En desarrollo', 'ok')">
+          <span style="font-size:20px;">♥</span><span style="flex:1; font-size:15px; font-weight:600;">Mis Favoritos</span><span style="color:var(--muted)">›</span>
+        </div>
+        ${botonNegocio}
+        <div style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid #fecaca; border-radius:12px; cursor:pointer; background:#fef2f2; margin-top:20px;" onclick="doLogout()">
+          <span style="font-size:20px;">🚪</span><span style="flex:1; font-size:15px; font-weight:700; color:var(--danger)">Cerrar sesión</span><span style="color:var(--danger)">›</span>
+        </div>
+      </div>
+    `;
+  }
+}
+
+function filtrarPorCategoria(cat, elementoHtml) {
+  categoriaActual = cat;
+  document.querySelectorAll('#category-chips .chip').forEach(c => c.classList.remove('active'));
+  if(elementoHtml) elementoHtml.classList.add('active');
+  aplicarFiltros();
+}
+
+function aplicarFiltros(){
+  const q = document.getElementById('buscar').value.toLowerCase();
+  let filtrados = negociosCache;
+  if(categoriaActual !== 'Todos') filtrados = filtrados.filter(n => (n.categoria || '').includes(categoriaActual));
+  if(q) filtrados = filtrados.filter(n => n.nombre.toLowerCase().includes(q) || (n.categoria||'').toLowerCase().includes(q));
+  renderNegocios(filtrados);
+}
+
+function renderNegocios(list){
+  const cont = document.getElementById('lista-negocios');
+  if(!cont) return;
+  if(!list.length){ cont.innerHTML = '<p style="text-align:center; padding:30px; color:var(--muted)">No se encontraron negocios.</p>'; return; }
+  
+  cont.innerHTML = list.map(n => `
+    <div class="product-card" style="flex-direction:column; align-items:stretch; gap:10px;">
+      <div style="display:flex; gap:12px; align-items:center;">
+        ${n.imagen_url ? `<div class="product-img" style="background-image:url('${n.imagen_url}')"></div>` : `<div class="product-img"></div>`}
+        <div class="product-info">
+          <div class="product-name">${n.nombre}</div>
+          <div class="product-biz"><span class="verify">✓</span> ${n.categoria || 'Negocio'}</div>
+          <div class="product-biz" style="margin-top:4px; font-size:11px;">📍 ${n.direccion || 'Vicente Guerrero'}</div>
+        </div>
+      </div>
+      <div style="display:flex; gap:8px;">
+        ${n.whatsapp ? `<button class="btn-save" style="padding:10px; font-size:13px; border-radius:8px;" onclick="window.open('https://wa.me/${n.whatsapp}')">💬 WhatsApp</button>` : ''}
+        <button class="btn-save btn-outline" style="padding:10px; font-size:13px; border-radius:8px;" onclick="toast('Ver perfil en desarrollo','ok')">Ver Perfil</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// 4. FUNCIONES DE BASE DE DATOS
+async function doLogin(){
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-pass').value;
+  if(!email || !password) return toast('Llena tus datos', 'err');
+  toast('Iniciando...', 'ok');
+  const { error } = await db.auth.signInWithPassword({ email, password });
+  if(error) return toast(error.message, 'err');
+  location.reload(); 
+}
+
+async function doLogout(){ 
+  await db.auth.signOut(); 
+  location.reload();
+}
+
+async function cargarNegociosPublicos(){
+  const { data, error } = await db.from('negocios').select('*');
+  if(error) return console.error("Error cargando negocios:", error); 
+  negociosCache = data || [];
+  aplicarFiltros(); 
+}
+
+async function onboardingPaso1() {
+  const email = document.getElementById('onb-email').value.trim();
+  const password = document.getElementById('onb-pass').value;
+  const nombre = document.getElementById('onb-nombre').value.trim();
+  const cat = document.getElementById('onb-categoria').value;
+  if(!email || !password || !nombre || !cat) return toast('Completa todos los campos', 'err');
+  toast('Creando cuenta...', 'ok');
+  const { error } = await db.auth.signUp({ email, password, options:{ data:{ nombre, rol: 'negocio' } } });
+  if(error) return toast(error.message, 'err');
+  toast('¡Cuenta creada! Paso 2...', 'ok');
+  navegar('onb-2');
+}
+
+async function onboardingPaso2() {
+  const wa = document.getElementById('onb-wa').value.trim();
+  const dir = document.getElementById('onb-dir').value.trim();
+  const horario = document.getElementById('onb-horario').value.trim();
+  const nombre = document.getElementById('onb-nombre').value.trim(); 
+  const cat = document.getElementById('onb-categoria').value; 
+  if(!wa || !dir) return toast('Falta WhatsApp o Dirección', 'err');
+  if(!currentUser) return toast('Espera a que inicie sesión...', 'err');
+  toast('Guardando datos...', 'ok');
+  
+  const { data, error } = await db.from('negocios').insert({
+    user_id: currentUser.id, nombre, categoria: cat, whatsapp: wa, telefono: wa, direccion: dir, horario, activo: true, suscripcion_activa: false 
+  }).select().single();
+  if(error) return toast(error.message, 'err');
+  
+  negocioTempID = data.id; 
+  await cargarPlanes();
+  navegar('onb-3');
+}
+
+async function cargarPlanes(){
+  const { data, error } = await db.from('planes').select('*').order('precio');
+  const cont = document.getElementById('planes-container');
+  if(error) { cont.innerHTML = 'Error al cargar planes: ' + error.message; return; }
+  cont.innerHTML = data.map(p => `
+    <div class="plan-card ${p.id==='pro' ? 'featured' : ''}">
+      ${p.id==='pro' ? '<div class="rib">⭐ Más popular</div>' : ''}
+      <div class="pname">${p.nombre}</div>
+      <div class="pprice">$${p.precio} <small>/ mes</small></div>
+      <ul class="plan-feats"><li>Hasta ${p.max_ofertas} productos</li><li>${p.descripcion}</li><li>Botón WhatsApp</li></ul>
+      <button class="btn-save ${p.id==='pro'?'btn-orange':'btn-outline'}" onclick="seleccionarPlan('${p.id}')">
+        ${p.precio === 0 ? 'Empezar Gratis' : 'Elegir Plan'}
+      </button>
+    </div>
+  `).join('');
+}
+
+async function seleccionarPlan(planId) {
+  toast('Configurando tu plan...', 'ok');
+  await db.from('negocios').update({ plan_id: planId, suscripcion_activa: planId === 'gratis' }).eq('id', negocioTempID);
+  toast('¡Bienvenido! Tu negocio está listo.', 'ok');
+  location.reload(); 
+}
+
+async function cargarDashNegocio() {
+  if(!currentUser) return;
+  const { data, error } = await db.from('negocios').select('*').eq('user_id', currentUser.id).maybeSingle();
+  if(data) {
+    negocioActual = data;
+    document.getElementById('dash-nombre').textContent = data.nombre;
+    
+    const dashAva = document.getElementById('dash-ava');
+    if(data.imagen_url) {
+      dashAva.style.backgroundImage = `url('${data.imagen_url}')`;
+      dashAva.textContent = '';
+    } else {
+      dashAva.style.backgroundImage = 'none';
+      dashAva.textContent = data.nombre.charAt(0).toUpperCase();
+    }
+
+    document.getElementById('dash-tracking').textContent = 'MG-' + data.nombre.substring(0,4).toUpperCase();
+    document.getElementById('stats-greeting').textContent = 'Hola, ' + data.nombre;
+
+    await cargarMisProductos();
+  }
+}
+
+async function cargarMisProductos() {
+  if(!negocioActual) return;
+  const { data, error } = await db.from('ofertas').select('*').eq('negocio_id', negocioActual.id);
+  const cont = document.getElementById('biz-productos-lista');
+  const countProd = document.getElementById('dash-prod-count');
+  
+  if(error || !data || data.length === 0) {
+    countProd.textContent = '0 productos publicados';
+    cont.innerHTML = `
+      <div style="text-align:center; padding:40px 20px;">
+        <div style="font-size:48px; margin-bottom:10px;">📦</div>
+        <h3 style="font-family:'Bricolage Grotesque'; font-size:18px; margin-bottom:8px;">Aún no tienes productos</h3>
+        <p style="color:var(--muted); font-size:14px; margin-bottom:20px;">Agrega tu primer platillo, producto o servicio para que tus clientes lo vean.</p>
+        <button class="btn-save" onclick="navegar('biz-add-producto')">+ Agregar Producto</button>
+      </div>`;
+    return;
+  }
+
+  countProd.textContent = `${data.length} productos publicados`;
+  cont.innerHTML = data.map(o => `
+    <div class="product-card" style="margin: 0 16px 12px;">
+      ${o.imagen_url ? `<div class="product-img" style="background-image:url('${o.imagen_url}')"></div>` : `<div class="product-img"></div>`}
+      <div class="product-info">
+        <div class="product-name">${o.titulo || 'Sin nombre'}</div>
+        <div class="product-biz">${o.activa ? 'Disponible' : 'Pausado'}</div>
+      </div>
+      <div class="product-price">$${o.precio || '0'}</div>
+    </div>
+  `).join('') + `<div style="padding: 16px;"><button class="btn-save btn-outline" onclick="navegar('biz-add-producto')">+ Nuevo Producto</button></div>`;
+}
+
+async function guardarNuevoProducto() {
+  const nombre = document.getElementById('add-prod-nombre').value.trim();
+  const precio = document.getElementById('add-prod-precio').value;
+  if(!nombre || !precio) return toast('Llena el nombre y precio', 'err');
+  if(!negocioActual) return toast('Error: No se detectó negocio', 'err');
+
+  toast('Guardando producto...', 'ok');
+  const { error } = await db.from('ofertas').insert({ negocio_id: negocioActual.id, titulo: nombre, precio: precio, activa: true });
+  if(error) return toast(error.message, 'err');
+  
+  toast('¡Producto agregado!', 'ok');
+  document.getElementById('add-prod-nombre').value = '';
+  document.getElementById('add-prod-precio').value = '';
+  await cargarMisProductos();
+  navegar('biz-productos');
+}
+
+// 5. ARRANQUE SEGURO DE LA APLICACIÓN
+async function iniciarApp() {
+  try {
+    const { data: { session } } = await db.auth.getSession();
+    currentUser = session?.user || null;
+    if (currentUser) {
+      const { data: prof } = await db.from('profiles').select('*').eq('id', currentUser.id).single();
+      currentProfile = prof;
+    }
+    renderizarPantallaCuenta();
+    await cargarNegociosPublicos();
+    
+    if(document.getElementById('panel-biz-dash').classList.contains('active')) {
+      cargarDashNegocio();
+    }
+  } catch (error) {
+    console.error("Error arrancando la app:", error);
+  }
+}
+
+// Esperamos a que la página cargue por completo para arrancar
+window.onload = iniciarApp;
+</script>
+</body>
+</html>
