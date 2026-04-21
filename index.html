@@ -21,30 +21,17 @@
   *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
   html,body{background:var(--bg);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;height:100%;}
   
-  /* CONTENEDOR TIPO APP */
-  .app-layout {
-    max-width: 440px;
-    margin: 0 auto;
-    background: #fff;
-    min-height: 100vh;
-    box-shadow: 0 0 40px rgba(0,0,0,0.1);
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    overflow-x: hidden;
-  }
-
+  .app-layout { max-width: 440px; margin: 0 auto; background: #fff; min-height: 100vh; box-shadow: 0 0 40px rgba(0,0,0,0.1); display: flex; flex-direction: column; position: relative; overflow-x: hidden; }
   .panel { display: none; flex: 1; flex-direction: column; overflow-y: auto; background: #fff; padding-bottom: 70px; }
   .panel.active { display: flex; }
   
-  /* HEADERS */
+  /* HEADERS GENERALES */
   .app-header { background: var(--green); color: #fff; padding: 14px 16px 16px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; position: sticky; top: 0; z-index: 10; }
   .app-header.orange { background: var(--orange); }
   .app-header .logo { font-family: 'Bricolage Grotesque', serif; font-weight: 800; font-size: 20px; letter-spacing: -.02em; display:flex; align-items:center; gap:8px;}
   .app-header .logo em { font-style: italic; color: #ffd9a8; }
   .app-header-title { font-weight: 700; font-size: 17px; flex: 1; text-align: center; }
   .back-btn { cursor: pointer; font-size: 24px; line-height: 1; opacity: .9; padding: 0 10px; margin-left: -10px; }
-  
   .app-body { padding: 16px; flex: 1; }
   
   /* SEARCH & CHIPS */
@@ -54,16 +41,17 @@
   .chip { padding: 8px 16px; border-radius: 999px; background: #f3f4f6; color: var(--ink); font-size: 13px; font-weight: 600; white-space: nowrap; cursor: pointer; transition: 0.2s;}
   .chip.active { background: var(--green); color: #fff; }
   
-  /* CARDS */
+  /* CARDS DE PRODUCTO */
   .product-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; margin-bottom: 12px; display: flex; align-items: center; gap: 14px; padding: 12px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
   .product-img { width: 80px; height: 80px; border-radius: 10px; background: var(--bg-warm); flex-shrink: 0; background-size: cover; background-position: center; }
   .product-info { flex: 1; min-width: 0; }
   .product-name { font-weight: 700; font-size: 15px; line-height: 1.2; margin-bottom: 4px; }
   .product-biz { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 4px; }
+  .product-price { font-weight: 800; color: var(--orange); font-size: 16px; white-space: nowrap; margin-left: auto;}
   .verify { color: var(--green); font-size: 11px; font-weight: 800; }
   
   /* BOTTOM NAV */
-  .bottom-nav { background: #fff; border-top: 1px solid var(--line); display: flex; padding: 10px 0 16px; position: absolute; bottom: 0; width: 100%; z-index: 20; }
+  .bottom-nav { background: #fff; border-top: 1px solid var(--line); display: flex; padding: 10px 0 16px; position: fixed; bottom: 0; width: 100%; max-width: 440px; z-index: 20; }
   .nav-item { flex: 1; text-align: center; font-size: 11px; font-weight: 600; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
   .nav-item.active { color: var(--green); }
   .nav-item .ico { font-size: 22px; line-height: 1; }
@@ -77,14 +65,40 @@
   .btn-orange { background: var(--orange); }
   .btn-outline { background: #fff; color: var(--ink); border: 1px solid var(--line); }
 
-  /* ONBOARDING / PLANES */
+  /* ========================================================= */
+  /* CSS DEL PROTOTIPO: ESTILOS ESPECÍFICOS DE NEGOCIO Y STATS */
+  /* ========================================================= */
+  .biz-dash-header { background: var(--green); color: #fff; padding: 24px 16px 18px; display: flex; align-items: center; gap: 14px; flex-shrink: 0; position: sticky; top: 0; z-index: 10;}
+  .biz-dash-header .ava { width: 56px; height: 56px; border-radius: 50%; background: #fff; border: 2px solid #fff; display:grid; place-items:center; font-size:24px; color:var(--green); font-weight:bold; flex-shrink:0;}
+  .biz-dash-header h3 { font-family: 'Bricolage Grotesque', serif; font-size: 20px; font-weight: 700; margin-bottom:4px; }
+  .status-pill { display: inline-flex; align-items: center; gap: 5px; background: rgba(255,255,255,.2); padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+  .rating-pill { display: inline-flex; align-items: center; gap: 4px; background: #fef3c7; color: #92400e; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; margin: 14px 16px 4px; width: fit-content; }
+  .stat-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; margin: 10px 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.02);}
+  .stat-card .ico-box { width: 44px; height: 44px; border-radius: 12px; background: var(--green-soft); color: var(--green); display: grid; place-items: center; font-size: 20px; }
+  .stat-card .t { font-size: 15px; font-weight: 700; margin-bottom:2px; }
+  .stat-card .s { font-size: 12px; color: var(--muted); }
+  .stat-card.orange .ico-box { background: var(--orange-soft); color: var(--orange); }
+  .cta-eye { margin: 14px 16px; background: var(--orange); color: #fff; border: none; border-radius: 12px; padding: 16px; font-weight: 800; font-size: 14px; font-family: inherit; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; width:calc(100% - 32px);}
+  
+  .stats-header { background: var(--green); color: #fff; padding: 24px 16px; flex-shrink: 0; position: sticky; top:0; z-index:10;}
+  .stats-header h3 { font-family: 'Bricolage Grotesque', serif; font-size: 20px; margin-bottom: 6px; font-weight:700;}
+  .stats-header p { font-size: 13px; opacity: .9; }
+  .highlight-card { margin: 16px; padding: 20px; background: linear-gradient(135deg, var(--orange-soft), #fde4cc); border-radius: var(--radius); display: flex; align-items: center; gap: 16px; }
+  .highlight-card .big { font-family: 'Bricolage Grotesque', serif; font-size: 36px; font-weight: 800; color: var(--orange); line-height:1; }
+  .highlight-card .lbl { font-size: 13px; color: var(--ink); font-weight: 700; margin-top:4px;}
+  .tab-switch { display: flex; background: #f3f4f6; border-radius: 10px; padding: 4px; margin: 0 16px 16px; }
+  .tab-switch .t { flex: 1; text-align: center; padding: 8px; font-size: 13px; font-weight: 700; color: var(--muted); border-radius: 8px; cursor: pointer; }
+  .tab-switch .t.active { background: #fff; color: var(--ink); box-shadow: 0 2px 6px rgba(0,0,0,.08); }
+  .chart-box { margin: 0 16px 16px; padding: 20px; border: 1px solid var(--line); border-radius: var(--radius); background:#fff;}
+  .chart-svg { width: 100%; height: 120px; margin-top:10px;}
+
+  /* ONBOARDING / PLANES CSS MANTENIDO */
   .onb-header { padding: 20px 16px 10px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; background: #fff; position: sticky; top:0; z-index:10;}
   .progress-bar { height: 6px; background: #e5e7eb; border-radius: 999px; flex: 1; overflow: hidden; }
   .progress-bar .fill { height: 100%; background: var(--green); border-radius: 999px; transition: 0.3s; }
   .onb-body { padding: 10px 20px 30px; flex: 1; }
   .onb-body h2 { font-family: 'Bricolage Grotesque', serif; font-size: 26px; font-weight: 700; line-height: 1.15; margin-bottom: 8px; }
   .onb-body .sub { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
-  
   .plan-card { border: 2px solid var(--line); border-radius: var(--radius); padding: 16px; margin-bottom: 14px; background: #fff; position: relative; }
   .plan-card.featured { border-color: var(--orange); background: linear-gradient(to bottom, #fff, var(--orange-soft)); }
   .plan-card .rib { position: absolute; top: -10px; right: 12px; background: var(--orange); color: #fff; font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 999px; text-transform: uppercase; letter-spacing: .08em; }
@@ -162,112 +176,150 @@
 
 
   <div id="panel-onb-1" class="panel">
-    <div class="onb-header">
-      <div class="back-btn" onclick="navegar('cuenta')">‹</div>
-      <div class="progress-bar"><div class="fill" style="width:33%"></div></div>
-      <span style="font-size:12px;color:var(--muted)">1/3</span>
-    </div>
+    <div class="onb-header"><div class="back-btn" onclick="navegar('cuenta')">‹</div><div class="progress-bar"><div class="fill" style="width:33%"></div></div><span style="font-size:12px;color:var(--muted)">1/3</span></div>
     <div class="onb-body">
-      <h2>Cuéntanos de tu negocio</h2>
-      <p class="sub">Paso 1 de 3 · Crear cuenta y datos básicos</p>
-      
+      <h2>Cuéntanos de tu negocio</h2><p class="sub">Paso 1 de 3 · Crear cuenta y datos básicos</p>
       <div class="field"><label>Correo Electrónico</label><input type="email" id="onb-email" placeholder="correo@ejemplo.com"></div>
       <div class="field"><label>Contraseña</label><input type="password" id="onb-pass" placeholder="Crea una contraseña (min 6 letras)"></div>
       <div class="field"><label>Nombre del negocio</label><input type="text" id="onb-nombre" placeholder="Ej: Pollos El Güero"></div>
-      <div class="field">
-        <label>Tipo de negocio</label>
-        <select id="onb-categoria">
-          <option value="">Selecciona una categoría</option>
-          <option>Comida</option><option>Ferretería</option><option>Servicios</option><option>Abarrotes</option><option>Otros</option>
-        </select>
-      </div>
-      
+      <div class="field"><label>Tipo de negocio</label><select id="onb-categoria"><option value="">Selecciona una categoría</option><option>Comida</option><option>Ferretería</option><option>Servicios</option><option>Abarrotes</option><option>Otros</option></select></div>
       <button class="btn-save" style="margin-top:20px" onclick="onboardingPaso1()">Continuar</button>
     </div>
   </div>
 
-
   <div id="panel-onb-2" class="panel">
-    <div class="onb-header">
-      <div class="back-btn" onclick="navegar('onb-1')">‹</div>
-      <div class="progress-bar"><div class="fill" style="width:66%"></div></div>
-      <span style="font-size:12px;color:var(--muted)">2/3</span>
-    </div>
+    <div class="onb-header"><div class="back-btn" onclick="navegar('onb-1')">‹</div><div class="progress-bar"><div class="fill" style="width:66%"></div></div><span style="font-size:12px;color:var(--muted)">2/3</span></div>
     <div class="onb-body">
-      <h2>WhatsApp y ubicación</h2>
-      <p class="sub">Aquí te contactarán tus clientes</p>
-      
+      <h2>WhatsApp y ubicación</h2><p class="sub">Aquí te contactarán tus clientes</p>
       <div class="field"><label>WhatsApp del negocio</label><input type="number" id="onb-wa" placeholder="Ej: 6741234567"></div>
-      <div style="background:var(--green-soft);padding:12px;border-radius:12px;font-size:12px;color:var(--green-deep);margin-bottom:20px;line-height:1.4">
-        💡 Al tocar "Pedir", el cliente te escribirá directo a este número.
-      </div>
-      
+      <div style="background:var(--green-soft);padding:12px;border-radius:12px;font-size:12px;color:var(--green-deep);margin-bottom:20px;line-height:1.4">💡 Al tocar "Pedir", el cliente te escribirá directo a este número.</div>
       <div class="field"><label>Dirección</label><input type="text" id="onb-dir" placeholder="Calle, número, colonia"></div>
       <div class="field"><label>Horario</label><input type="text" id="onb-horario" placeholder="Ej: Lun a Sab, 9am a 6pm"></div>
-      
       <button class="btn-save" style="margin-top:20px" onclick="onboardingPaso2()">Continuar</button>
     </div>
   </div>
 
-
   <div id="panel-onb-3" class="panel">
-    <div class="onb-header">
-      <div class="back-btn" onclick="navegar('onb-2')">‹</div>
-      <div class="progress-bar"><div class="fill" style="width:100%"></div></div>
-      <span style="font-size:12px;color:var(--muted)">3/3</span>
-    </div>
+    <div class="onb-header"><div class="back-btn" onclick="navegar('onb-2')">‹</div><div class="progress-bar"><div class="fill" style="width:100%"></div></div><span style="font-size:12px;color:var(--muted)">3/3</span></div>
     <div class="onb-body">
-      <h2>Elige tu plan</h2>
-      <p class="sub">Puedes cambiar o cancelar cuando quieras</p>
-      
+      <h2>Elige tu plan</h2><p class="sub">Puedes cambiar o cancelar cuando quieras</p>
       <div id="planes-container">Cargando planes...</div>
-      
     </div>
   </div>
 
 
   <div id="panel-biz-dash" class="panel">
-    <div class="app-header">
-      <div class="app-header-title">Panel de Negocio</div>
-      <div class="icon-btn" style="cursor:pointer" onclick="doLogout()">🚪</div>
+    <div class="biz-dash-header">
+      <div class="ava" id="dash-ava">N</div>
+      <div>
+        <h3 id="dash-nombre">Mi Negocio</h3>
+        <span class="status-pill">● Abierto</span>
+      </div>
     </div>
-    <div class="app-body">
-      <div style="text-align:center; margin-bottom:20px;">
-        <h2 id="dash-nombre" style="font-family:'Bricolage Grotesque'; font-size:24px; font-weight:700">Mi Negocio</h2>
-        <span id="dash-plan" style="display:inline-block; background:var(--green-soft); color:var(--green-deep); font-size:12px; font-weight:700; padding:4px 12px; border-radius:999px; margin-top:6px;">Plan Activo</span>
-      </div>
-
-      <div class="product-card" onclick="toast('Ir a editar info (En desarrollo)','ok')">
-        <div style="font-size:24px; padding:10px;">✏️</div>
-        <div class="product-info">
-          <div class="product-name">Editar Info del Negocio</div>
-          <div class="product-biz">Horario, WhatsApp, Dirección</div>
-        </div>
+    
+    <div class="app-body" style="padding:0">
+      <div class="rating-pill">⭐ 5.0 · Responde rápido</div>
+      
+      <div class="stat-card" onclick="navegar('biz-productos')">
+        <div class="ico-box">📦</div>
+        <div style="flex:1"><div class="t">Mis Productos</div><div class="s">Gestiona tu catálogo</div></div>
         <div style="color:var(--muted)">›</div>
       </div>
-
-      <div class="product-card" onclick="toast('Ir a productos (En desarrollo)','ok')">
-        <div style="font-size:24px; padding:10px;">📦</div>
-        <div class="product-info">
-          <div class="product-name">Mis Ofertas y Productos</div>
-          <div class="product-biz">Agrega o pausa productos</div>
-        </div>
+      
+      <div class="stat-card" onclick="toast('Editar negocio en desarrollo','ok')">
+        <div class="ico-box">✏️</div>
+        <div style="flex:1"><div class="t">Editar Negocio</div><div class="s">Datos, foto, WhatsApp</div></div>
         <div style="color:var(--muted)">›</div>
       </div>
-
-      <div class="product-card" onclick="toast('Ir a estadísticas (En desarrollo)','ok')">
-        <div style="font-size:24px; padding:10px;">📊</div>
-        <div class="product-info">
-          <div class="product-name">Estadísticas</div>
-          <div class="product-biz">Vistas y clics de tus clientes</div>
-        </div>
+      
+      <div class="stat-card" onclick="toast('Horarios en desarrollo','ok')">
+        <div class="ico-box">📍</div>
+        <div style="flex:1"><div class="t">Mi Horario</div><div class="s">Abre toda la semana</div></div>
         <div style="color:var(--muted)">›</div>
+      </div>
+      
+      <div class="stat-card orange" onclick="navegar('biz-stats')">
+        <div class="ico-box">📊</div>
+        <div style="flex:1"><div class="t">Estadísticas</div><div class="s">Vistas y clics de la app</div></div>
+        <div style="color:var(--muted)">›</div>
+      </div>
+      
+      <button class="cta-eye" onclick="navegar('inicio')">👁️ Ver cómo te ven tus clientes</button>
+      
+      <div style="margin:0 16px 16px;padding:16px;background:linear-gradient(135deg,#1e293b,#0f172a);border-radius:14px;color:#fff; box-shadow:0 10px 20px -5px rgba(0,0,0,0.2);">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#94a3b8;font-weight:700;margin-bottom:8px">🔒 Tu código rastreable</div>
+        <div style="font-family:'Bricolage Grotesque',monospace;font-size:24px;font-weight:800;letter-spacing:.05em;color:#fde68a;margin-bottom:6px" id="dash-tracking">MG-NEGOCIO</div>
+        <div style="font-size:12px;color:#cbd5e1;line-height:1.4">Este mes: <strong style="color:#fde68a">0 pedidos rastreados</strong></div>
       </div>
     </div>
     
     <div class="bottom-nav">
-      <div class="nav-item active"><span class="ico">🏪</span>Mi Negocio</div>
-      <div class="nav-item" onclick="navegar('inicio')"><span class="ico">👁️</span>Ver App</div>
+      <div class="nav-item active" onclick="navegar('biz-dash')"><span class="ico">🏠</span>Dashboard</div>
+      <div class="nav-item" onclick="navegar('biz-productos')"><span class="ico">📦</span>Productos</div>
+      <div class="nav-item" onclick="navegar('biz-stats')"><span class="ico">📊</span>Estadísticas</div>
+    </div>
+  </div>
+
+
+  <div id="panel-biz-productos" class="panel">
+    <div class="app-header">
+      <div class="back-btn" onclick="navegar('biz-dash')">‹</div>
+      <div class="app-header-title">Mis Productos</div>
+      <div style="font-size:26px; cursor:pointer;" onclick="toast('Formulario en desarrollo','ok')">+</div>
+    </div>
+    
+    <div class="app-body" id="biz-productos-lista">
+      <p style="text-align:center; padding:30px; color:var(--muted)">Cargando tus productos...</p>
+    </div>
+    
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="navegar('biz-dash')"><span class="ico">🏠</span>Dashboard</div>
+      <div class="nav-item active" onclick="navegar('biz-productos')"><span class="ico">📦</span>Productos</div>
+      <div class="nav-item" onclick="navegar('biz-stats')"><span class="ico">📊</span>Estadísticas</div>
+    </div>
+  </div>
+
+
+  <div id="panel-biz-stats" class="panel">
+    <div class="stats-header">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <div class="back-btn" onclick="navegar('biz-dash')">‹</div>
+        <div style="font-family:'Bricolage Grotesque',serif;font-size:18px;font-weight:700">Estadísticas</div>
+      </div>
+      <h3 id="stats-greeting">Hola, Negocio</h3>
+      <p>¡Bien hecho! Esto recibiste esta semana:</p>
+    </div>
+    
+    <div class="app-body" style="padding:0">
+      <div class="highlight-card">
+        <span style="font-size:40px">🔥</span>
+        <div><div class="big">25</div><div class="lbl">Clics en "Pedir por WhatsApp"</div></div>
+      </div>
+      
+      <div class="tab-switch">
+        <div class="t">Día</div><div class="t active">Semana</div><div class="t">Mes</div>
+      </div>
+      
+      <div class="chart-box">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Clics por día</div>
+        <svg class="chart-svg" viewBox="0 0 240 100">
+          <polyline points="10,70 45,50 80,55 115,35 150,45 185,25 220,15" fill="none" stroke="var(--orange)" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="220" cy="15" r="5" fill="var(--orange)"/>
+          <text x="10" y="95" font-size="10" font-weight="700" fill="#6b7280">L</text>
+          <text x="45" y="95" font-size="10" font-weight="700" fill="#6b7280">M</text>
+          <text x="80" y="95" font-size="10" font-weight="700" fill="#6b7280">M</text>
+          <text x="115" y="95" font-size="10" font-weight="700" fill="#6b7280">J</text>
+          <text x="150" y="95" font-size="10" font-weight="700" fill="#6b7280">V</text>
+          <text x="185" y="95" font-size="10" font-weight="700" fill="#6b7280">S</text>
+          <text x="220" y="95" font-size="10" font-weight="700" fill="#6b7280">D</text>
+        </svg>
+      </div>
+    </div>
+    
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="navegar('biz-dash')"><span class="ico">🏠</span>Dashboard</div>
+      <div class="nav-item" onclick="navegar('biz-productos')"><span class="ico">📦</span>Productos</div>
+      <div class="nav-item active" onclick="navegar('biz-stats')"><span class="ico">📊</span>Estadísticas</div>
     </div>
   </div>
 
@@ -283,9 +335,10 @@ const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let currentUser = null;
 let currentProfile = null;
+let negocioActual = null; // Guardamos info del negocio logueado
 let negocioTempID = null; 
 let negociosCache = [];
-let categoriaActual = 'Todos'; // Para los filtros
+let categoriaActual = 'Todos';
 
 // ==========================================
 // UTILIDADES
@@ -305,31 +358,13 @@ function navegar(panelId) {
 }
 
 // ==========================================
-// AUTENTICACIÓN Y ESTADO DE SESIÓN
+// ESTADO DE SESIÓN Y VISTA "MI CUENTA"
 // ==========================================
-db.auth.onAuthStateChange(async (event, session) => {
-  currentUser = session?.user || null;
-  
-  if (currentUser) {
-    const { data: prof } = await db.from('profiles').select('*').eq('id', currentUser.id).single();
-    currentProfile = prof;
-    
-    if(prof?.rol === 'negocio' && document.getElementById('panel-inicio').classList.contains('active')) {
-       // Opcional: Mandarlo directo al dash si quieres. Por ahora lo dejamos libre.
-    }
-  } else {
-    currentProfile = null;
-  }
-  
-  renderizarPantallaCuenta();
-});
-
 function renderizarPantallaCuenta() {
   const cont = document.getElementById('cuenta-contenido');
   if(!cont) return; 
   
   if (!currentUser) {
-    // ESTADO: NO LOGUEADO (Igual que antes)
     cont.style.justifyContent = 'center';
     cont.innerHTML = `
       <div class="emoji-big">👋</div>
@@ -345,9 +380,7 @@ function renderizarPantallaCuenta() {
       </div>
     `;
   } else {
-    // ESTADO: LOGUEADO (Menú completo tipo prototipo)
-    cont.style.justifyContent = 'flex-start'; // Para que se alinee arriba
-    
+    cont.style.justifyContent = 'flex-start';
     const botonNegocio = currentProfile?.rol === 'negocio' 
       ? `<div style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid var(--green); border-radius:12px; cursor:pointer; background:var(--green-soft);" onclick="navegar('biz-dash'); cargarDashNegocio();">
           <span style="font-size:20px;">🏪</span>
@@ -371,23 +404,14 @@ function renderizarPantallaCuenta() {
 
       <div style="display:flex; flex-direction:column; gap:8px;">
         <div style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid var(--line); border-radius:12px; cursor:pointer;" onclick="toast('En desarrollo', 'ok')">
-          <span style="font-size:20px;">📦</span>
-          <span style="flex:1; font-size:15px; font-weight:600;">Mis pedidos</span>
-          <span style="color:var(--muted)">›</span>
+          <span style="font-size:20px;">📦</span><span style="flex:1; font-size:15px; font-weight:600;">Mis pedidos</span><span style="color:var(--muted)">›</span>
         </div>
-        
         <div style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid var(--line); border-radius:12px; cursor:pointer; margin-bottom:12px;" onclick="toast('En desarrollo', 'ok')">
-          <span style="font-size:20px;">♥</span>
-          <span style="flex:1; font-size:15px; font-weight:600;">Mis Favoritos</span>
-          <span style="color:var(--muted)">›</span>
+          <span style="font-size:20px;">♥</span><span style="flex:1; font-size:15px; font-weight:600;">Mis Favoritos</span><span style="color:var(--muted)">›</span>
         </div>
-
         ${botonNegocio}
-
         <div style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid #fecaca; border-radius:12px; cursor:pointer; background:#fef2f2; margin-top:20px;" onclick="doLogout()">
-          <span style="font-size:20px;">🚪</span>
-          <span style="flex:1; font-size:15px; font-weight:700; color:var(--danger)">Cerrar sesión</span>
-          <span style="color:var(--danger)">›</span>
+          <span style="font-size:20px;">🚪</span><span style="flex:1; font-size:15px; font-weight:700; color:var(--danger)">Cerrar sesión</span><span style="color:var(--danger)">›</span>
         </div>
       </div>
     `;
@@ -398,16 +422,17 @@ async function doLogin(){
   const email = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-pass').value;
   if(!email || !password) return toast('Llena tus datos', 'err');
-  
   toast('Iniciando...', 'ok');
   const { error } = await db.auth.signInWithPassword({ email, password });
   if(error) return toast(error.message, 'err');
+  iniciarApp(); // Forzar recarga de info
 }
 
 async function doLogout(){ 
   await db.auth.signOut(); 
   navegar('inicio');
   toast('Sesión cerrada', 'ok');
+  iniciarApp();
 }
 
 // ==========================================
@@ -415,49 +440,30 @@ async function doLogout(){
 // ==========================================
 async function cargarNegociosPublicos(){
   const { data, error } = await db.from('negocios').select('*');
-  if(error){ 
-    console.error("Error cargando negocios:", error); 
-    toast("Error cargando negocios", "err");
-    return; 
-  }
+  if(error) return console.error("Error cargando negocios:", error); 
   negociosCache = data || [];
-  aplicarFiltros(); // En lugar de render directo, aplicamos filtros por defecto
+  aplicarFiltros(); 
 }
 
 function filtrarPorCategoria(cat, elementoHtml) {
   categoriaActual = cat;
-  
-  // Cambiar color de los botones
   document.querySelectorAll('#category-chips .chip').forEach(c => c.classList.remove('active'));
   if(elementoHtml) elementoHtml.classList.add('active');
-  
   aplicarFiltros();
 }
 
 function aplicarFiltros(){
   const q = document.getElementById('buscar').value.toLowerCase();
   let filtrados = negociosCache;
-
-  // 1. Filtrar por categoría (pestañas)
-  if(categoriaActual !== 'Todos') {
-    filtrados = filtrados.filter(n => (n.categoria || '').includes(categoriaActual));
-  }
-
-  // 2. Filtrar por búsqueda de texto
-  if(q) {
-    filtrados = filtrados.filter(n =>
-      n.nombre.toLowerCase().includes(q) ||
-      (n.categoria||'').toLowerCase().includes(q)
-    );
-  }
-
+  if(categoriaActual !== 'Todos') filtrados = filtrados.filter(n => (n.categoria || '').includes(categoriaActual));
+  if(q) filtrados = filtrados.filter(n => n.nombre.toLowerCase().includes(q) || (n.categoria||'').toLowerCase().includes(q));
   renderNegocios(filtrados);
 }
 
 function renderNegocios(list){
   const cont = document.getElementById('lista-negocios');
   if(!cont) return;
-  if(!list.length){ cont.innerHTML = '<p style="text-align:center; padding:30px; color:var(--muted)">No se encontraron negocios con esos filtros.</p>'; return; }
+  if(!list.length){ cont.innerHTML = '<p style="text-align:center; padding:30px; color:var(--muted)">No se encontraron negocios.</p>'; return; }
   
   cont.innerHTML = list.map(n => `
     <div class="product-card" style="flex-direction:column; align-items:stretch; gap:10px;">
@@ -485,17 +491,10 @@ async function onboardingPaso1() {
   const password = document.getElementById('onb-pass').value;
   const nombre = document.getElementById('onb-nombre').value.trim();
   const cat = document.getElementById('onb-categoria').value;
-  
   if(!email || !password || !nombre || !cat) return toast('Completa todos los campos', 'err');
-  
   toast('Creando cuenta...', 'ok');
-  const { error } = await db.auth.signUp({ 
-    email, password, 
-    options:{ data:{ nombre, rol: 'negocio' } } 
-  });
-  
+  const { error } = await db.auth.signUp({ email, password, options:{ data:{ nombre, rol: 'negocio' } } });
   if(error) return toast(error.message, 'err');
-  
   toast('¡Cuenta creada! Paso 2...', 'ok');
   navegar('onb-2');
 }
@@ -506,29 +505,16 @@ async function onboardingPaso2() {
   const horario = document.getElementById('onb-horario').value.trim();
   const nombre = document.getElementById('onb-nombre').value.trim(); 
   const cat = document.getElementById('onb-categoria').value; 
-  
   if(!wa || !dir) return toast('Falta WhatsApp o Dirección', 'err');
   if(!currentUser) return toast('Espera a que inicie sesión...', 'err');
-
   toast('Guardando datos...', 'ok');
   
-  const payload = {
-    user_id: currentUser.id,
-    nombre: nombre,
-    categoria: cat,
-    whatsapp: wa,
-    telefono: wa, 
-    direccion: dir,
-    horario: horario,
-    activo: true, 
-    suscripcion_activa: false 
-  };
-
-  const { data, error } = await db.from('negocios').insert(payload).select().single();
+  const { data, error } = await db.from('negocios').insert({
+    user_id: currentUser.id, nombre, categoria: cat, whatsapp: wa, telefono: wa, direccion: dir, horario, activo: true, suscripcion_activa: false 
+  }).select().single();
   if(error) return toast(error.message, 'err');
   
   negocioTempID = data.id; 
-  
   await cargarPlanes();
   navegar('onb-3');
 }
@@ -537,18 +523,12 @@ async function cargarPlanes(){
   const { data, error } = await db.from('planes').select('*').order('precio');
   const cont = document.getElementById('planes-container');
   if(error) { cont.innerHTML = 'Error al cargar planes: ' + error.message; return; }
-  if(!data) return;
-  
   cont.innerHTML = data.map(p => `
     <div class="plan-card ${p.id==='pro' ? 'featured' : ''}">
       ${p.id==='pro' ? '<div class="rib">⭐ Más popular</div>' : ''}
       <div class="pname">${p.nombre}</div>
       <div class="pprice">$${p.precio} <small>/ mes</small></div>
-      <ul class="plan-feats">
-        <li>Hasta ${p.max_ofertas} productos</li>
-        <li>${p.descripcion}</li>
-        <li>Botón de WhatsApp directo</li>
-      </ul>
+      <ul class="plan-feats"><li>Hasta ${p.max_ofertas} productos</li><li>${p.descripcion}</li><li>Botón WhatsApp</li></ul>
       <button class="btn-save ${p.id==='pro'?'btn-orange':'btn-outline'}" onclick="seleccionarPlan('${p.id}')">
         ${p.precio === 0 ? 'Empezar Gratis' : 'Elegir Plan'}
       </button>
@@ -558,27 +538,60 @@ async function cargarPlanes(){
 
 async function seleccionarPlan(planId) {
   toast('Configurando tu plan...', 'ok');
-  await db.from('negocios').update({
-    plan_id: planId,
-    suscripcion_activa: planId === 'gratis' ? true : false 
-  }).eq('id', negocioTempID);
-  
+  await db.from('negocios').update({ plan_id: planId, suscripcion_activa: planId === 'gratis' }).eq('id', negocioTempID);
   toast('¡Bienvenido! Tu negocio está listo.', 'ok');
-  cargarNegociosPublicos();
-  cargarDashNegocio();
+  iniciarApp(); // Recargar datos frescos
   navegar('biz-dash');
 }
 
 // ==========================================
-// DASHBOARD DE NEGOCIO (BÁSICO)
+// DASHBOARD DE NEGOCIO (PESTAÑAS PROTOTIPO)
 // ==========================================
 async function cargarDashNegocio() {
   if(!currentUser) return;
   const { data, error } = await db.from('negocios').select('*').eq('user_id', currentUser.id).maybeSingle();
   if(data) {
+    negocioActual = data;
+    // Rellenar Dashboard Header
     document.getElementById('dash-nombre').textContent = data.nombre;
-    document.getElementById('dash-plan').textContent = 'Plan: ' + (data.plan_id || 'gratis').toUpperCase() + (data.suscripcion_activa ? ' ✓' : ' (Inactivo)');
+    document.getElementById('dash-ava').textContent = data.nombre.charAt(0).toUpperCase();
+    document.getElementById('dash-tracking').textContent = 'MG-' + data.nombre.substring(0,4).toUpperCase();
+    
+    // Rellenar Estadísticas
+    document.getElementById('stats-greeting').textContent = 'Hola, ' + data.nombre;
+
+    // Cargar productos en la pestaña de productos
+    await cargarMisProductos();
   }
+}
+
+async function cargarMisProductos() {
+  if(!negocioActual) return;
+  const { data, error } = await db.from('ofertas').select('*').eq('negocio_id', negocioActual.id);
+  const cont = document.getElementById('biz-productos-lista');
+  
+  if(error || !data || data.length === 0) {
+    cont.innerHTML = `
+      <div style="text-align:center; padding:40px 20px;">
+        <div style="font-size:48px; margin-bottom:10px;">📦</div>
+        <h3 style="font-family:'Bricolage Grotesque'; font-size:18px; margin-bottom:8px;">Aún no tienes productos</h3>
+        <p style="color:var(--muted); font-size:14px; margin-bottom:20px;">Agrega tu primer platillo, producto o servicio para que tus clientes lo vean.</p>
+        <button class="btn-save" onclick="toast('Formulario en desarrollo','ok')">+ Agregar Producto</button>
+      </div>`;
+    return;
+  }
+
+  // Si tiene productos, renderizarlos estilo prototipo
+  cont.innerHTML = data.map(o => `
+    <div class="product-card">
+      ${o.imagen_url ? `<div class="product-img" style="background-image:url('${o.imagen_url}')"></div>` : `<div class="product-img"></div>`}
+      <div class="product-info">
+        <div class="product-name">${o.titulo || 'Sin nombre'}</div>
+        <div class="product-biz">${o.activa ? '● Disponible' : '○ Pausado'}</div>
+      </div>
+      <div class="product-price">$${o.precio || '0'}</div>
+    </div>
+  `).join('') + `<button class="btn-save btn-outline" style="margin-top:10px;" onclick="toast('Formulario en desarrollo','ok')">+ Nuevo Producto</button>`;
 }
 
 // ==========================================
@@ -587,17 +600,18 @@ async function cargarDashNegocio() {
 async function iniciarApp() {
   try {
     const { data: { session }, error } = await db.auth.getSession();
-    if(error) console.error("Error de sesión:", error);
-    
     currentUser = session?.user || null;
     if (currentUser) {
       const { data: prof } = await db.from('profiles').select('*').eq('id', currentUser.id).single();
       currentProfile = prof;
     }
-    
     renderizarPantallaCuenta();
     await cargarNegociosPublicos();
     
+    // Si ya estamos en una pestaña de negocio, forzar recarga del dash
+    if(document.getElementById('panel-biz-dash').classList.contains('active')) {
+      cargarDashNegocio();
+    }
   } catch (error) {
     console.error("Error arrancando la app:", error);
   }
