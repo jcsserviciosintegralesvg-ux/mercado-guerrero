@@ -61,23 +61,27 @@
   .field label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; display: block; }
   .field input, .field select, .field textarea { width: 100%; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-family: inherit; font-size: 15px; background: #fff; outline: none; }
   .field input:focus { border-color: var(--green); }
+  .field .peso-input { position: relative; }
+  .field .peso-input::before { content: '$'; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-weight: 700; }
+  .field .peso-input input { padding-left: 26px; }
   .btn-save { width: 100%; background: var(--green); color: #fff; border: none; border-radius: 12px; padding: 16px; font-weight: 800; font-size: 15px; font-family: inherit; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; }
   .btn-orange { background: var(--orange); }
   .btn-outline { background: #fff; color: var(--ink); border: 1px solid var(--line); }
 
   /* ========================================================= */
-  /* CSS DEL PROTOTIPO: ESTILOS ESPECÍFICOS DE NEGOCIO Y STATS */
+  /* CSS ESTILOS NEGOCIO Y STATS */
   /* ========================================================= */
   .biz-dash-header { background: var(--green); color: #fff; padding: 24px 16px 18px; display: flex; align-items: center; gap: 14px; flex-shrink: 0; position: sticky; top: 0; z-index: 10;}
-  .biz-dash-header .ava { width: 56px; height: 56px; border-radius: 50%; background: #fff; border: 2px solid #fff; display:grid; place-items:center; font-size:24px; color:var(--green); font-weight:bold; flex-shrink:0;}
+  .biz-dash-header .ava { width: 56px; height: 56px; border-radius: 50%; background: #fff; border: 2px solid #fff; display:grid; place-items:center; font-size:24px; color:var(--green); font-weight:bold; flex-shrink:0; background-size: cover; background-position: center;}
   .biz-dash-header h3 { font-family: 'Bricolage Grotesque', serif; font-size: 20px; font-weight: 700; margin-bottom:4px; }
   .status-pill { display: inline-flex; align-items: center; gap: 5px; background: rgba(255,255,255,.2); padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; }
   .rating-pill { display: inline-flex; align-items: center; gap: 4px; background: #fef3c7; color: #92400e; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; margin: 14px 16px 4px; width: fit-content; }
+  
   .stat-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; margin: 10px 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.02);}
-  .stat-card .ico-box { width: 44px; height: 44px; border-radius: 12px; background: var(--green-soft); color: var(--green); display: grid; place-items: center; font-size: 20px; }
+  .stat-card .ico-box { width: 44px; height: 44px; border-radius: 12px; background: #fff; border: 1px solid var(--line); color: var(--ink); display: grid; place-items: center; font-size: 20px; }
   .stat-card .t { font-size: 15px; font-weight: 700; margin-bottom:2px; }
   .stat-card .s { font-size: 12px; color: var(--muted); }
-  .stat-card.orange .ico-box { background: var(--orange-soft); color: var(--orange); }
+  
   .cta-eye { margin: 14px 16px; background: var(--orange); color: #fff; border: none; border-radius: 12px; padding: 16px; font-weight: 800; font-size: 14px; font-family: inherit; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; width:calc(100% - 32px);}
   
   .stats-header { background: var(--green); color: #fff; padding: 24px 16px; flex-shrink: 0; position: sticky; top:0; z-index:10;}
@@ -92,7 +96,17 @@
   .chart-box { margin: 0 16px 16px; padding: 20px; border: 1px solid var(--line); border-radius: var(--radius); background:#fff;}
   .chart-svg { width: 100%; height: 120px; margin-top:10px;}
 
-  /* ONBOARDING / PLANES CSS MANTENIDO */
+  /* MI HORARIO */
+  .day-row { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid var(--line); font-size: 14px; margin: 0 16px;}
+  .day-row .d { font-weight: 700; flex: 1; }
+  .day-row .h { color: var(--muted); font-size: 13px; width: 100px; text-align: center;}
+  .day-row.closed .h { color: #dc2626; }
+  .day-row .tog { width: 44px; height: 24px; background: var(--green); border-radius: 999px; position: relative; cursor: pointer;}
+  .day-row .tog::after { content: ''; position: absolute; top: 2px; right: 2px; width: 20px; height: 20px; background: #fff; border-radius: 50%; transition: 0.2s;}
+  .day-row.closed .tog { background: #e5e7eb; }
+  .day-row.closed .tog::after { right: auto; left: 2px; }
+
+  /* ONBOARDING / PLANES */
   .onb-header { padding: 20px 16px 10px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; background: #fff; position: sticky; top:0; z-index:10;}
   .progress-bar { height: 6px; background: #e5e7eb; border-radius: 999px; flex: 1; overflow: hidden; }
   .progress-bar .fill { height: 100%; background: var(--green); border-radius: 999px; transition: 0.3s; }
@@ -218,11 +232,11 @@
     </div>
     
     <div class="app-body" style="padding:0">
-      <div class="rating-pill">⭐ 5.0 · Responde rápido</div>
+      <div class="rating-pill">⭐ 4.8 · Responde rápido</div>
       
-      <div class="stat-card" onclick="navegar('biz-productos')">
+      <div class="stat-card" onclick="navegar('biz-productos'); cargarMisProductos()">
         <div class="ico-box">📦</div>
-        <div style="flex:1"><div class="t">Mis Productos</div><div class="s">Gestiona tu catálogo</div></div>
+        <div style="flex:1"><div class="t">Mis Productos</div><div class="s" id="dash-prod-count">Gestiona tu catálogo</div></div>
         <div style="color:var(--muted)">›</div>
       </div>
       
@@ -232,30 +246,24 @@
         <div style="color:var(--muted)">›</div>
       </div>
       
-      <div class="stat-card" onclick="toast('Horarios en desarrollo','ok')">
+      <div class="stat-card" onclick="navegar('biz-horario')">
         <div class="ico-box">📍</div>
-        <div style="flex:1"><div class="t">Mi Horario</div><div class="s">Abre toda la semana</div></div>
+        <div style="flex:1"><div class="t">Mi Horario</div><div class="s">Abre lunes a sábado</div></div>
         <div style="color:var(--muted)">›</div>
       </div>
       
       <div class="stat-card orange" onclick="navegar('biz-stats')">
-        <div class="ico-box">📊</div>
-        <div style="flex:1"><div class="t">Estadísticas</div><div class="s">Vistas y clics de la app</div></div>
+        <div class="ico-box" style="background:var(--orange-soft); color:var(--orange); border-color:var(--orange-soft);">📊</div>
+        <div style="flex:1"><div class="t">Estadísticas</div><div class="s">25 clics esta semana</div></div>
         <div style="color:var(--muted)">›</div>
       </div>
       
       <button class="cta-eye" onclick="navegar('inicio')">👁️ Ver cómo te ven tus clientes</button>
-      
-      <div style="margin:0 16px 16px;padding:16px;background:linear-gradient(135deg,#1e293b,#0f172a);border-radius:14px;color:#fff; box-shadow:0 10px 20px -5px rgba(0,0,0,0.2);">
-        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#94a3b8;font-weight:700;margin-bottom:8px">🔒 Tu código rastreable</div>
-        <div style="font-family:'Bricolage Grotesque',monospace;font-size:24px;font-weight:800;letter-spacing:.05em;color:#fde68a;margin-bottom:6px" id="dash-tracking">MG-NEGOCIO</div>
-        <div style="font-size:12px;color:#cbd5e1;line-height:1.4">Este mes: <strong style="color:#fde68a">0 pedidos rastreados</strong></div>
-      </div>
     </div>
     
     <div class="bottom-nav">
       <div class="nav-item active" onclick="navegar('biz-dash')"><span class="ico">🏠</span>Dashboard</div>
-      <div class="nav-item" onclick="navegar('biz-productos')"><span class="ico">📦</span>Productos</div>
+      <div class="nav-item" onclick="navegar('biz-productos'); cargarMisProductos()"><span class="ico">📦</span>Productos</div>
       <div class="nav-item" onclick="navegar('biz-stats')"><span class="ico">📊</span>Estadísticas</div>
     </div>
   </div>
@@ -265,17 +273,62 @@
     <div class="app-header">
       <div class="back-btn" onclick="navegar('biz-dash')">‹</div>
       <div class="app-header-title">Mis Productos</div>
-      <div style="font-size:26px; cursor:pointer;" onclick="toast('Formulario en desarrollo','ok')">+</div>
+      <div style="font-size:26px; cursor:pointer;" onclick="navegar('biz-add-producto')">+</div>
     </div>
     
-    <div class="app-body" id="biz-productos-lista">
+    <div class="app-body" id="biz-productos-lista" style="padding-top:16px;">
       <p style="text-align:center; padding:30px; color:var(--muted)">Cargando tus productos...</p>
     </div>
     
     <div class="bottom-nav">
       <div class="nav-item" onclick="navegar('biz-dash')"><span class="ico">🏠</span>Dashboard</div>
-      <div class="nav-item active" onclick="navegar('biz-productos')"><span class="ico">📦</span>Productos</div>
+      <div class="nav-item active" onclick="navegar('biz-productos')"><span class="ico">📦</span><span style="display:inline-block; background:var(--orange); color:#fff; border-radius:999px; padding:0 4px; font-size:10px; position:absolute; top:8px; right:35%;">3</span>Productos</div>
       <div class="nav-item" onclick="navegar('biz-stats')"><span class="ico">📊</span>Estadísticas</div>
+    </div>
+  </div>
+
+
+  <div id="panel-biz-add-producto" class="panel">
+    <div class="app-header">
+      <div class="back-btn" onclick="navegar('biz-productos')">‹</div>
+      <div class="app-header-title">Agregar Producto</div>
+      <div style="width:24px"></div>
+    </div>
+    
+    <div class="app-body">
+      <div style="height: 180px; background: #333; border-radius: 14px; display:flex; align-items:flex-end; justify-content:center; padding:12px; margin-bottom:20px; background-image:url('https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=600'); background-size:cover; background-position:center; position:relative;">
+        <div style="background: rgba(0,0,0,0.6); color:#fff; padding:6px 12px; border-radius:8px; font-size:12px; font-weight:600; display:flex; align-items:center; gap:6px;">
+          📷 Cambiar imagen
+        </div>
+      </div>
+      
+      <div class="field">
+        <label>NOMBRE DEL PRODUCTO</label>
+        <input type="text" id="add-prod-nombre" placeholder="Ej: Medio Pollo">
+      </div>
+      
+      <div class="field">
+        <label>PRECIO (MXN)</label>
+        <div class="peso-input">
+          <input type="number" id="add-prod-precio" placeholder="Ej: 95">
+        </div>
+      </div>
+      
+      <div class="field">
+        <label>CATEGORÍA</label>
+        <select id="add-prod-cat">
+          <option>Comida · Pollería</option>
+          <option>Bebidas</option>
+          <option>Postres</option>
+        </select>
+      </div>
+      
+      <div class="field">
+        <label>DESCRIPCIÓN CORTA</label>
+        <textarea id="add-prod-desc" rows="3" placeholder="Medio pollo asado al carbón con tortillas y salsas"></textarea>
+      </div>
+      
+      <button class="btn-save" onclick="guardarNuevoProducto()">Guardar producto</button>
     </div>
   </div>
 
@@ -293,7 +346,7 @@
     <div class="app-body" style="padding:0">
       <div class="highlight-card">
         <span style="font-size:40px">🔥</span>
-        <div><div class="big">25</div><div class="lbl">Clics en "Pedir por WhatsApp"</div></div>
+        <div><div class="big">25</div><div class="lbl">Clics en "Pedir ahora"</div></div>
       </div>
       
       <div class="tab-switch">
@@ -318,10 +371,59 @@
     
     <div class="bottom-nav">
       <div class="nav-item" onclick="navegar('biz-dash')"><span class="ico">🏠</span>Dashboard</div>
-      <div class="nav-item" onclick="navegar('biz-productos')"><span class="ico">📦</span>Productos</div>
+      <div class="nav-item" onclick="navegar('biz-productos')"><span class="ico">📦</span><span style="display:inline-block; background:var(--orange); color:#fff; border-radius:999px; padding:0 4px; font-size:10px; position:absolute; top:8px; right:50%;">3</span>Productos</div>
       <div class="nav-item active" onclick="navegar('biz-stats')"><span class="ico">📊</span>Estadísticas</div>
     </div>
   </div>
+
+
+  <div id="panel-biz-horario" class="panel">
+    <div class="app-header">
+      <div class="back-btn" onclick="navegar('biz-dash')">‹</div>
+      <div class="app-header-title">Mi Horario</div>
+      <div style="width:24px"></div>
+    </div>
+    
+    <div class="app-body" style="padding:0">
+      <div style="background:var(--green-soft); padding:16px; border-radius:12px; font-size:13px; color:var(--ink); margin:16px; line-height:1.4;">
+        💡 <strong>Tip:</strong> Los clientes verán "Abierto ahora" solo en los días y horas que marques.
+      </div>
+      
+      <div class="day-row">
+        <span class="d">Lunes</span><span class="h">12:00 · 20:00</span>
+        <div class="tog" onclick="toggleDia(this)"></div>
+      </div>
+      <div class="day-row">
+        <span class="d">Martes</span><span class="h">12:00 · 20:00</span>
+        <div class="tog" onclick="toggleDia(this)"></div>
+      </div>
+      <div class="day-row">
+        <span class="d">Miércoles</span><span class="h">12:00 · 20:00</span>
+        <div class="tog" onclick="toggleDia(this)"></div>
+      </div>
+      <div class="day-row">
+        <span class="d">Jueves</span><span class="h">12:00 · 20:00</span>
+        <div class="tog" onclick="toggleDia(this)"></div>
+      </div>
+      <div class="day-row">
+        <span class="d">Viernes</span><span class="h">12:00 · 22:00</span>
+        <div class="tog" onclick="toggleDia(this)"></div>
+      </div>
+      <div class="day-row">
+        <span class="d">Sábado</span><span class="h">12:00 · 22:00</span>
+        <div class="tog" onclick="toggleDia(this)"></div>
+      </div>
+      <div class="day-row closed">
+        <span class="d">Domingo</span><span class="h">Cerrado</span>
+        <div class="tog" onclick="toggleDia(this)"></div>
+      </div>
+      
+      <div style="padding:16px;">
+        <button class="btn-save" onclick="toast('Horarios guardados','ok'); navegar('biz-dash');">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+
 
 </div>
 
@@ -335,7 +437,7 @@ const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let currentUser = null;
 let currentProfile = null;
-let negocioActual = null; // Guardamos info del negocio logueado
+let negocioActual = null; 
 let negocioTempID = null; 
 let negociosCache = [];
 let categoriaActual = 'Todos';
@@ -357,269 +459,7 @@ function navegar(panelId) {
   window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
-// ==========================================
-// ESTADO DE SESIÓN Y VISTA "MI CUENTA"
-// ==========================================
-function renderizarPantallaCuenta() {
-  const cont = document.getElementById('cuenta-contenido');
-  if(!cont) return; 
-  
-  if (!currentUser) {
-    cont.style.justifyContent = 'center';
-    cont.innerHTML = `
-      <div class="emoji-big">👋</div>
-      <h2 style="font-family:'Bricolage Grotesque'; font-size:24px; text-align:center; margin-bottom:20px;">Inicia sesión</h2>
-      <div class="field"><label>Email</label><input type="email" id="login-email" placeholder="correo@ejemplo.com"></div>
-      <div class="field"><label>Contraseña</label><input type="password" id="login-pass"></div>
-      <button class="btn-save" onclick="doLogin()">Entrar</button>
-      
-      <div style="margin-top:40px; border-top:1px solid var(--line); padding-top:30px; text-align:center;">
-        <h3 style="font-size:16px; margin-bottom:10px;">¿Tienes un negocio?</h3>
-        <p class="muted" style="margin-bottom:16px;">Súbelo a Mercado Guerrero y recibe pedidos por WhatsApp.</p>
-        <button class="btn-save btn-outline" onclick="navegar('onb-1')">Registrar mi negocio</button>
-      </div>
-    `;
-  } else {
-    cont.style.justifyContent = 'flex-start';
-    const botonNegocio = currentProfile?.rol === 'negocio' 
-      ? `<div style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid var(--green); border-radius:12px; cursor:pointer; background:var(--green-soft);" onclick="navegar('biz-dash'); cargarDashNegocio();">
-          <span style="font-size:20px;">🏪</span>
-          <span style="flex:1; font-size:15px; font-weight:700; color:var(--green-deep)">Ir a mi Panel de Negocio</span>
-          <span style="color:var(--green-deep)">›</span>
-        </div>`
-      : `<div style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid var(--orange); border-radius:12px; cursor:pointer; background:var(--orange-soft);" onclick="navegar('onb-1')">
-          <span style="font-size:20px;">🏪</span>
-          <span style="flex:1; font-size:15px; font-weight:700; color:var(--orange-deep)">Registrar mi negocio</span>
-          <span style="color:var(--orange-deep)">›</span>
-        </div>`;
-
-    cont.innerHTML = `
-      <div style="background:linear-gradient(135deg,var(--green),var(--green-deep)); color:#fff; padding:24px 16px; border-radius:16px; display:flex; align-items:center; gap:16px; margin-bottom:20px;">
-        <div style="width:56px; height:56px; border-radius:50%; background:#fff; display:grid; place-items:center; font-size:24px;">👤</div>
-        <div>
-          <h3 style="font-family:'Bricolage Grotesque'; font-size:20px; margin-bottom:4px;">Hola, ${currentProfile?.nombre || 'Usuario'}</h3>
-          <small style="opacity:0.85; font-size:13px;">${currentProfile?.rol === 'negocio' ? 'Cuenta de Negocio' : 'Cuenta de Cliente'}</small>
-        </div>
-      </div>
-
-      <div style="display:flex; flex-direction:column; gap:8px;">
-        <div style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid var(--line); border-radius:12px; cursor:pointer;" onclick="toast('En desarrollo', 'ok')">
-          <span style="font-size:20px;">📦</span><span style="flex:1; font-size:15px; font-weight:600;">Mis pedidos</span><span style="color:var(--muted)">›</span>
-        </div>
-        <div style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid var(--line); border-radius:12px; cursor:pointer; margin-bottom:12px;" onclick="toast('En desarrollo', 'ok')">
-          <span style="font-size:20px;">♥</span><span style="flex:1; font-size:15px; font-weight:600;">Mis Favoritos</span><span style="color:var(--muted)">›</span>
-        </div>
-        ${botonNegocio}
-        <div style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid #fecaca; border-radius:12px; cursor:pointer; background:#fef2f2; margin-top:20px;" onclick="doLogout()">
-          <span style="font-size:20px;">🚪</span><span style="flex:1; font-size:15px; font-weight:700; color:var(--danger)">Cerrar sesión</span><span style="color:var(--danger)">›</span>
-        </div>
-      </div>
-    `;
-  }
-}
-
-async function doLogin(){
-  const email = document.getElementById('login-email').value.trim();
-  const password = document.getElementById('login-pass').value;
-  if(!email || !password) return toast('Llena tus datos', 'err');
-  toast('Iniciando...', 'ok');
-  const { error } = await db.auth.signInWithPassword({ email, password });
-  if(error) return toast(error.message, 'err');
-  iniciarApp(); // Forzar recarga de info
-}
-
-async function doLogout(){ 
-  await db.auth.signOut(); 
-  navegar('inicio');
-  toast('Sesión cerrada', 'ok');
-  iniciarApp();
-}
-
-// ==========================================
-// VISTA CLIENTE (INICIO) Y FILTROS
-// ==========================================
-async function cargarNegociosPublicos(){
-  const { data, error } = await db.from('negocios').select('*');
-  if(error) return console.error("Error cargando negocios:", error); 
-  negociosCache = data || [];
-  aplicarFiltros(); 
-}
-
-function filtrarPorCategoria(cat, elementoHtml) {
-  categoriaActual = cat;
-  document.querySelectorAll('#category-chips .chip').forEach(c => c.classList.remove('active'));
-  if(elementoHtml) elementoHtml.classList.add('active');
-  aplicarFiltros();
-}
-
-function aplicarFiltros(){
-  const q = document.getElementById('buscar').value.toLowerCase();
-  let filtrados = negociosCache;
-  if(categoriaActual !== 'Todos') filtrados = filtrados.filter(n => (n.categoria || '').includes(categoriaActual));
-  if(q) filtrados = filtrados.filter(n => n.nombre.toLowerCase().includes(q) || (n.categoria||'').toLowerCase().includes(q));
-  renderNegocios(filtrados);
-}
-
-function renderNegocios(list){
-  const cont = document.getElementById('lista-negocios');
-  if(!cont) return;
-  if(!list.length){ cont.innerHTML = '<p style="text-align:center; padding:30px; color:var(--muted)">No se encontraron negocios.</p>'; return; }
-  
-  cont.innerHTML = list.map(n => `
-    <div class="product-card" style="flex-direction:column; align-items:stretch; gap:10px;">
-      <div style="display:flex; gap:12px; align-items:center;">
-        ${n.imagen_url ? `<div class="product-img" style="background-image:url('${n.imagen_url}')"></div>` : `<div class="product-img"></div>`}
-        <div class="product-info">
-          <div class="product-name">${n.nombre}</div>
-          <div class="product-biz"><span class="verify">✓</span> ${n.categoria || 'Negocio'}</div>
-          <div class="product-biz" style="margin-top:4px; font-size:11px;">📍 ${n.direccion || 'Vicente Guerrero'}</div>
-        </div>
-      </div>
-      <div style="display:flex; gap:8px;">
-        ${n.whatsapp ? `<button class="btn-save" style="padding:10px; font-size:13px; border-radius:8px;" onclick="window.open('https://wa.me/${n.whatsapp}')">💬 WhatsApp</button>` : ''}
-        <button class="btn-save btn-outline" style="padding:10px; font-size:13px; border-radius:8px;" onclick="toast('Ver perfil en desarrollo','ok')">Ver Perfil</button>
-      </div>
-    </div>
-  `).join('');
-}
-
-// ==========================================
-// FLUJO ONBOARDING (REGISTRO Y PLANES)
-// ==========================================
-async function onboardingPaso1() {
-  const email = document.getElementById('onb-email').value.trim();
-  const password = document.getElementById('onb-pass').value;
-  const nombre = document.getElementById('onb-nombre').value.trim();
-  const cat = document.getElementById('onb-categoria').value;
-  if(!email || !password || !nombre || !cat) return toast('Completa todos los campos', 'err');
-  toast('Creando cuenta...', 'ok');
-  const { error } = await db.auth.signUp({ email, password, options:{ data:{ nombre, rol: 'negocio' } } });
-  if(error) return toast(error.message, 'err');
-  toast('¡Cuenta creada! Paso 2...', 'ok');
-  navegar('onb-2');
-}
-
-async function onboardingPaso2() {
-  const wa = document.getElementById('onb-wa').value.trim();
-  const dir = document.getElementById('onb-dir').value.trim();
-  const horario = document.getElementById('onb-horario').value.trim();
-  const nombre = document.getElementById('onb-nombre').value.trim(); 
-  const cat = document.getElementById('onb-categoria').value; 
-  if(!wa || !dir) return toast('Falta WhatsApp o Dirección', 'err');
-  if(!currentUser) return toast('Espera a que inicie sesión...', 'err');
-  toast('Guardando datos...', 'ok');
-  
-  const { data, error } = await db.from('negocios').insert({
-    user_id: currentUser.id, nombre, categoria: cat, whatsapp: wa, telefono: wa, direccion: dir, horario, activo: true, suscripcion_activa: false 
-  }).select().single();
-  if(error) return toast(error.message, 'err');
-  
-  negocioTempID = data.id; 
-  await cargarPlanes();
-  navegar('onb-3');
-}
-
-async function cargarPlanes(){
-  const { data, error } = await db.from('planes').select('*').order('precio');
-  const cont = document.getElementById('planes-container');
-  if(error) { cont.innerHTML = 'Error al cargar planes: ' + error.message; return; }
-  cont.innerHTML = data.map(p => `
-    <div class="plan-card ${p.id==='pro' ? 'featured' : ''}">
-      ${p.id==='pro' ? '<div class="rib">⭐ Más popular</div>' : ''}
-      <div class="pname">${p.nombre}</div>
-      <div class="pprice">$${p.precio} <small>/ mes</small></div>
-      <ul class="plan-feats"><li>Hasta ${p.max_ofertas} productos</li><li>${p.descripcion}</li><li>Botón WhatsApp</li></ul>
-      <button class="btn-save ${p.id==='pro'?'btn-orange':'btn-outline'}" onclick="seleccionarPlan('${p.id}')">
-        ${p.precio === 0 ? 'Empezar Gratis' : 'Elegir Plan'}
-      </button>
-    </div>
-  `).join('');
-}
-
-async function seleccionarPlan(planId) {
-  toast('Configurando tu plan...', 'ok');
-  await db.from('negocios').update({ plan_id: planId, suscripcion_activa: planId === 'gratis' }).eq('id', negocioTempID);
-  toast('¡Bienvenido! Tu negocio está listo.', 'ok');
-  iniciarApp(); // Recargar datos frescos
-  navegar('biz-dash');
-}
-
-// ==========================================
-// DASHBOARD DE NEGOCIO (PESTAÑAS PROTOTIPO)
-// ==========================================
-async function cargarDashNegocio() {
-  if(!currentUser) return;
-  const { data, error } = await db.from('negocios').select('*').eq('user_id', currentUser.id).maybeSingle();
-  if(data) {
-    negocioActual = data;
-    // Rellenar Dashboard Header
-    document.getElementById('dash-nombre').textContent = data.nombre;
-    document.getElementById('dash-ava').textContent = data.nombre.charAt(0).toUpperCase();
-    document.getElementById('dash-tracking').textContent = 'MG-' + data.nombre.substring(0,4).toUpperCase();
-    
-    // Rellenar Estadísticas
-    document.getElementById('stats-greeting').textContent = 'Hola, ' + data.nombre;
-
-    // Cargar productos en la pestaña de productos
-    await cargarMisProductos();
-  }
-}
-
-async function cargarMisProductos() {
-  if(!negocioActual) return;
-  const { data, error } = await db.from('ofertas').select('*').eq('negocio_id', negocioActual.id);
-  const cont = document.getElementById('biz-productos-lista');
-  
-  if(error || !data || data.length === 0) {
-    cont.innerHTML = `
-      <div style="text-align:center; padding:40px 20px;">
-        <div style="font-size:48px; margin-bottom:10px;">📦</div>
-        <h3 style="font-family:'Bricolage Grotesque'; font-size:18px; margin-bottom:8px;">Aún no tienes productos</h3>
-        <p style="color:var(--muted); font-size:14px; margin-bottom:20px;">Agrega tu primer platillo, producto o servicio para que tus clientes lo vean.</p>
-        <button class="btn-save" onclick="toast('Formulario en desarrollo','ok')">+ Agregar Producto</button>
-      </div>`;
-    return;
-  }
-
-  // Si tiene productos, renderizarlos estilo prototipo
-  cont.innerHTML = data.map(o => `
-    <div class="product-card">
-      ${o.imagen_url ? `<div class="product-img" style="background-image:url('${o.imagen_url}')"></div>` : `<div class="product-img"></div>`}
-      <div class="product-info">
-        <div class="product-name">${o.titulo || 'Sin nombre'}</div>
-        <div class="product-biz">${o.activa ? '● Disponible' : '○ Pausado'}</div>
-      </div>
-      <div class="product-price">$${o.precio || '0'}</div>
-    </div>
-  `).join('') + `<button class="btn-save btn-outline" style="margin-top:10px;" onclick="toast('Formulario en desarrollo','ok')">+ Nuevo Producto</button>`;
-}
-
-// ==========================================
-// INICIO AUTOMÁTICO DIRECTO
-// ==========================================
-async function iniciarApp() {
-  try {
-    const { data: { session }, error } = await db.auth.getSession();
-    currentUser = session?.user || null;
-    if (currentUser) {
-      const { data: prof } = await db.from('profiles').select('*').eq('id', currentUser.id).single();
-      currentProfile = prof;
-    }
-    renderizarPantallaCuenta();
-    await cargarNegociosPublicos();
-    
-    // Si ya estamos en una pestaña de negocio, forzar recarga del dash
-    if(document.getElementById('panel-biz-dash').classList.contains('active')) {
-      cargarDashNegocio();
-    }
-  } catch (error) {
-    console.error("Error arrancando la app:", error);
-  }
-}
-
-// Ejecutar inmediatamente
-iniciarApp();
-
-</script>
-</body>
-</html>
+function toggleDia(elemento) {
+  const row = elemento.parentElement;
+  row.classList.toggle('closed');
+  const spanHora = row.querySelector('.h');
