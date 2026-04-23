@@ -22,7 +22,7 @@
   html,body{background:var(--bg);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;height:100%;}
   
   .app-layout { max-width: 440px; margin: 0 auto; background: #fff; min-height: 100vh; box-shadow: 0 0 40px rgba(0,0,0,0.1); display: flex; flex-direction: column; position: relative; overflow-x: hidden; }
-  .panel { display: none; flex: 1; flex-direction: column; overflow-y: auto; background: #fff; padding-bottom: 70px; }
+  .panel { display: none; flex: 1; flex-direction: column; overflow-y: auto; background: #fff; padding-bottom: 80px; }
   .panel.active { display: flex; }
   
   /* HEADERS GENERALES */
@@ -52,15 +52,16 @@
   
   /* BOTTOM NAV */
   .bottom-nav { background: #fff; border-top: 1px solid var(--line); display: flex; padding: 10px 0 16px; position: fixed; bottom: 0; width: 100%; max-width: 440px; z-index: 20; }
-  .nav-item { flex: 1; text-align: center; font-size: 11px; font-weight: 600; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
+  .nav-item { flex: 1; text-align: center; font-size: 11px; font-weight: 600; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; position:relative;}
   .nav-item.active { color: var(--green); }
   .nav-item .ico { font-size: 22px; line-height: 1; }
+  .badge { display:inline-block; background:var(--orange); color:#fff; border-radius:999px; padding:1px 5px; font-size:10px; position:absolute; top:-2px; right:calc(50% - 20px); font-weight:800; border:2px solid #fff;}
 
   /* FORMS & BUTTONS */
   .field { margin-bottom: 16px; }
   .field label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; display: block; }
   .field input, .field select, .field textarea { width: 100%; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-family: inherit; font-size: 15px; background: #fff; outline: none; }
-  .field input:focus { border-color: var(--green); }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--green); }
   .field .peso-input { position: relative; }
   .field .peso-input::before { content: '$'; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-weight: 700; }
   .field .peso-input input { padding-left: 26px; }
@@ -68,10 +69,10 @@
   .btn-orange { background: var(--orange); }
   .btn-outline { background: #fff; color: var(--ink); border: 1px solid var(--line); }
 
-  /* ESTILOS NEGOCIO Y STATS */
+  /* ESTILOS NEGOCIO Y STATS EXACTOS */
   .biz-dash-header { background: var(--green); color: #fff; padding: 24px 16px 18px; display: flex; align-items: center; gap: 14px; flex-shrink: 0; position: sticky; top: 0; z-index: 10;}
   .biz-dash-header .ava { width: 56px; height: 56px; border-radius: 50%; background: #fff; border: 2px solid #fff; display:grid; place-items:center; font-size:24px; color:var(--green); font-weight:bold; flex-shrink:0; background-size: cover; background-position: center;}
-  .biz-dash-header h3 { font-family: 'Bricolage Grotesque', serif; font-size: 20px; font-weight: 700; margin-bottom:4px; }
+  .biz-dash-header h3 { font-family: 'Bricolage Grotesque', serif; font-size: 20px; font-weight: 700; margin-bottom:4px; line-height:1.2;}
   .status-pill { display: inline-flex; align-items: center; gap: 5px; background: rgba(255,255,255,.2); padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; }
   .rating-pill { display: inline-flex; align-items: center; gap: 4px; background: #fef3c7; color: #92400e; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; margin: 14px 16px 4px; width: fit-content; }
   
@@ -100,25 +101,9 @@
   .day-row .h { color: var(--muted); font-size: 13px; width: 100px; text-align: center;}
   .day-row.closed .h { color: #dc2626; }
   .day-row .tog { width: 44px; height: 24px; background: var(--green); border-radius: 999px; position: relative; cursor: pointer;}
-  .day-row .tog::after { content: ''; position: absolute; top: 2px; right: 2px; width: 20px; height: 20px; background: #fff; border-radius: 50%; transition: 0.2s;}
+  .day-row .tog::after { content: ''; position: absolute; top: 2px; right: 2px; width: 20px; height: 20px; background: #fff; border-radius: 50%; transition: 0.2s; box-shadow:0 2px 4px rgba(0,0,0,.2);}
   .day-row.closed .tog { background: #e5e7eb; }
-  .day-row.closed .tog::after { right: auto; left: 2px; }
-
-  /* ONBOARDING / PLANES */
-  .onb-header { padding: 20px 16px 10px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; background: #fff; position: sticky; top:0; z-index:10;}
-  .progress-bar { height: 6px; background: #e5e7eb; border-radius: 999px; flex: 1; overflow: hidden; }
-  .progress-bar .fill { height: 100%; background: var(--green); border-radius: 999px; transition: 0.3s; }
-  .onb-body { padding: 10px 20px 30px; flex: 1; }
-  .onb-body h2 { font-family: 'Bricolage Grotesque', serif; font-size: 26px; font-weight: 700; line-height: 1.15; margin-bottom: 8px; }
-  .onb-body .sub { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
-  .plan-card { border: 2px solid var(--line); border-radius: var(--radius); padding: 16px; margin-bottom: 14px; background: #fff; position: relative; }
-  .plan-card.featured { border-color: var(--orange); background: linear-gradient(to bottom, #fff, var(--orange-soft)); }
-  .plan-card .rib { position: absolute; top: -10px; right: 12px; background: var(--orange); color: #fff; font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 999px; text-transform: uppercase; letter-spacing: .08em; }
-  .plan-card .pname { font-family: 'Bricolage Grotesque', serif; font-size: 20px; font-weight: 700; }
-  .plan-card .pprice { font-size: 24px; font-weight: 800; margin: 4px 0 8px; }
-  .plan-card .pprice small { font-size: 13px; color: var(--muted); font-weight: 500; }
-  .plan-feats { list-style: none; font-size: 13px; line-height: 2; margin-bottom: 14px; }
-  .plan-feats li::before { content: '✓ '; color: var(--green); font-weight: 800; }
+  .day-row.closed .tog::after { right: auto; left: 2px; box-shadow:0 2px 4px rgba(0,0,0,.1);}
 
   /* UTILS */
   .emoji-big { font-size: 64px; margin-bottom: 16px; text-align: center; }
@@ -172,6 +157,42 @@
     </div>
   </div>
 
+
+  <div id="panel-perfil-pub" class="panel">
+    <div class="biz-dash-header">
+      <div class="back-btn" onclick="navegar('inicio')" style="margin-right:10px;">‹</div>
+      <div class="ava" id="pub-ava">N</div>
+      <div>
+        <h3 id="pub-nombre">Cargando...</h3>
+        <span class="status-pill">● Abierto ahora</span>
+      </div>
+    </div>
+    
+    <div class="app-body" style="padding-top:0">
+      <div class="rating-pill">⭐ 4.8 · Responde rápido</div>
+      
+      <div style="margin: 16px; font-size: 14px; color: var(--muted); line-height: 1.6;" id="pub-info">
+        📍 Cargando dirección...<br>
+        🕒 Cargando horario...
+      </div>
+      
+      <div style="padding: 0 16px 16px;">
+        <button class="btn-save btn-orange" id="pub-wa-btn" style="padding:18px;">💬 Enviar mensaje por WhatsApp</button>
+      </div>
+
+      <h3 style="font-family:'Bricolage Grotesque'; font-size:18px; margin: 10px 16px;">Catálogo</h3>
+      <div id="pub-productos" style="padding: 0 16px;">
+        <p style="text-align:center; color:var(--muted); padding:20px;">Cargando productos...</p>
+      </div>
+    </div>
+
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="navegar('inicio')"><span class="ico">🏠</span>Inicio</div>
+      <div class="nav-item" onclick="navegar('cuenta')"><span class="ico">👤</span>Mi Cuenta</div>
+    </div>
+  </div>
+
+
   <div id="panel-cuenta" class="panel">
     <div class="app-header"><div class="app-header-title">Mi Cuenta</div></div>
     
@@ -184,6 +205,7 @@
       <div class="nav-item active" onclick="navegar('cuenta')"><span class="ico">👤</span>Mi Cuenta</div>
     </div>
   </div>
+
 
   <div id="panel-onb-1" class="panel">
     <div class="onb-header"><div class="back-btn" onclick="navegar('cuenta')">‹</div><div class="progress-bar"><div class="fill" style="width:33%"></div></div><span style="font-size:12px;color:var(--muted)">1/3</span></div>
@@ -204,7 +226,7 @@
       <div class="field"><label>WhatsApp del negocio</label><input type="number" id="onb-wa" placeholder="Ej: 6741234567"></div>
       <div style="background:var(--green-soft);padding:12px;border-radius:12px;font-size:12px;color:var(--green-deep);margin-bottom:20px;line-height:1.4">💡 Al tocar "Pedir", el cliente te escribirá directo a este número.</div>
       <div class="field"><label>Dirección</label><input type="text" id="onb-dir" placeholder="Calle, número, colonia"></div>
-      <div class="field"><label>Horario</label><input type="text" id="onb-horario" placeholder="Ej: Lun a Sab, 9am a 6pm"></div>
+      <div class="field"><label>Horario</label><input type="text" id="onb-horario" placeholder="Ej: Lunes a Sábado, 8am a 6pm"></div>
       <button class="btn-save" style="margin-top:20px" onclick="onboardingPaso2()">Continuar</button>
     </div>
   </div>
@@ -217,12 +239,13 @@
     </div>
   </div>
 
+
   <div id="panel-biz-dash" class="panel">
     <div class="biz-dash-header">
       <div class="ava" id="dash-ava">N</div>
       <div>
         <h3 id="dash-nombre">Mi Negocio</h3>
-        <span class="status-pill">● Abierto</span>
+        <span class="status-pill">● Abierto · <span id="dash-hora">12:00 - 20:00</span></span>
       </div>
     </div>
     
@@ -231,7 +254,7 @@
       
       <div class="stat-card" onclick="navegar('biz-productos'); cargarMisProductos()">
         <div class="ico-box">📦</div>
-        <div style="flex:1"><div class="t">Mis Productos</div><div class="s" id="dash-prod-count">Gestiona tu catálogo</div></div>
+        <div style="flex:1"><div class="t">Mis Productos</div><div class="s" id="dash-prod-count">0 publicados</div></div>
         <div style="color:var(--muted)">›</div>
       </div>
       
@@ -253,15 +276,16 @@
         <div style="color:var(--muted)">›</div>
       </div>
       
-      <button class="cta-eye" onclick="navegar('inicio')">👁️ Ver cómo te ven tus clientes</button>
+      <button class="cta-eye" onclick="verMiPropioPerfil()">👁️ Ver cómo te ven tus clientes</button>
     </div>
     
     <div class="bottom-nav">
       <div class="nav-item active" onclick="navegar('biz-dash')"><span class="ico">🏠</span>Dashboard</div>
-      <div class="nav-item" onclick="navegar('biz-productos'); cargarMisProductos()"><span class="ico">📦</span>Productos</div>
+      <div class="nav-item" onclick="navegar('biz-productos'); cargarMisProductos()"><span class="ico">📦</span><span class="badge" id="badge-prod-1">0</span>Productos</div>
       <div class="nav-item" onclick="navegar('biz-stats')"><span class="ico">📊</span>Estadísticas</div>
     </div>
   </div>
+
 
   <div id="panel-biz-productos" class="panel">
     <div class="app-header">
@@ -276,10 +300,11 @@
     
     <div class="bottom-nav">
       <div class="nav-item" onclick="navegar('biz-dash')"><span class="ico">🏠</span>Dashboard</div>
-      <div class="nav-item active" onclick="navegar('biz-productos')"><span class="ico">📦</span><span style="display:inline-block; background:var(--orange); color:#fff; border-radius:999px; padding:0 4px; font-size:10px; position:absolute; top:8px; right:35%;">3</span>Productos</div>
+      <div class="nav-item active" onclick="navegar('biz-productos')"><span class="ico">📦</span><span class="badge" id="badge-prod-2">0</span>Productos</div>
       <div class="nav-item" onclick="navegar('biz-stats')"><span class="ico">📊</span>Estadísticas</div>
     </div>
   </div>
+
 
   <div id="panel-biz-add-producto" class="panel">
     <div class="app-header">
@@ -290,7 +315,7 @@
     
     <div class="app-body">
       <div style="height: 180px; background: #333; border-radius: 14px; display:flex; align-items:flex-end; justify-content:center; padding:12px; margin-bottom:20px; background-image:url('https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=600'); background-size:cover; background-position:center; position:relative;">
-        <div style="background: rgba(0,0,0,0.6); color:#fff; padding:6px 12px; border-radius:8px; font-size:12px; font-weight:600; display:flex; align-items:center; gap:6px;">
+        <div style="background: rgba(0,0,0,0.6); color:#fff; padding:6px 12px; border-radius:8px; font-size:12px; font-weight:600; display:flex; align-items:center; gap:6px; cursor:pointer;" onclick="toast('Subida de imagen en desarrollo','ok')">
           📷 Cambiar imagen
         </div>
       </div>
@@ -306,10 +331,26 @@
           <input type="number" id="add-prod-precio" placeholder="Ej: 95">
         </div>
       </div>
+
+      <div class="field">
+        <label>CATEGORÍA</label>
+        <select id="add-prod-cat">
+          <option>Comida · Pollería</option>
+          <option>Bebidas</option>
+          <option>Postres</option>
+          <option>Servicios</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>DESCRIPCIÓN CORTA</label>
+        <textarea id="add-prod-desc" rows="3" placeholder="Medio pollo asado al carbón con tortillas y salsas"></textarea>
+      </div>
       
       <button class="btn-save" onclick="guardarNuevoProducto()">Guardar producto</button>
     </div>
   </div>
+
 
   <div id="panel-biz-stats" class="panel">
     <div class="stats-header">
@@ -349,10 +390,11 @@
     
     <div class="bottom-nav">
       <div class="nav-item" onclick="navegar('biz-dash')"><span class="ico">🏠</span>Dashboard</div>
-      <div class="nav-item" onclick="navegar('biz-productos')"><span class="ico">📦</span><span style="display:inline-block; background:var(--orange); color:#fff; border-radius:999px; padding:0 4px; font-size:10px; position:absolute; top:8px; right:50%;">3</span>Productos</div>
+      <div class="nav-item" onclick="navegar('biz-productos')"><span class="ico">📦</span><span class="badge" id="badge-prod-3">0</span>Productos</div>
       <div class="nav-item active" onclick="navegar('biz-stats')"><span class="ico">📊</span>Estadísticas</div>
     </div>
   </div>
+
 
   <div id="panel-biz-horario" class="panel">
     <div class="app-header">
@@ -404,9 +446,9 @@
 </div>
 
 <script>
-console.log("✅ El cerebro de la app (JavaScript) se cargó correctamente.");
-
-// 1. CONFIGURACIÓN SUPABASE
+// ==========================================
+// 1. CONFIGURACIÓN BÁSICA
+// ==========================================
 const SUPABASE_URL = 'https://djddsqbmaxgpryabvktt.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqZGRzcWJtYXhncHJ5YWJ2a3R0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2MzUxMTEsImV4cCI6MjA5MjIxMTExMX0.3JO1RU1_NY4cTCO23_QanF0kFBE8VWPqzsU6yTvLx1c';
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -418,7 +460,6 @@ let negocioTempID = null;
 let negociosCache = [];
 let categoriaActual = 'Todos';
 
-// 2. UTILIDADES
 function toast(msg, type='ok'){
   const t = document.getElementById('toast');
   t.textContent = msg; 
@@ -445,63 +486,14 @@ function toggleDia(elemento) {
   }
 }
 
-// 3. FUNCIONES DE VISTA Y SESIÓN
-function renderizarPantallaCuenta() {
-  const cont = document.getElementById('cuenta-contenido');
-  if(!cont) return; 
-  
-  if (!currentUser) {
-    cont.style.justifyContent = 'center';
-    cont.innerHTML = `
-      <div class="emoji-big">👋</div>
-      <h2 style="font-family:'Bricolage Grotesque'; font-size:24px; text-align:center; margin-bottom:20px;">Inicia sesión</h2>
-      <div class="field"><label>Email</label><input type="email" id="login-email" placeholder="correo@ejemplo.com"></div>
-      <div class="field"><label>Contraseña</label><input type="password" id="login-pass"></div>
-      <button class="btn-save" onclick="doLogin()">Entrar</button>
-      
-      <div style="margin-top:40px; border-top:1px solid var(--line); padding-top:30px; text-align:center;">
-        <h3 style="font-size:16px; margin-bottom:10px;">¿Tienes un negocio?</h3>
-        <p class="muted" style="margin-bottom:16px;">Súbelo a Mercado Guerrero y recibe pedidos por WhatsApp.</p>
-        <button class="btn-save btn-outline" onclick="navegar('onb-1')">Registrar mi negocio</button>
-      </div>
-    `;
-  } else {
-    cont.style.justifyContent = 'flex-start';
-    const botonNegocio = currentProfile?.rol === 'negocio' 
-      ? `<div style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid var(--green); border-radius:12px; cursor:pointer; background:var(--green-soft);" onclick="navegar('biz-dash'); cargarDashNegocio();">
-          <span style="font-size:20px;">🏪</span>
-          <span style="flex:1; font-size:15px; font-weight:700; color:var(--green-deep)">Ir a mi Panel de Negocio</span>
-          <span style="color:var(--green-deep)">›</span>
-        </div>`
-      : `<div style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid var(--orange); border-radius:12px; cursor:pointer; background:var(--orange-soft);" onclick="navegar('onb-1')">
-          <span style="font-size:20px;">🏪</span>
-          <span style="flex:1; font-size:15px; font-weight:700; color:var(--orange-deep)">Registrar mi negocio</span>
-          <span style="color:var(--orange-deep)">›</span>
-        </div>`;
-
-    cont.innerHTML = `
-      <div style="background:linear-gradient(135deg,var(--green),var(--green-deep)); color:#fff; padding:24px 16px; border-radius:16px; display:flex; align-items:center; gap:16px; margin-bottom:20px;">
-        <div style="width:56px; height:56px; border-radius:50%; background:#fff; display:grid; place-items:center; font-size:24px;">👤</div>
-        <div>
-          <h3 style="font-family:'Bricolage Grotesque'; font-size:20px; margin-bottom:4px;">Hola, ${currentProfile?.nombre || 'Usuario'}</h3>
-          <small style="opacity:0.85; font-size:13px;">${currentProfile?.rol === 'negocio' ? 'Cuenta de Negocio' : 'Cuenta de Cliente'}</small>
-        </div>
-      </div>
-
-      <div style="display:flex; flex-direction:column; gap:8px;">
-        <div style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid var(--line); border-radius:12px; cursor:pointer;" onclick="toast('En desarrollo', 'ok')">
-          <span style="font-size:20px;">📦</span><span style="flex:1; font-size:15px; font-weight:600;">Mis pedidos</span><span style="color:var(--muted)">›</span>
-        </div>
-        <div style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid var(--line); border-radius:12px; cursor:pointer; margin-bottom:12px;" onclick="toast('En desarrollo', 'ok')">
-          <span style="font-size:20px;">♥</span><span style="flex:1; font-size:15px; font-weight:600;">Mis Favoritos</span><span style="color:var(--muted)">›</span>
-        </div>
-        ${botonNegocio}
-        <div style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid #fecaca; border-radius:12px; cursor:pointer; background:#fef2f2; margin-top:20px;" onclick="doLogout()">
-          <span style="font-size:20px;">🚪</span><span style="flex:1; font-size:15px; font-weight:700; color:var(--danger)">Cerrar sesión</span><span style="color:var(--danger)">›</span>
-        </div>
-      </div>
-    `;
-  }
+// ==========================================
+// 2. VISTA PÚBLICA (CLIENTES)
+// ==========================================
+async function cargarNegociosPublicos(){
+  const { data, error } = await db.from('negocios').select('*');
+  if(error) return console.error("Error cargando negocios:", error); 
+  negociosCache = data || [];
+  aplicarFiltros(); 
 }
 
 function filtrarPorCategoria(cat, elementoHtml) {
@@ -527,7 +519,7 @@ function renderNegocios(list){
   cont.innerHTML = list.map(n => `
     <div class="product-card" style="flex-direction:column; align-items:stretch; gap:10px;">
       <div style="display:flex; gap:12px; align-items:center;">
-        ${n.imagen_url ? `<div class="product-img" style="background-image:url('${n.imagen_url}')"></div>` : `<div class="product-img"></div>`}
+        ${n.imagen_url ? `<div class="product-img" style="background-image:url('${n.imagen_url}')"></div>` : `<div class="product-img" style="background:#e8f5ec; color:var(--green); display:grid; place-items:center; font-weight:800; font-size:24px;">${n.nombre.charAt(0)}</div>`}
         <div class="product-info">
           <div class="product-name">${n.nombre}</div>
           <div class="product-biz"><span class="verify">✓</span> ${n.categoria || 'Negocio'}</div>
@@ -536,13 +528,112 @@ function renderNegocios(list){
       </div>
       <div style="display:flex; gap:8px;">
         ${n.whatsapp ? `<button class="btn-save" style="padding:10px; font-size:13px; border-radius:8px;" onclick="window.open('https://wa.me/${n.whatsapp}')">💬 WhatsApp</button>` : ''}
-        <button class="btn-save btn-outline" style="padding:10px; font-size:13px; border-radius:8px;" onclick="toast('Ver perfil en desarrollo','ok')">Ver Perfil</button>
+        <button class="btn-save btn-outline" style="padding:10px; font-size:13px; border-radius:8px;" onclick="abrirPerfilPublico('${n.id}')">Ver Perfil</button>
       </div>
     </div>
   `).join('');
 }
 
-// 4. FUNCIONES DE BASE DE DATOS
+// ESTA FUNCIÓN ABRE EL PERFIL COMPLETO PARA EL CLIENTE
+async function abrirPerfilPublico(idNegocio) {
+  toast('Cargando perfil...', 'ok');
+  const neg = negociosCache.find(n => n.id === idNegocio);
+  if(!neg) return toast('No se encontró el negocio', 'err');
+
+  // Llenar datos básicos
+  document.getElementById('pub-nombre').textContent = neg.nombre;
+  document.getElementById('pub-ava').textContent = neg.nombre.charAt(0).toUpperCase();
+  document.getElementById('pub-info').innerHTML = `📍 ${neg.direccion || 'Sin dirección registrada'}<br>🕒 ${neg.horario || 'Horario no especificado'}`;
+  
+  // Botón de whatsapp
+  const waBtn = document.getElementById('pub-wa-btn');
+  if(neg.whatsapp) {
+    waBtn.style.display = 'block';
+    waBtn.onclick = () => window.open(`https://wa.me/${neg.whatsapp}`);
+  } else {
+    waBtn.style.display = 'none';
+  }
+
+  // Buscar sus productos
+  const { data: prods } = await db.from('ofertas').select('*').eq('negocio_id', neg.id).eq('activa', true);
+  const cont = document.getElementById('pub-productos');
+  
+  if(!prods || prods.length === 0) {
+    cont.innerHTML = '<p style="text-align:center; color:var(--muted); padding:20px;">Este negocio aún no ha subido productos.</p>';
+  } else {
+    cont.innerHTML = prods.map(p => `
+      <div class="product-card">
+        ${p.imagen_url ? `<div class="product-img" style="background-image:url('${p.imagen_url}')"></div>` : `<div class="product-img" style="background:#fff4ec; color:var(--orange); display:grid; place-items:center; font-size:24px;">📦</div>`}
+        <div class="product-info">
+          <div class="product-name">${p.titulo}</div>
+          <div class="product-biz">${p.descripcion || 'Disponible'}</div>
+        </div>
+        <div class="product-price">$${p.precio}</div>
+      </div>
+    `).join('');
+  }
+
+  navegar('perfil-pub');
+}
+
+// ==========================================
+// 3. SESIÓN Y CUENTA
+// ==========================================
+function renderizarPantallaCuenta() {
+  const cont = document.getElementById('cuenta-contenido');
+  if(!cont) return; 
+  
+  if (!currentUser) {
+    cont.style.justifyContent = 'center';
+    cont.innerHTML = `
+      <div class="emoji-big">👋</div>
+      <h2 style="font-family:'Bricolage Grotesque'; font-size:24px; text-align:center; margin-bottom:20px;">Inicia sesión</h2>
+      <div class="field"><label>Email</label><input type="email" id="login-email" placeholder="correo@ejemplo.com"></div>
+      <div class="field"><label>Contraseña</label><input type="password" id="login-pass"></div>
+      <button class="btn-save" onclick="doLogin()">Entrar</button>
+      
+      <div style="margin-top:40px; border-top:1px solid var(--line); padding-top:30px; text-align:center;">
+        <h3 style="font-size:16px; margin-bottom:10px;">¿Tienes un negocio?</h3>
+        <p class="muted" style="margin-bottom:16px;">Súbelo a Mercado Guerrero y recibe pedidos por WhatsApp.</p>
+        <button class="btn-save btn-outline" onclick="navegar('onb-1')">Registrar mi negocio</button>
+      </div>
+    `;
+  } else {
+    cont.style.justifyContent = 'flex-start';
+    const botonNegocio = currentProfile?.rol === 'negocio' 
+      ? `<div style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid var(--green); border-radius:12px; cursor:pointer; background:var(--green-soft);" onclick="irAPanelNegocioSeguro()">
+          <span style="font-size:20px;">🏪</span>
+          <span style="flex:1; font-size:15px; font-weight:700; color:var(--green-deep)">Ir a mi Panel de Negocio</span>
+          <span style="color:var(--green-deep)">›</span>
+        </div>`
+      : `<div style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid var(--orange); border-radius:12px; cursor:pointer; background:var(--orange-soft);" onclick="navegar('onb-1')">
+          <span style="font-size:20px;">🏪</span>
+          <span style="flex:1; font-size:15px; font-weight:700; color:var(--orange-deep)">Registrar mi negocio</span>
+          <span style="color:var(--orange-deep)">›</span>
+        </div>`;
+
+    cont.innerHTML = `
+      <div style="background:linear-gradient(135deg,var(--green),var(--green-deep)); color:#fff; padding:24px 16px; border-radius:16px; display:flex; align-items:center; gap:16px; margin-bottom:20px;">
+        <div style="width:56px; height:56px; border-radius:50%; background:#fff; display:grid; place-items:center; font-size:24px;">👤</div>
+        <div>
+          <h3 style="font-family:'Bricolage Grotesque'; font-size:20px; margin-bottom:4px;">Hola, ${currentProfile?.nombre || 'Usuario'}</h3>
+          <small style="opacity:0.85; font-size:13px;">${currentProfile?.rol === 'negocio' ? 'Cuenta de Negocio' : 'Cuenta de Cliente'}</small>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <div style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid var(--line); border-radius:12px; cursor:pointer;" onclick="toast('En desarrollo', 'ok')">
+          <span style="font-size:20px;">📦</span><span style="flex:1; font-size:15px; font-weight:600;">Mis pedidos</span><span style="color:var(--muted)">›</span>
+        </div>
+        ${botonNegocio}
+        <div style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid #fecaca; border-radius:12px; cursor:pointer; background:#fef2f2; margin-top:20px;" onclick="doLogout()">
+          <span style="font-size:20px;">🚪</span><span style="flex:1; font-size:15px; font-weight:700; color:var(--danger)">Cerrar sesión</span><span style="color:var(--danger)">›</span>
+        </div>
+      </div>
+    `;
+  }
+}
+
 async function doLogin(){
   const email = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-pass').value;
@@ -558,13 +649,31 @@ async function doLogout(){
   location.reload();
 }
 
-async function cargarNegociosPublicos(){
-  const { data, error } = await db.from('negocios').select('*');
-  if(error) return console.error("Error cargando negocios:", error); 
-  negociosCache = data || [];
-  aplicarFiltros(); 
+// ESTA FUNCIÓN TE PROTEGE SI TU REGISTRO SE QUEDÓ A LA MITAD
+async function irAPanelNegocioSeguro() {
+  toast('Cargando tu negocio...', 'ok');
+  const { data, error } = await db.from('negocios').select('*').eq('user_id', currentUser.id).maybeSingle();
+  
+  if (data) {
+    negocioActual = data;
+    await cargarDashNegocio();
+    navegar('biz-dash');
+  } else {
+    // Si dice que es negocio pero no hay datos en la tabla, lo mandamos a terminar de registrarse
+    toast('Termina de configurar los datos de tu local', 'ok');
+    navegar('onb-2');
+  }
 }
 
+function verMiPropioPerfil() {
+  if(negocioActual) {
+    abrirPerfilPublico(negocioActual.id);
+  }
+}
+
+// ==========================================
+// 4. ONBOARDING (REGISTRO NEGOCIO)
+// ==========================================
 async function onboardingPaso1() {
   const email = document.getElementById('onb-email').value.trim();
   const password = document.getElementById('onb-pass').value;
@@ -582,15 +691,19 @@ async function onboardingPaso2() {
   const wa = document.getElementById('onb-wa').value.trim();
   const dir = document.getElementById('onb-dir').value.trim();
   const horario = document.getElementById('onb-horario').value.trim();
-  const nombre = document.getElementById('onb-nombre').value.trim(); 
-  const cat = document.getElementById('onb-categoria').value; 
+  const nombre = document.getElementById('onb-nombre').value.trim() || currentProfile?.nombre; 
+  const cat = document.getElementById('onb-categoria').value || 'Otros'; 
+  
   if(!wa || !dir) return toast('Falta WhatsApp o Dirección', 'err');
   if(!currentUser) return toast('Espera a que inicie sesión...', 'err');
+  
   toast('Guardando datos...', 'ok');
   
-  const { data, error } = await db.from('negocios').insert({
+  // Usamos upsert por si el usuario ya existía pero no había terminado
+  const { data, error } = await db.from('negocios').upsert({
     user_id: currentUser.id, nombre, categoria: cat, whatsapp: wa, telefono: wa, direccion: dir, horario, activo: true, suscripcion_activa: false 
-  }).select().single();
+  }, { onConflict: 'user_id' }).select().single();
+  
   if(error) return toast(error.message, 'err');
   
   negocioTempID = data.id; 
@@ -622,37 +735,33 @@ async function seleccionarPlan(planId) {
   location.reload(); 
 }
 
+// ==========================================
+// 5. FUNCIONES PANEL DE NEGOCIO PROTOTIPO
+// ==========================================
 async function cargarDashNegocio() {
-  if(!currentUser) return;
-  const { data, error } = await db.from('negocios').select('*').eq('user_id', currentUser.id).maybeSingle();
-  if(data) {
-    negocioActual = data;
-    document.getElementById('dash-nombre').textContent = data.nombre;
-    
-    const dashAva = document.getElementById('dash-ava');
-    if(data.imagen_url) {
-      dashAva.style.backgroundImage = `url('${data.imagen_url}')`;
-      dashAva.textContent = '';
-    } else {
-      dashAva.style.backgroundImage = 'none';
-      dashAva.textContent = data.nombre.charAt(0).toUpperCase();
-    }
+  if(!negocioActual) return;
+  document.getElementById('dash-nombre').textContent = negocioActual.nombre;
+  document.getElementById('dash-ava').textContent = negocioActual.nombre.charAt(0).toUpperCase();
+  document.getElementById('stats-greeting').textContent = 'Hola, ' + negocioActual.nombre;
+  if(negocioActual.horario) document.getElementById('dash-hora').textContent = negocioActual.horario.substring(0,15);
 
-    document.getElementById('dash-tracking').textContent = 'MG-' + data.nombre.substring(0,4).toUpperCase();
-    document.getElementById('stats-greeting').textContent = 'Hola, ' + data.nombre;
-
-    await cargarMisProductos();
-  }
+  await cargarMisProductos();
 }
 
 async function cargarMisProductos() {
   if(!negocioActual) return;
   const { data, error } = await db.from('ofertas').select('*').eq('negocio_id', negocioActual.id);
   const cont = document.getElementById('biz-productos-lista');
-  const countProd = document.getElementById('dash-prod-count');
+  const countText = document.getElementById('dash-prod-count');
   
+  // Actualizar los badges circulares naranjas de la parte inferior
+  const num = (data && !error) ? data.length : 0;
+  document.getElementById('badge-prod-1').textContent = num;
+  document.getElementById('badge-prod-2').textContent = num;
+  document.getElementById('badge-prod-3').textContent = num;
+  countText.textContent = `${num} publicados`;
+
   if(error || !data || data.length === 0) {
-    countProd.textContent = '0 productos publicados';
     cont.innerHTML = `
       <div style="text-align:center; padding:40px 20px;">
         <div style="font-size:48px; margin-bottom:10px;">📦</div>
@@ -663,10 +772,10 @@ async function cargarMisProductos() {
     return;
   }
 
-  countProd.textContent = `${data.length} productos publicados`;
+  // Renderizar la lista de productos del negocio
   cont.innerHTML = data.map(o => `
     <div class="product-card" style="margin: 0 16px 12px;">
-      ${o.imagen_url ? `<div class="product-img" style="background-image:url('${o.imagen_url}')"></div>` : `<div class="product-img"></div>`}
+      ${o.imagen_url ? `<div class="product-img" style="background-image:url('${o.imagen_url}')"></div>` : `<div class="product-img" style="background:#fff4ec; color:var(--orange); display:grid; place-items:center; font-size:24px;">📦</div>`}
       <div class="product-info">
         <div class="product-name">${o.titulo || 'Sin nombre'}</div>
         <div class="product-biz">${o.activa ? 'Disponible' : 'Pausado'}</div>
@@ -679,21 +788,34 @@ async function cargarMisProductos() {
 async function guardarNuevoProducto() {
   const nombre = document.getElementById('add-prod-nombre').value.trim();
   const precio = document.getElementById('add-prod-precio').value;
+  const desc = document.getElementById('add-prod-desc').value.trim();
+  
   if(!nombre || !precio) return toast('Llena el nombre y precio', 'err');
   if(!negocioActual) return toast('Error: No se detectó negocio', 'err');
 
   toast('Guardando producto...', 'ok');
-  const { error } = await db.from('ofertas').insert({ negocio_id: negocioActual.id, titulo: nombre, precio: precio, activa: true });
+  
+  const { error } = await db.from('ofertas').insert({ 
+    negocio_id: negocioActual.id, 
+    titulo: nombre, 
+    precio: precio, 
+    descripcion: desc,
+    activa: true 
+  });
+  
   if(error) return toast(error.message, 'err');
   
   toast('¡Producto agregado!', 'ok');
   document.getElementById('add-prod-nombre').value = '';
   document.getElementById('add-prod-precio').value = '';
+  document.getElementById('add-prod-desc').value = '';
   await cargarMisProductos();
   navegar('biz-productos');
 }
 
-// 5. ARRANQUE SEGURO DE LA APLICACIÓN
+// ==========================================
+// 6. ARRANQUE DEL SISTEMA
+// ==========================================
 async function iniciarApp() {
   try {
     const { data: { session } } = await db.auth.getSession();
@@ -701,19 +823,20 @@ async function iniciarApp() {
     if (currentUser) {
       const { data: prof } = await db.from('profiles').select('*').eq('id', currentUser.id).single();
       currentProfile = prof;
+      // Pre-cargamos los datos del negocio por si le da click a ir al panel
+      if(prof?.rol === 'negocio') {
+         const { data: neg } = await db.from('negocios').select('*').eq('user_id', currentUser.id).maybeSingle();
+         if(neg) negocioActual = neg;
+      }
     }
     renderizarPantallaCuenta();
     await cargarNegociosPublicos();
     
-    if(document.getElementById('panel-biz-dash').classList.contains('active')) {
-      cargarDashNegocio();
-    }
   } catch (error) {
     console.error("Error arrancando la app:", error);
   }
 }
 
-// Esperamos a que la página cargue por completo para arrancar
 window.onload = iniciarApp;
 </script>
 </body>
