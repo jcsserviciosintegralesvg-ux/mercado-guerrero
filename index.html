@@ -61,7 +61,7 @@
   .chip { padding: 7px 14px; border-radius: 999px; background: #f3f4f6; color: var(--ink); font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; transition:all .2s;}
   .chip.active { background: var(--green); color: #fff; }
 
-  /* MENÚ LATERAL (HAMBURGUESA) */
+  /* MENÚ LATERAL */
   .menu-overlay { position: absolute; inset: 0; z-index: 9999; display: flex; visibility: hidden; }
   .menu-overlay.active { visibility: visible; }
   .menu-bg { position: absolute; inset: 0; background: rgba(0,0,0,0.5); opacity: 0; transition: opacity 0.3s; }
@@ -69,7 +69,6 @@
   .menu-content { position: relative; width: 280px; height: 100%; background: #fff; box-shadow: 2px 0 15px rgba(0,0,0,0.2); transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); display:flex; flex-direction:column; }
   .menu-overlay.active .menu-content { transform: translateX(0); }
   
-  /* LISTAS TIPO MENÚ (Mi cuenta y Sidebar) */
   .menu-list { padding: 8px 0; }
   .menu-item { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 1px solid var(--line); cursor: pointer; background: #fff; transition: background .2s;}
   .menu-item:active { background: #f9fafb; }
@@ -101,6 +100,11 @@
   .product-biz { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 3px; margin-top:2px; }
   .verify { color: var(--green); font-size: 10px; font-weight:bold; }
   .product-price { font-weight: 800; color: var(--orange); font-size: 15px; white-space: nowrap; margin-left:auto;}
+
+  /* BOTÓN CORAZÓN (FAVORITOS) */
+  .heart-btn { font-size: 22px; color: #e5e7eb; cursor: pointer; padding: 5px; margin-left: auto; transition: transform .2s, color .2s; }
+  .heart-btn:active { transform: scale(1.2); }
+  .heart-btn.active { color: var(--danger); }
 
   /* FORMS & BOTONES */
   .field { margin-bottom: 12px; }
@@ -147,8 +151,8 @@
       <div class="menu-list" style="flex:1; overflow-y:auto; padding-top:10px;">
         <div class="menu-item" onclick="toggleMenu(); navegar('inicio')"><span class="ico">🏠</span><span class="txt">Inicio</span></div>
         <div class="menu-item" onclick="toggleMenu(); toast('Negocios en desarrollo', 'ok')"><span class="ico">🏪</span><span class="txt">Negocios</span></div>
-        <div class="menu-item" onclick="toggleMenu(); toast('Favoritos en desarrollo', 'ok')"><span class="ico">♥</span><span class="txt">Favoritos</span></div>
         <div class="menu-item" onclick="toggleMenu(); navegar('cuenta')"><span class="ico">👤</span><span class="txt">Mi Cuenta</span></div>
+        <div class="menu-item" onclick="toggleMenu(); navegar('onb-0')"><span class="ico" style="color:var(--orange)">📋</span><span class="txt" style="color:var(--orange)">Registro y Planes</span></div>
       </div>
     </div>
   </div>
@@ -247,14 +251,27 @@
     </div>
   </div>
 
+  <div id="panel-onb-0" class="panel">
+    <div class="app-header" style="background:transparent; color:var(--ink); padding:14px 16px;">
+      <div class="back-btn" onclick="navegar('inicio')">‹</div>
+    </div>
+    <div class="app-body" style="display:flex;flex-direction:column;justify-content:center;text-align:center;padding:20px 22px;">
+      <div class="emoji-big">🏪</div>
+      <h2 style="font-family:'Bricolage Grotesque', serif; font-size:26px; font-weight:800; line-height:1.1; margin-bottom:12px; color:var(--ink);">Pon tu negocio en el mapa de Vicente Guerrero</h2>
+      <p style="color:var(--muted); font-size:14px; margin-bottom:26px; line-height:1.5;">Miles de vecinos buscando comida, ferretería y servicios cada semana.</p>
+      <button class="btn-save btn-orange" onclick="navegar('onb-1')">Registrar mi negocio</button>
+      <button style="background:transparent;border:none;color:var(--muted);font-family:inherit;font-size:14px;font-weight:600;margin-top:16px;cursor:pointer" onclick="navegar('cuenta')">Ya tengo cuenta · Iniciar sesión</button>
+    </div>
+  </div>
+
   <div id="panel-onb-1" class="panel">
     <div class="app-header" style="background:#fff; color:var(--ink); padding:18px 16px 10px; border-bottom:1px solid var(--line);">
-      <div class="back-btn" onclick="navegar('cuenta')">‹</div>
+      <div class="back-btn" onclick="navegar('onb-0')">‹</div>
       <div style="height:4px; background:#e5e7eb; border-radius:999px; flex:1; margin:0 12px; overflow:hidden;"><div style="height:100%; background:var(--green); width:33%; border-radius:999px;"></div></div>
       <span style="font-size:11px;color:var(--muted)">1/3</span>
     </div>
     <div class="app-body">
-      <h2 style="font-family:'Bricolage Grotesque'; font-size:24px; font-weight:700; margin-bottom:8px;">Cuéntanos de tu negocio</h2><p style="color:var(--muted); font-size:13px; margin-bottom:20px;">Paso 1 de 3 · Crear cuenta y datos</p>
+      <h2 style="font-family:'Bricolage Grotesque'; font-size:24px; font-weight:700; margin-bottom:8px;">Cuéntanos de tu negocio</h2><p style="color:var(--muted); font-size:13px; margin-bottom:20px;">Paso 1 de 3 · Info básica</p>
       <div class="field"><label>Correo Electrónico</label><input type="email" id="onb-email" placeholder="correo@ejemplo.com"></div>
       <div class="field"><label>Contraseña</label><input type="password" id="onb-pass" placeholder="Mínimo 6 letras"></div>
       <div class="field"><label>Nombre del negocio</label><input type="text" id="onb-nombre" placeholder="Ej: Pollos El Güero"></div>
@@ -303,28 +320,23 @@
         <span style="display:inline-flex; align-items:center; gap:5px; background:rgba(255,255,255,.2); padding:4px 10px; border-radius:999px; font-size:11px; font-weight:600;">● Abierto · <span id="dash-hora">12:00 - 20:00</span></span>
       </div>
     </div>
-    
     <div class="app-body" style="padding:0">
       <div style="display:inline-flex; align-items:center; gap:4px; background:#fef3c7; color:#92400e; padding:5px 10px; border-radius:999px; font-size:11px; font-weight:700; margin:10px 14px 4px;">⭐ 4.8 · Responde rápido</div>
-      
       <div style="background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:14px; margin:10px 14px; display:flex; align-items:center; gap:12px; cursor:pointer;" onclick="navegar('biz-productos'); cargarMisProductos()">
         <div style="width:40px; height:40px; border-radius:10px; background:var(--green-soft); color:var(--green); display:grid; place-items:center; font-size:18px;">📦</div>
         <div style="flex:1"><div style="font-size:14px; font-weight:700;">Mis Productos</div><div style="font-size:11px; color:var(--muted);" id="dash-prod-count">0 publicados</div></div>
         <div style="color:var(--muted)">›</div>
       </div>
-      
       <div style="background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:14px; margin:10px 14px; display:flex; align-items:center; gap:12px; cursor:pointer;" onclick="toast('Editar negocio en desarrollo','ok')">
         <div style="width:40px; height:40px; border-radius:10px; background:var(--green-soft); color:var(--green); display:grid; place-items:center; font-size:18px;">✏️</div>
         <div style="flex:1"><div style="font-size:14px; font-weight:700;">Editar Negocio</div><div style="font-size:11px; color:var(--muted);">Datos, foto, WhatsApp</div></div>
         <div style="color:var(--muted)">›</div>
       </div>
-      
       <div style="background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:14px; margin:10px 14px; display:flex; align-items:center; gap:12px; cursor:pointer;" onclick="toast('Estadísticas en desarrollo','ok')">
         <div style="width:40px; height:40px; border-radius:10px; background:var(--orange-soft); color:var(--orange); display:grid; place-items:center; font-size:18px;">📊</div>
         <div style="flex:1"><div style="font-size:14px; font-weight:700;">Estadísticas</div><div style="font-size:11px; color:var(--muted);">25 clics esta semana</div></div>
         <div style="color:var(--muted)">›</div>
       </div>
-      
       <button class="btn-save btn-orange" style="width:calc(100% - 28px); margin:14px; padding:14px;" onclick="verMiPropioPerfil()">👁️ Ver cómo te ven tus clientes</button>
     </div>
   </div>
@@ -371,6 +383,9 @@ let negocioTempID = null;
 let negociosCache = [];
 let categoriaActual = 'Todos';
 
+// Cargamos favoritos guardados localmente para simular persistencia
+let misFavoritos = JSON.parse(localStorage.getItem('mg_favoritos') || '[]');
+
 function toast(msg, type='ok'){
   const t = document.getElementById('toast');
   t.textContent = msg; 
@@ -388,6 +403,22 @@ function navegar(panelId) {
 function toggleMenu() {
   const menu = document.getElementById('side-menu');
   menu.classList.toggle('active');
+}
+
+// FUNCIÓN PARA EL CORAZÓN DE FAVORITOS
+function toggleFavorito(e, id) {
+  e.stopPropagation(); // Evita que se abra el perfil al tocar el corazón
+  const icono = e.currentTarget;
+  if(misFavoritos.includes(id)) {
+    misFavoritos = misFavoritos.filter(f => f !== id);
+    icono.classList.remove('active');
+    toast('Eliminado de favoritos');
+  } else {
+    misFavoritos.push(id);
+    icono.classList.add('active');
+    toast('Guardado en favoritos ♥', 'ok');
+  }
+  localStorage.setItem('mg_favoritos', JSON.stringify(misFavoritos));
 }
 
 // ==========================================
@@ -416,48 +447,38 @@ function aplicarFiltros(){
   const cont = document.getElementById('lista-negocios');
   if(!filtrados.length){ cont.innerHTML = '<p style="text-align:center; padding:30px; color:var(--muted); font-size:13px;">No se encontraron negocios.</p>'; return; }
   
-  cont.innerHTML = filtrados.map(n => `
-    <div class="product-card" onclick="abrirPerfilPublico('${n.id}')">
-      ${n.imagen_url ? `<div class="product-img" style="background-image:url('${n.imagen_url}')"></div>` : `<div class="product-img" style="background:#e8f5ec; color:var(--green);">${n.nombre.charAt(0)}</div>`}
-      <div class="product-info">
-        <div class="product-name">${n.nombre}</div>
-        <div class="product-biz"><span class="verify">✓</span> ${n.categoria || 'Negocio'}</div>
-        <div class="product-biz" style="color:var(--green); font-weight:600;">● Abierto</div>
+  cont.innerHTML = filtrados.map(n => {
+    const isFav = misFavoritos.includes(n.id) ? 'active' : '';
+    return `
+      <div class="product-card" onclick="abrirPerfilPublico('${n.id}')">
+        ${n.imagen_url ? `<div class="product-img" style="background-image:url('${n.imagen_url}')"></div>` : `<div class="product-img" style="background:#e8f5ec; color:var(--green);">${n.nombre.charAt(0)}</div>`}
+        <div class="product-info">
+          <div class="product-name">${n.nombre}</div>
+          <div class="product-biz"><span class="verify">✓</span> ${n.categoria || 'Negocio'}</div>
+          <div class="product-biz" style="color:var(--green); font-weight:600;">● Abierto</div>
+        </div>
+        <div class="heart-btn ${isFav}" onclick="toggleFavorito(event, '${n.id}')">♥</div>
       </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 async function cargarPromos() {
-  // Aquí consultamos las ofertas para ver si hay promociones (limitamos a 10 para el panel)
   const { data, error } = await db.from('ofertas').select('*, negocios(nombre)').eq('activa', true).limit(10);
-  
   const txtBanner = document.getElementById('inicio-promo-text');
   const panelPromos = document.getElementById('lista-promos');
   
   if (error || !data || data.length === 0) {
-    // ESTADO: SIN PROMOCIONES
     txtBanner.textContent = "Aún sin promociones";
-    panelPromos.innerHTML = `
-      <div style="background:var(--orange-soft); border:2px dashed var(--orange); border-radius:14px; padding:40px 20px; text-align:center; margin-top:10px;">
-        <div style="font-size:48px; margin-bottom:10px;">🔥</div>
-        <h3 style="color:var(--orange-deep); font-family:'Bricolage Grotesque', serif; font-size:20px; margin-bottom:8px; line-height:1.1;">Aún sin promociones</h3>
-        <p style="color:var(--orange); font-size:14px;">Vuelve más tarde para ver las mejores ofertas y descuentos de Vicente Guerrero.</p>
-      </div>
-    `;
+    panelPromos.innerHTML = `<div style="background:var(--orange-soft); border:2px dashed var(--orange); border-radius:14px; padding:40px 20px; text-align:center; margin-top:10px;"><div style="font-size:48px; margin-bottom:10px;">🔥</div><h3 style="color:var(--orange-deep); font-family:'Bricolage Grotesque', serif; font-size:20px; margin-bottom:8px; line-height:1.1;">Aún sin promociones</h3><p style="color:var(--orange); font-size:14px;">Vuelve más tarde para ver ofertas.</p></div>`;
   } else {
-    // ESTADO: CON PROMOCIONES
     txtBanner.textContent = "¡Aprovecha ahora!";
     panelPromos.innerHTML = data.map(p => `
       <div class="promo-card">
         <div class="cat">Oferta 🔥</div>
         <div class="body">
           ${p.imagen_url ? `<div class="img" style="background-image:url('${p.imagen_url}')"></div>` : `<div class="img" style="background:#fff4ec; color:var(--orange); display:grid; place-items:center; font-size:24px;">📦</div>`}
-          <div class="text">
-            <div class="title">${p.titulo}</div>
-            <div class="prices"><span class="new">$${p.precio}</span></div>
-            <div class="tag">${p.negocios?.nombre || 'Negocio Local'}</div>
-          </div>
+          <div class="text"><div class="title">${p.titulo}</div><div class="prices"><span class="new">$${p.precio}</span></div><div class="tag">${p.negocios?.nombre || 'Negocio Local'}</div></div>
         </div>
       </div>
     `).join('');
@@ -474,10 +495,8 @@ async function abrirPerfilPublico(idNegocio) {
   document.getElementById('pub-info').innerHTML = `🕐 ${neg.horario || 'Horario no especificado'} · 📍 ${neg.direccion || 'Sin dirección'}`;
   
   const waBtn = document.getElementById('pub-wa-btn');
-  if(neg.whatsapp) {
-    waBtn.style.display = 'block';
-    waBtn.onclick = () => window.open(`https://wa.me/${neg.whatsapp}`);
-  } else { waBtn.style.display = 'none'; }
+  if(neg.whatsapp) { waBtn.style.display = 'block'; waBtn.onclick = () => window.open(`https://wa.me/${neg.whatsapp}`); } 
+  else { waBtn.style.display = 'none'; }
 
   const { data: prods } = await db.from('ofertas').select('*').eq('negocio_id', neg.id).eq('activa', true);
   const cont = document.getElementById('pub-productos');
@@ -488,10 +507,7 @@ async function abrirPerfilPublico(idNegocio) {
     cont.innerHTML = prods.map(p => `
       <div class="product-card" style="margin-bottom:8px">
         ${p.imagen_url ? `<div class="product-img" style="width:54px; height:54px; background-image:url('${p.imagen_url}')"></div>` : `<div class="product-img" style="width:54px; height:54px; background:#fff4ec; color:var(--orange); font-size:18px;">📦</div>`}
-        <div class="product-info">
-          <div class="product-name" style="font-size:13px">${p.titulo}</div>
-          <div class="product-biz" style="font-size:10px">${p.descripcion || 'Disponible'}</div>
-        </div>
+        <div class="product-info"><div class="product-name" style="font-size:13px">${p.titulo}</div><div class="product-biz" style="font-size:10px">${p.descripcion || 'Disponible'}</div></div>
         <div class="product-price" style="font-size:13px">$${p.precio}</div>
       </div>
     `).join('');
@@ -500,7 +516,7 @@ async function abrirPerfilPublico(idNegocio) {
 }
 
 // ==========================================
-// 3. SESIÓN Y MI CUENTA REDISEÑADA
+// 3. SESIÓN Y MI CUENTA 
 // ==========================================
 function renderizarPantallaCuenta() {
   const cont = document.getElementById('cuenta-contenido');
@@ -518,14 +534,14 @@ function renderizarPantallaCuenta() {
       <div style="margin-top:40px; border-top:1px solid var(--line); padding-top:30px; text-align:center;">
         <h3 style="font-size:15px; margin-bottom:8px; font-weight:700;">¿Tienes un negocio?</h3>
         <p style="color:var(--muted); font-size:13px; margin-bottom:14px;">Súbelo a Mercado Guerrero y recibe pedidos por WhatsApp.</p>
-        <button class="btn-save btn-outline" style="font-size:14px; padding:12px;" onclick="navegar('onb-1')">Registrar mi negocio</button>
+        <button class="btn-save btn-outline" style="font-size:14px; padding:12px;" onclick="navegar('onb-0')">Registrar mi negocio</button>
       </div>
     `;
   } else {
     cont.style.padding = '0';
     const botonNegocio = currentProfile?.rol === 'negocio' 
       ? `<div class="menu-item" onclick="irAPanelNegocioSeguro()"><span class="ico" style="color:var(--green)">🏪</span><span class="txt" style="color:var(--green)">Ir a mi Panel de Negocio</span><span class="arr">›</span></div>`
-      : `<div class="menu-item" onclick="navegar('onb-1')"><span class="ico" style="color:var(--orange)">🏪</span><span class="txt" style="color:var(--orange)">Registrar mi negocio</span><span class="arr">›</span></div>`;
+      : `<div class="menu-item" onclick="navegar('onb-0')"><span class="ico" style="color:var(--orange)">🏪</span><span class="txt" style="color:var(--orange)">Registrar mi negocio</span><span class="arr">›</span></div>`;
 
     cont.innerHTML = `
       <div style="background:linear-gradient(135deg,var(--green),var(--green-deep)); color:#fff; padding:24px 20px; display:flex; align-items:center; gap:14px; flex-shrink:0;">
@@ -537,8 +553,8 @@ function renderizarPantallaCuenta() {
       </div>
 
       <div class="menu-list" style="padding-top:10px;">
-        <div class="menu-item" onclick="toast('En desarrollo', 'ok')"><span class="ico">📦</span><span class="txt">Mis pedidos</span><span class="arr">›</span></div>
-        <div class="menu-item" onclick="toast('En desarrollo', 'ok')"><span class="ico">♥</span><span class="txt">Favoritos</span><span class="arr">›</span></div>
+        <div class="menu-item" onclick="toast('Tus pedidos guardados (Demo)', 'ok')"><span class="ico">📦</span><span class="txt">Mis pedidos</span><span class="arr">›</span></div>
+        <div class="menu-item" onclick="toast('Tienes ' + misFavoritos.length + ' negocios favoritos', 'ok')"><span class="ico" style="color:var(--danger)">♥</span><span class="txt">Mis Favoritos</span><span class="arr">›</span></div>
         ${botonNegocio}
         <div class="menu-item" onclick="doLogout()"><span class="ico" style="color:var(--danger)">🚪</span><span class="txt" style="color:var(--danger)">Cerrar sesión</span><span class="arr">›</span></div>
       </div>
@@ -562,7 +578,7 @@ async function irAPanelNegocioSeguro() {
   toast('Cargando tu negocio...', 'ok');
   const { data, error } = await db.from('negocios').select('*').eq('user_id', currentUser.id).maybeSingle();
   if (data) { negocioActual = data; await cargarDashNegocio(); navegar('biz-dash'); } 
-  else { toast('Termina de configurar los datos de tu local', 'ok'); navegar('onb-2'); }
+  else { toast('Termina de configurar los datos de tu local', 'ok'); navegar('onb-1'); }
 }
 
 function verMiPropioPerfil() { if(negocioActual) abrirPerfilPublico(negocioActual.id); }
@@ -622,7 +638,7 @@ async function seleccionarPlan(planId) {
 }
 
 // ==========================================
-// 5. FUNCIONES PANEL DE NEGOCIO PROTOTIPO
+// 5. FUNCIONES PANEL DE NEGOCIO
 // ==========================================
 async function cargarDashNegocio() {
   if(!negocioActual) return;
@@ -686,7 +702,7 @@ async function iniciarApp() {
     }
     renderizarPantallaCuenta();
     await cargarNegociosPublicos();
-    await cargarPromos(); // Carga las ofertas del día al iniciar
+    await cargarPromos();
   } catch (error) { console.error("Error arrancando:", error); }
 }
 
