@@ -3,12 +3,15 @@
 <head>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Mercado Guerrero · App</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Unbounded:wght@700;800;900&display=swap" rel="stylesheet">
 <style>
+  /* ==========================================
+     1. VARIABLES Y BASE EXACTAS DEL PROTOTIPO
+  ========================================== */
   :root{
     --green:#0f7a3f; --green-deep:#0a5a2e; --green-soft:#e8f5ec;
     --orange:#ea580c; --orange-soft:#fff4ec; --orange-deep:#c2410c;
@@ -21,93 +24,144 @@
   *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
   html,body{background:var(--bg);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;height:100%;}
   
-  .app-layout { max-width: 440px; margin: 0 auto; background: #fff; min-height: 100vh; box-shadow: 0 0 40px rgba(0,0,0,0.1); display: flex; flex-direction: column; position: relative; overflow-x: hidden; }
-  .panel { display: none; flex: 1; flex-direction: column; overflow-y: auto; background: #fff; padding-bottom: 80px; }
+  body{
+    background-image:
+      radial-gradient(circle at 10% 0%, rgba(15,122,63,.06), transparent 40%),
+      radial-gradient(circle at 90% 100%, rgba(234,88,12,.06), transparent 40%);
+    display: flex; justify-content: center; align-items: flex-start;
+  }
+
+  /* CONTENEDOR TIPO APP (Móvil Full / Desktop Teléfono) */
+  .app-layout { 
+    width: 100%; max-width: 440px; background: #fff; 
+    height: 100vh; display: flex; flex-direction: column; 
+    position: relative; overflow: hidden;
+  }
+  @media (min-width: 441px) {
+    .app-layout {
+      height: 90vh; margin-top: 5vh; border-radius: 42px;
+      box-shadow: 0 30px 60px -15px rgba(0,0,0,.3);
+      border: 8px solid #111;
+    }
+  }
+
+  .panel { display: none; flex: 1; flex-direction: column; overflow-y: auto; background: #fff; position: relative; }
   .panel.active { display: flex; }
-  
-  /* HEADERS GENERALES */
+  .panel::-webkit-scrollbar { width: 0; }
+
+  /* ==========================================
+     2. COMPONENTES GLOBALES (PROTOTIPO)
+  ========================================== */
   .app-header { background: var(--green); color: #fff; padding: 14px 16px 16px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; position: sticky; top: 0; z-index: 10; }
   .app-header.orange { background: var(--orange); }
   .app-header .logo { font-family: 'Bricolage Grotesque', serif; font-weight: 800; font-size: 20px; letter-spacing: -.02em; display:flex; align-items:center; gap:8px;}
   .app-header .logo em { font-style: italic; color: #ffd9a8; }
   .app-header-title { font-weight: 700; font-size: 17px; flex: 1; text-align: center; }
-  .back-btn { cursor: pointer; font-size: 24px; line-height: 1; opacity: .9; padding: 0 10px; margin-left: -10px; }
-  .app-body { padding: 16px; flex: 1; }
+  .back-btn { cursor: pointer; font-size: 20px; line-height: 1; opacity: .9; padding: 0 10px 0 0; }
+  .app-body { flex: 1; padding: 14px; background: #fff; }
   
-  /* SEARCH & CHIPS */
-  .search-box { background: #f3f4f6; border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
-  .search-box input { background: transparent; border: none; outline: none; width: 100%; font-family: inherit; font-size: 14px; }
-  .chips { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
-  .chip { padding: 8px 16px; border-radius: 999px; background: #f3f4f6; color: var(--ink); font-size: 13px; font-weight: 600; white-space: nowrap; cursor: pointer; transition: 0.2s;}
+  .search-box { background: #f3f4f6; border-radius: 12px; padding: 10px 14px; display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+  .search-box input { background: transparent; border: none; outline: none; width: 100%; font-family: inherit; font-size: 13px; color: var(--ink);}
+  .chips { display: flex; gap: 6px; margin-bottom: 14px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+  .chip { padding: 7px 14px; border-radius: 999px; background: #f3f4f6; color: var(--ink); font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; transition:all .2s;}
   .chip.active { background: var(--green); color: #fff; }
   
-  /* CARDS DE PRODUCTO */
-  .product-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; margin-bottom: 12px; display: flex; align-items: center; gap: 14px; padding: 12px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-  .product-img { width: 80px; height: 80px; border-radius: 10px; background: var(--bg-warm); flex-shrink: 0; background-size: cover; background-position: center; }
+  /* TARJETAS DE PRODUCTOS/NEGOCIOS EXACTAS */
+  .product-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; padding: 10px; cursor: pointer; transition: transform .2s; }
+  .product-img { width: 74px; height: 74px; border-radius: 10px; background: #ddd; flex-shrink: 0; background-size: cover; background-position: center; display:grid; place-items:center; font-weight:800; font-size:24px; color:var(--muted); }
   .product-info { flex: 1; min-width: 0; }
-  .product-name { font-weight: 700; font-size: 15px; line-height: 1.2; margin-bottom: 4px; }
-  .product-biz { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 4px; }
-  .product-price { font-weight: 800; color: var(--orange); font-size: 16px; white-space: nowrap; margin-left: auto;}
-  .verify { color: var(--green); font-size: 11px; font-weight: 800; }
+  .product-name { font-weight: 700; font-size: 14px; line-height: 1.2; margin-bottom: 3px; }
+  .product-biz { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 3px; margin-top:2px; }
+  .verify { color: var(--green); font-size: 10px; font-weight:bold; }
+  .product-price { font-weight: 800; color: var(--orange); font-size: 15px; white-space: nowrap; margin-left:auto;}
   
-  /* BOTTOM NAV */
-  .bottom-nav { background: #fff; border-top: 1px solid var(--line); display: flex; padding: 10px 0 16px; position: fixed; bottom: 0; width: 100%; max-width: 440px; z-index: 20; }
-  .nav-item { flex: 1; text-align: center; font-size: 11px; font-weight: 600; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; position:relative;}
+  /* BOTTOM NAV EXACTO */
+  .bottom-nav { background: #fff; border-top: 1px solid var(--line); display: flex; flex-shrink: 0; padding: 8px 0 10px; position: sticky; bottom: 0; z-index: 20; width: 100%; margin-top: auto;}
+  .nav-item { flex: 1; text-align: center; font-size: 10px; font-weight: 600; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; position:relative;}
   .nav-item.active { color: var(--green); }
-  .nav-item .ico { font-size: 22px; line-height: 1; }
-  .badge { display:inline-block; background:var(--orange); color:#fff; border-radius:999px; padding:1px 5px; font-size:10px; position:absolute; top:-2px; right:calc(50% - 20px); font-weight:800; border:2px solid #fff;}
+  .nav-item .ico { font-size: 20px; line-height: 1; }
+  .badge { display:grid; place-items:center; background:var(--orange); color:#fff; border-radius:999px; font-size:9px; position:absolute; top:-4px; right:calc(50% - 18px); font-weight:800; min-width:16px; height:16px; padding:0 4px;}
 
-  /* FORMS & BUTTONS */
-  .field { margin-bottom: 16px; }
-  .field label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; display: block; }
-  .field input, .field select, .field textarea { width: 100%; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-family: inherit; font-size: 15px; background: #fff; outline: none; }
+  /* FORMS & BOTONES */
+  .field { margin-bottom: 12px; }
+  .field label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 5px; display: block; }
+  .field input, .field select, .field textarea { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font-family: inherit; font-size: 14px; background: #fff; outline:none;}
   .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--green); }
   .field .peso-input { position: relative; }
   .field .peso-input::before { content: '$'; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-weight: 700; }
   .field .peso-input input { padding-left: 26px; }
-  .btn-save { width: 100%; background: var(--green); color: #fff; border: none; border-radius: 12px; padding: 16px; font-weight: 800; font-size: 15px; font-family: inherit; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; }
+  
+  .btn-save { width: 100%; background: var(--green); color: #fff; border: none; border-radius: 12px; padding: 14px; font-weight: 800; font-size: 15px; font-family: inherit; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 6px;}
   .btn-orange { background: var(--orange); }
   .btn-outline { background: #fff; color: var(--ink); border: 1px solid var(--line); }
 
-  /* ESTILOS NEGOCIO Y STATS EXACTOS */
-  .biz-dash-header { background: var(--green); color: #fff; padding: 24px 16px 18px; display: flex; align-items: center; gap: 14px; flex-shrink: 0; position: sticky; top: 0; z-index: 10;}
-  .biz-dash-header .ava { width: 56px; height: 56px; border-radius: 50%; background: #fff; border: 2px solid #fff; display:grid; place-items:center; font-size:24px; color:var(--green); font-weight:bold; flex-shrink:0; background-size: cover; background-position: center;}
-  .biz-dash-header h3 { font-family: 'Bricolage Grotesque', serif; font-size: 20px; font-weight: 700; margin-bottom:4px; line-height:1.2;}
-  .status-pill { display: inline-flex; align-items: center; gap: 5px; background: rgba(255,255,255,.2); padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; }
-  .rating-pill { display: inline-flex; align-items: center; gap: 4px; background: #fef3c7; color: #92400e; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; margin: 14px 16px 4px; width: fit-content; }
+  /* ==========================================
+     3. DISEÑO PANEL DE NEGOCIO EXACTO
+  ========================================== */
+  .biz-dash-header { background: var(--green); color: #fff; padding: 18px 16px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; position: sticky; top: 0; z-index: 10;}
+  .biz-dash-header .ava { width: 46px; height: 46px; border-radius: 50%; background: #fff; border: 2px solid #fff; display:grid; place-items:center; font-size:20px; color:var(--green); font-weight:bold; flex-shrink:0; background-size: cover; background-position: center;}
+  .biz-dash-header h3 { font-family: 'Bricolage Grotesque', serif; font-size: 18px; font-weight: 700; margin-bottom:2px;}
+  .status-pill { display: inline-flex; align-items: center; gap: 5px; background: rgba(255,255,255,.2); padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; margin-top: 3px;}
+  .rating-pill { display: inline-flex; align-items: center; gap: 4px; background: #fef3c7; color: #92400e; padding: 5px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; margin: 10px 14px 4px; width: fit-content; }
   
-  .stat-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; margin: 10px 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.02);}
-  .stat-card .ico-box { width: 44px; height: 44px; border-radius: 12px; background: #fff; border: 1px solid var(--line); color: var(--ink); display: grid; place-items: center; font-size: 20px; }
-  .stat-card .t { font-size: 15px; font-weight: 700; margin-bottom:2px; }
-  .stat-card .s { font-size: 12px; color: var(--muted); }
+  .stat-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; margin: 10px 14px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+  .stat-card .ico-box { width: 40px; height: 40px; border-radius: 10px; background: var(--green-soft); color: var(--green); display: grid; place-items: center; font-size: 18px; }
+  .stat-card .t { font-size: 14px; font-weight: 700; margin-bottom:2px; }
+  .stat-card .s { font-size: 11px; color: var(--muted); }
+  .stat-card.orange .ico-box { background: var(--orange-soft); color: var(--orange); }
   
-  .cta-eye { margin: 14px 16px; background: var(--orange); color: #fff; border: none; border-radius: 12px; padding: 16px; font-weight: 800; font-size: 14px; font-family: inherit; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; width:calc(100% - 32px);}
+  .cta-eye { margin: 14px; background: var(--orange); color: #fff; border: none; border-radius: 12px; padding: 14px; font-weight: 800; font-size: 14px; font-family: inherit; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; width:calc(100% - 28px);}
   
-  .stats-header { background: var(--green); color: #fff; padding: 24px 16px; flex-shrink: 0; position: sticky; top:0; z-index:10;}
-  .stats-header h3 { font-family: 'Bricolage Grotesque', serif; font-size: 20px; margin-bottom: 6px; font-weight:700;}
-  .stats-header p { font-size: 13px; opacity: .9; }
-  .highlight-card { margin: 16px; padding: 20px; background: linear-gradient(135deg, var(--orange-soft), #fde4cc); border-radius: var(--radius); display: flex; align-items: center; gap: 16px; }
-  .highlight-card .big { font-family: 'Bricolage Grotesque', serif; font-size: 36px; font-weight: 800; color: var(--orange); line-height:1; }
-  .highlight-card .lbl { font-size: 13px; color: var(--ink); font-weight: 700; margin-top:4px;}
-  .tab-switch { display: flex; background: #f3f4f6; border-radius: 10px; padding: 4px; margin: 0 16px 16px; }
-  .tab-switch .t { flex: 1; text-align: center; padding: 8px; font-size: 13px; font-weight: 700; color: var(--muted); border-radius: 8px; cursor: pointer; }
-  .tab-switch .t.active { background: #fff; color: var(--ink); box-shadow: 0 2px 6px rgba(0,0,0,.08); }
-  .chart-box { margin: 0 16px 16px; padding: 20px; border: 1px solid var(--line); border-radius: var(--radius); background:#fff;}
-  .chart-svg { width: 100%; height: 120px; margin-top:10px;}
+  .stats-header { background: var(--green); color: #fff; padding: 20px 16px; flex-shrink: 0; position: sticky; top:0; z-index:10;}
+  .stats-header h3 { font-family: 'Bricolage Grotesque', serif; font-size: 17px; margin-bottom: 4px; }
+  .stats-header p { font-size: 12px; opacity: .9; }
+  .highlight-card { margin: 14px; padding: 14px; background: linear-gradient(135deg, var(--orange-soft), #fde4cc); border-radius: var(--radius); display: flex; align-items: center; gap: 12px; }
+  .highlight-card .big { font-family: 'Bricolage Grotesque', serif; font-size: 30px; font-weight: 800; color: var(--orange); line-height:1; }
+  .highlight-card .lbl { font-size: 12px; color: var(--ink); font-weight: 600; margin-top:2px;}
+  .tab-switch { display: flex; background: #f3f4f6; border-radius: 10px; padding: 3px; margin: 0 14px 12px; }
+  .tab-switch .t { flex: 1; text-align: center; padding: 7px; font-size: 12px; font-weight: 600; color: var(--muted); border-radius: 8px; cursor: pointer; }
+  .tab-switch .t.active { background: #fff; color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  .chart-box { margin: 0 14px 12px; padding: 14px; border: 1px solid var(--line); border-radius: var(--radius); background:#fff;}
+  .chart-svg { width: 100%; height: 100px; margin-top:10px;}
 
   /* MI HORARIO */
-  .day-row { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid var(--line); font-size: 14px; margin: 0 16px;}
+  .day-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid var(--line); font-size: 13px; }
   .day-row .d { font-weight: 700; flex: 1; }
-  .day-row .h { color: var(--muted); font-size: 13px; width: 100px; text-align: center;}
+  .day-row .h { color: var(--muted); font-size: 12px; width: 90px; text-align: center;}
   .day-row.closed .h { color: #dc2626; }
-  .day-row .tog { width: 44px; height: 24px; background: var(--green); border-radius: 999px; position: relative; cursor: pointer;}
-  .day-row .tog::after { content: ''; position: absolute; top: 2px; right: 2px; width: 20px; height: 20px; background: #fff; border-radius: 50%; transition: 0.2s; box-shadow:0 2px 4px rgba(0,0,0,.2);}
+  .day-row .tog { width: 38px; height: 22px; background: var(--green); border-radius: 999px; position: relative; cursor: pointer;}
+  .day-row .tog::after { content: ''; position: absolute; top: 2px; right: 2px; width: 18px; height: 18px; background: #fff; border-radius: 50%; transition: 0.2s;}
   .day-row.closed .tog { background: #e5e7eb; }
-  .day-row.closed .tog::after { right: auto; left: 2px; box-shadow:0 2px 4px rgba(0,0,0,.1);}
+  .day-row.closed .tog::after { right: auto; left: 2px; }
+
+  /* ONBOARDING */
+  .onb-header { padding: 18px 16px 10px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; background: #fff; position:sticky; top:0; z-index:10;}
+  .progress-bar { height: 4px; background: #e5e7eb; border-radius: 999px; flex: 1; overflow: hidden; }
+  .progress-bar .fill { height: 100%; background: var(--green); border-radius: 999px; }
+  .onb-body { padding: 20px 16px; flex: 1; overflow-y: auto; background: #fff; }
+  .onb-body h2 { font-family: 'Bricolage Grotesque', serif; font-size: 24px; font-weight: 700; line-height: 1.15; margin-bottom: 8px; }
+  .onb-body .sub { color: var(--muted); font-size: 13px; margin-bottom: 20px; }
+  .emoji-big { font-size: 56px; margin-bottom: 14px; text-align: center; }
+  
+  .plan-card { border: 2px solid var(--line); border-radius: var(--radius); padding: 14px; margin-bottom: 10px; background: #fff; position: relative; }
+  .plan-card.featured { border-color: var(--orange); background: linear-gradient(to bottom, #fff, var(--orange-soft)); }
+  .plan-card .rib { position: absolute; top: -10px; right: 12px; background: var(--orange); color: #fff; font-size: 10px; font-weight: 800; padding: 3px 10px; border-radius: 999px; text-transform: uppercase; letter-spacing: .08em; }
+  .plan-card .pname { font-family: 'Bricolage Grotesque', serif; font-size: 18px; font-weight: 700; }
+  .plan-card .pprice { font-size: 22px; font-weight: 800; margin: 4px 0 8px; }
+  .plan-card .pprice small { font-size: 12px; color: var(--muted); font-weight: 500; }
+  .plan-feats { list-style: none; font-size: 12px; line-height: 1.9; margin-bottom:12px; padding-left:0;}
+  .plan-feats li::before { content: '✓ '; color: var(--green); font-weight: 800; }
+  .plan-feats li.x::before { content: '✗ '; color: #dc2626; }
+
+  /* PERFIL PÚBLICO HERO */
+  .biz-header { height: 160px; background-size: cover; background-position: center; position: relative; flex-shrink: 0; background-color: var(--green-soft); }
+  .biz-header::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,.6)); }
+  .biz-header .name { position: absolute; bottom: 12px; left: 14px; right: 14px; color: #fff; font-family: 'Bricolage Grotesque', serif; font-size: 22px; font-weight: 700; z-index: 2; }
+  .biz-meta { padding: 14px; background: #fff; display: flex; flex-direction: column; gap: 8px; border-bottom:1px solid var(--line); margin-bottom:10px;}
+  .biz-meta .badge-open { display: inline-flex; align-items: center; gap: 4px; background: var(--green-soft); color: var(--green); font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 999px; align-self: flex-start; }
 
   /* UTILS */
-  .emoji-big { font-size: 64px; margin-bottom: 16px; text-align: center; }
-  .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 14px 24px; border-radius: 999px; z-index: 9999; font-size: 14px; font-weight: 600; box-shadow: var(--sh); transition: 0.3s; white-space: nowrap; }
+  .toast { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 12px 20px; border-radius: 999px; z-index: 9999; font-size: 13px; font-weight: 600; box-shadow: var(--sh); transition: 0.3s; white-space: nowrap; }
   .toast.hidden { top: -60px; opacity: 0; }
   .toast.err { background: var(--danger); }
   .toast.ok { background: var(--green); }
@@ -115,12 +169,12 @@
 </head>
 <body>
 
-<div id="toast" class="toast hidden"></div>
-
 <div class="app-layout">
+  <div id="toast" class="toast hidden"></div>
 
   <div id="panel-inicio" class="panel active">
     <div class="app-header">
+      <div class="icon-btn" style="font-size:20px; cursor:pointer;" onclick="toast('Menú en desarrollo','ok')">☰</div>
       <div class="logo">
         <svg width="24" height="24" viewBox="0 -22 100 122">
           <path d="M 32 2 Q 32 -18 50 -18 Q 68 -18 68 2" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/>
@@ -130,12 +184,13 @@
         </svg>
         Mercado <em>Guerrero</em>
       </div>
+      <div class="icon-btn" style="margin-left:auto; font-size:18px; cursor:pointer;" onclick="toast('Notificaciones en desarrollo','ok')">🔔</div>
     </div>
     
     <div class="app-body">
       <div class="search-box">
         <span>🔍</span>
-        <input type="text" id="buscar" placeholder="Buscar negocios, comida..." oninput="aplicarFiltros()">
+        <input type="text" id="buscar" placeholder="Buscar productos, negocios..." oninput="aplicarFiltros()">
       </div>
       
       <div class="chips" id="category-chips">
@@ -145,74 +200,79 @@
         <div class="chip" onclick="filtrarPorCategoria('Servicios', this)">Servicios</div>
       </div>
 
-      <h3 style="font-family:'Bricolage Grotesque'; font-size:18px; margin: 20px 0 10px;">Directorio Local</h3>
+      <div style="font-family:'Bricolage Grotesque',serif; font-size:18px; font-weight:700; margin: 14px 0 10px;">Directorio Local</div>
       <div id="lista-negocios">
-        <p style="text-align:center; padding:20px; color:var(--muted)">Cargando negocios...</p>
+        <p style="text-align:center; padding:20px; color:var(--muted); font-size:13px;">Cargando negocios...</p>
       </div>
     </div>
 
     <div class="bottom-nav">
       <div class="nav-item active" onclick="navegar('inicio')"><span class="ico">🏠</span>Inicio</div>
+      <div class="nav-item" onclick="toast('Sección Negocios en desarrollo','ok')"><span class="ico">🏪</span>Negocios</div>
       <div class="nav-item" onclick="navegar('cuenta')"><span class="ico">👤</span>Mi Cuenta</div>
     </div>
   </div>
 
-
   <div id="panel-perfil-pub" class="panel">
-    <div class="biz-dash-header">
-      <div class="back-btn" onclick="navegar('inicio')" style="margin-right:10px;">‹</div>
-      <div class="ava" id="pub-ava">N</div>
-      <div>
-        <h3 id="pub-nombre">Cargando...</h3>
-        <span class="status-pill">● Abierto ahora</span>
+    <div class="app-header">
+      <div class="back-btn" onclick="navegar('inicio')">‹</div>
+      <div class="app-header-title" id="pub-header-title">Perfil</div>
+      <div class="icon-btn" style="font-size:18px;">♥</div>
+    </div>
+    
+    <div class="biz-header" id="pub-hero" style="background-image:url('https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=600')">
+      <div class="name" id="pub-nombre">Cargando...</div>
+    </div>
+    
+    <div class="biz-meta">
+      <span class="badge-open">● Abierto ahora</span>
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);cursor:pointer">
+        <div style="color:var(--star);font-size:14px">★★★★★</div><strong style="font-size:14px">4.8</strong>
+        <span style="font-size:11px;color:var(--muted);flex:1">127 reseñas</span>
+      </div>
+      <div style="font-size:12px;color:var(--muted)" id="pub-info">
+        🕐 Cargando... · 📍 Cargando...
       </div>
     </div>
     
     <div class="app-body" style="padding-top:0">
-      <div class="rating-pill">⭐ 4.8 · Responde rápido</div>
-      
-      <div style="margin: 16px; font-size: 14px; color: var(--muted); line-height: 1.6;" id="pub-info">
-        📍 Cargando dirección...<br>
-        🕒 Cargando horario...
-      </div>
-      
-      <div style="padding: 0 16px 16px;">
-        <button class="btn-save btn-orange" id="pub-wa-btn" style="padding:18px;">💬 Enviar mensaje por WhatsApp</button>
+      <div style="margin-bottom:14px;">
+        <button class="btn-save btn-orange" id="pub-wa-btn" style="box-shadow:0 6px 18px -4px rgba(234,88,12,.5); font-size:14px;">💬 Pedir por WhatsApp</button>
       </div>
 
-      <h3 style="font-family:'Bricolage Grotesque'; font-size:18px; margin: 10px 16px;">Catálogo</h3>
-      <div id="pub-productos" style="padding: 0 16px;">
-        <p style="text-align:center; color:var(--muted); padding:20px;">Cargando productos...</p>
+      <div style="font-weight:700;font-size:13px;color:var(--ink);text-transform:uppercase;letter-spacing:.1em; margin-bottom:10px;">Nuestros Productos</div>
+      <div id="pub-productos">
+        <p style="text-align:center; color:var(--muted); padding:20px; font-size:13px;">Cargando productos...</p>
       </div>
     </div>
 
     <div class="bottom-nav">
       <div class="nav-item" onclick="navegar('inicio')"><span class="ico">🏠</span>Inicio</div>
+      <div class="nav-item" onclick="toast('Sección Negocios en desarrollo','ok')"><span class="ico">🏪</span>Negocios</div>
       <div class="nav-item" onclick="navegar('cuenta')"><span class="ico">👤</span>Mi Cuenta</div>
     </div>
   </div>
-
 
   <div id="panel-cuenta" class="panel">
     <div class="app-header"><div class="app-header-title">Mi Cuenta</div></div>
     
     <div class="app-body" id="cuenta-contenido" style="display:flex; flex-direction:column;">
-      <p style="text-align:center; padding:20px; color:var(--muted)">Cargando cuenta...</p>
+      <p style="text-align:center; padding:20px; color:var(--muted); font-size:13px;">Cargando cuenta...</p>
     </div>
 
     <div class="bottom-nav">
       <div class="nav-item" onclick="navegar('inicio')"><span class="ico">🏠</span>Inicio</div>
+      <div class="nav-item" onclick="toast('Sección Negocios en desarrollo','ok')"><span class="ico">🏪</span>Negocios</div>
       <div class="nav-item active" onclick="navegar('cuenta')"><span class="ico">👤</span>Mi Cuenta</div>
     </div>
   </div>
 
-
   <div id="panel-onb-1" class="panel">
-    <div class="onb-header"><div class="back-btn" onclick="navegar('cuenta')">‹</div><div class="progress-bar"><div class="fill" style="width:33%"></div></div><span style="font-size:12px;color:var(--muted)">1/3</span></div>
+    <div class="onb-header"><div class="back-btn" onclick="navegar('cuenta')">‹</div><div class="progress-bar"><div class="fill" style="width:33%"></div></div><span style="font-size:11px;color:var(--muted)">1/3</span></div>
     <div class="onb-body">
-      <h2>Cuéntanos de tu negocio</h2><p class="sub">Paso 1 de 3 · Crear cuenta y datos básicos</p>
+      <h2>Cuéntanos de tu negocio</h2><p class="sub">Paso 1 de 3 · Crear cuenta y datos</p>
       <div class="field"><label>Correo Electrónico</label><input type="email" id="onb-email" placeholder="correo@ejemplo.com"></div>
-      <div class="field"><label>Contraseña</label><input type="password" id="onb-pass" placeholder="Crea una contraseña (min 6 letras)"></div>
+      <div class="field"><label>Contraseña</label><input type="password" id="onb-pass" placeholder="Mínimo 6 letras"></div>
       <div class="field"><label>Nombre del negocio</label><input type="text" id="onb-nombre" placeholder="Ej: Pollos El Güero"></div>
       <div class="field"><label>Tipo de negocio</label><select id="onb-categoria"><option value="">Selecciona una categoría</option><option>Comida</option><option>Ferretería</option><option>Servicios</option><option>Abarrotes</option><option>Otros</option></select></div>
       <button class="btn-save" style="margin-top:20px" onclick="onboardingPaso1()">Continuar</button>
@@ -220,25 +280,24 @@
   </div>
 
   <div id="panel-onb-2" class="panel">
-    <div class="onb-header"><div class="back-btn" onclick="navegar('onb-1')">‹</div><div class="progress-bar"><div class="fill" style="width:66%"></div></div><span style="font-size:12px;color:var(--muted)">2/3</span></div>
+    <div class="onb-header"><div class="back-btn" onclick="navegar('onb-1')">‹</div><div class="progress-bar"><div class="fill" style="width:66%"></div></div><span style="font-size:11px;color:var(--muted)">2/3</span></div>
     <div class="onb-body">
-      <h2>WhatsApp y ubicación</h2><p class="sub">Aquí te contactarán tus clientes</p>
+      <h2>WhatsApp y ubicación</h2><p class="sub">Aquí llegarán los pedidos de tus clientes</p>
       <div class="field"><label>WhatsApp del negocio</label><input type="number" id="onb-wa" placeholder="Ej: 6741234567"></div>
-      <div style="background:var(--green-soft);padding:12px;border-radius:12px;font-size:12px;color:var(--green-deep);margin-bottom:20px;line-height:1.4">💡 Al tocar "Pedir", el cliente te escribirá directo a este número.</div>
-      <div class="field"><label>Dirección</label><input type="text" id="onb-dir" placeholder="Calle, número, colonia"></div>
+      <div style="background:var(--green-soft);padding:10px 12px;border-radius:10px;font-size:11px;color:var(--green-deep);margin-bottom:12px;line-height:1.4">💡 Al tocar "Pedir", el cliente te escribirá directo a este número.</div>
+      <div class="field"><label>Dirección del negocio</label><input type="text" id="onb-dir" placeholder="Calle, número, colonia"></div>
       <div class="field"><label>Horario</label><input type="text" id="onb-horario" placeholder="Ej: Lunes a Sábado, 8am a 6pm"></div>
       <button class="btn-save" style="margin-top:20px" onclick="onboardingPaso2()">Continuar</button>
     </div>
   </div>
 
   <div id="panel-onb-3" class="panel">
-    <div class="onb-header"><div class="back-btn" onclick="navegar('onb-2')">‹</div><div class="progress-bar"><div class="fill" style="width:100%"></div></div><span style="font-size:12px;color:var(--muted)">3/3</span></div>
+    <div class="onb-header"><div class="back-btn" onclick="navegar('onb-2')">‹</div><div class="progress-bar"><div class="fill" style="width:100%"></div></div><span style="font-size:11px;color:var(--muted)">3/3</span></div>
     <div class="onb-body">
       <h2>Elige tu plan</h2><p class="sub">Puedes cambiar o cancelar cuando quieras</p>
-      <div id="planes-container">Cargando planes...</div>
+      <div id="planes-container"><p style="font-size:13px; color:var(--muted);">Cargando planes...</p></div>
     </div>
   </div>
-
 
   <div id="panel-biz-dash" class="panel">
     <div class="biz-dash-header">
@@ -271,7 +330,7 @@
       </div>
       
       <div class="stat-card orange" onclick="navegar('biz-stats')">
-        <div class="ico-box" style="background:var(--orange-soft); color:var(--orange); border-color:var(--orange-soft);">📊</div>
+        <div class="ico-box">📊</div>
         <div style="flex:1"><div class="t">Estadísticas</div><div class="s">25 clics esta semana</div></div>
         <div style="color:var(--muted)">›</div>
       </div>
@@ -286,16 +345,15 @@
     </div>
   </div>
 
-
   <div id="panel-biz-productos" class="panel">
     <div class="app-header">
       <div class="back-btn" onclick="navegar('biz-dash')">‹</div>
       <div class="app-header-title">Mis Productos</div>
-      <div style="font-size:26px; cursor:pointer;" onclick="navegar('biz-add-producto')">+</div>
+      <div style="font-size:24px; cursor:pointer;" onclick="navegar('biz-add-producto')">+</div>
     </div>
     
-    <div class="app-body" id="biz-productos-lista" style="padding-top:16px;">
-      <p style="text-align:center; padding:30px; color:var(--muted)">Cargando tus productos...</p>
+    <div class="app-body" id="biz-productos-lista" style="padding-top:14px;">
+      <p style="text-align:center; padding:30px; color:var(--muted); font-size:13px;">Cargando tus productos...</p>
     </div>
     
     <div class="bottom-nav">
@@ -305,35 +363,24 @@
     </div>
   </div>
 
-
   <div id="panel-biz-add-producto" class="panel">
     <div class="app-header">
       <div class="back-btn" onclick="navegar('biz-productos')">‹</div>
       <div class="app-header-title">Agregar Producto</div>
-      <div style="width:24px"></div>
+      <div style="width:20px"></div>
     </div>
     
     <div class="app-body">
-      <div style="height: 180px; background: #333; border-radius: 14px; display:flex; align-items:flex-end; justify-content:center; padding:12px; margin-bottom:20px; background-image:url('https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=600'); background-size:cover; background-position:center; position:relative;">
-        <div style="background: rgba(0,0,0,0.6); color:#fff; padding:6px 12px; border-radius:8px; font-size:12px; font-weight:600; display:flex; align-items:center; gap:6px; cursor:pointer;" onclick="toast('Subida de imagen en desarrollo','ok')">
+      <div style="height:150px; background:#f3f4f6; border-radius:12px; display:flex; align-items:flex-end; justify-content:center; padding:10px; margin-bottom:14px; background-image:url('https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=600'); background-size:cover; background-position:center; position:relative;">
+        <div style="position:absolute; bottom:10px; left:10px; background:rgba(0,0,0,.6); color:#fff; padding:6px 10px; border-radius:8px; font-size:11px; font-weight:600; display:flex; align-items:center; gap:4px; cursor:pointer;" onclick="toast('Subida de imagen en desarrollo','ok')">
           📷 Cambiar imagen
         </div>
       </div>
       
+      <div class="field"><label>Nombre del producto</label><input type="text" id="add-prod-nombre" placeholder="Ej: Medio Pollo"></div>
+      <div class="field"><label>Precio (MXN)</label><div class="peso-input"><input type="number" id="add-prod-precio" placeholder="Ej: 95"></div></div>
       <div class="field">
-        <label>NOMBRE DEL PRODUCTO</label>
-        <input type="text" id="add-prod-nombre" placeholder="Ej: Medio Pollo">
-      </div>
-      
-      <div class="field">
-        <label>PRECIO (MXN)</label>
-        <div class="peso-input">
-          <input type="number" id="add-prod-precio" placeholder="Ej: 95">
-        </div>
-      </div>
-
-      <div class="field">
-        <label>CATEGORÍA</label>
+        <label>Categoría</label>
         <select id="add-prod-cat">
           <option>Comida · Pollería</option>
           <option>Bebidas</option>
@@ -341,22 +388,17 @@
           <option>Servicios</option>
         </select>
       </div>
-
-      <div class="field">
-        <label>DESCRIPCIÓN CORTA</label>
-        <textarea id="add-prod-desc" rows="3" placeholder="Medio pollo asado al carbón con tortillas y salsas"></textarea>
-      </div>
+      <div class="field"><label>Descripción corta</label><textarea id="add-prod-desc" rows="2" placeholder="Medio pollo asado al carbón con tortillas y salsas"></textarea></div>
       
       <button class="btn-save" onclick="guardarNuevoProducto()">Guardar producto</button>
     </div>
   </div>
 
-
   <div id="panel-biz-stats" class="panel">
     <div class="stats-header">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
         <div class="back-btn" onclick="navegar('biz-dash')">‹</div>
-        <div style="font-family:'Bricolage Grotesque',serif;font-size:18px;font-weight:700">Estadísticas</div>
+        <div style="font-family:'Bricolage Grotesque',serif;font-size:17px;font-weight:700">Estadísticas</div>
       </div>
       <h3 id="stats-greeting">Hola, Negocio</h3>
       <p>¡Bien hecho! Esto recibiste esta semana:</p>
@@ -364,7 +406,7 @@
     
     <div class="app-body" style="padding:0">
       <div class="highlight-card">
-        <span style="font-size:40px">🔥</span>
+        <span style="font-size:32px">🔥</span>
         <div><div class="big">25</div><div class="lbl">Clics en "Pedir ahora"</div></div>
       </div>
       
@@ -373,17 +415,17 @@
       </div>
       
       <div class="chart-box">
-        <div style="font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Clics por día</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">Clics por día</div>
         <svg class="chart-svg" viewBox="0 0 240 100">
-          <polyline points="10,70 45,50 80,55 115,35 150,45 185,25 220,15" fill="none" stroke="var(--orange)" stroke-width="3" stroke-linecap="round"/>
-          <circle cx="220" cy="15" r="5" fill="var(--orange)"/>
-          <text x="10" y="95" font-size="10" font-weight="700" fill="#6b7280">L</text>
-          <text x="45" y="95" font-size="10" font-weight="700" fill="#6b7280">M</text>
-          <text x="80" y="95" font-size="10" font-weight="700" fill="#6b7280">M</text>
-          <text x="115" y="95" font-size="10" font-weight="700" fill="#6b7280">J</text>
-          <text x="150" y="95" font-size="10" font-weight="700" fill="#6b7280">V</text>
-          <text x="185" y="95" font-size="10" font-weight="700" fill="#6b7280">S</text>
-          <text x="220" y="95" font-size="10" font-weight="700" fill="#6b7280">D</text>
+          <polyline points="10,70 45,50 80,55 115,35 150,45 185,25 220,15" fill="none" stroke="var(--orange)" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="220" cy="15" r="4" fill="var(--orange)"/>
+          <text x="10" y="95" font-size="9" fill="#6b7280">L</text>
+          <text x="45" y="95" font-size="9" fill="#6b7280">M</text>
+          <text x="80" y="95" font-size="9" fill="#6b7280">M</text>
+          <text x="115" y="95" font-size="9" fill="#6b7280">J</text>
+          <text x="150" y="95" font-size="9" fill="#6b7280">V</text>
+          <text x="185" y="95" font-size="9" fill="#6b7280">S</text>
+          <text x="220" y="95" font-size="9" fill="#6b7280">D</text>
         </svg>
       </div>
     </div>
@@ -395,57 +437,49 @@
     </div>
   </div>
 
-
   <div id="panel-biz-horario" class="panel">
     <div class="app-header">
       <div class="back-btn" onclick="navegar('biz-dash')">‹</div>
       <div class="app-header-title">Mi Horario</div>
-      <div style="width:24px"></div>
+      <div style="width:20px"></div>
     </div>
     
     <div class="app-body" style="padding:0">
-      <div style="background:var(--green-soft); padding:16px; border-radius:12px; font-size:13px; color:var(--ink); margin:16px; line-height:1.4;">
+      <div style="background:var(--green-soft); padding:14px; border-radius:10px; font-size:12px; margin:14px; line-height:1.4;">
         💡 <strong>Tip:</strong> Los clientes verán "Abierto ahora" solo en los días y horas que marques.
       </div>
       
-      <div class="day-row">
-        <span class="d">Lunes</span><span class="h">12:00 · 20:00</span>
-        <div class="tog" onclick="toggleDia(this)"></div>
-      </div>
-      <div class="day-row">
-        <span class="d">Martes</span><span class="h">12:00 · 20:00</span>
-        <div class="tog" onclick="toggleDia(this)"></div>
-      </div>
-      <div class="day-row">
-        <span class="d">Miércoles</span><span class="h">12:00 · 20:00</span>
-        <div class="tog" onclick="toggleDia(this)"></div>
-      </div>
-      <div class="day-row">
-        <span class="d">Jueves</span><span class="h">12:00 · 20:00</span>
-        <div class="tog" onclick="toggleDia(this)"></div>
-      </div>
-      <div class="day-row">
-        <span class="d">Viernes</span><span class="h">12:00 · 22:00</span>
-        <div class="tog" onclick="toggleDia(this)"></div>
-      </div>
-      <div class="day-row">
-        <span class="d">Sábado</span><span class="h">12:00 · 22:00</span>
-        <div class="tog" onclick="toggleDia(this)"></div>
-      </div>
-      <div class="day-row closed">
-        <span class="d">Domingo</span><span class="h">Cerrado</span>
-        <div class="tog" onclick="toggleDia(this)"></div>
+      <div style="margin:0 14px;">
+        <div class="day-row">
+          <span class="d">Lunes</span><span class="h">12:00 · 20:00</span><div class="tog" onclick="toggleDia(this)"></div>
+        </div>
+        <div class="day-row">
+          <span class="d">Martes</span><span class="h">12:00 · 20:00</span><div class="tog" onclick="toggleDia(this)"></div>
+        </div>
+        <div class="day-row">
+          <span class="d">Miércoles</span><span class="h">12:00 · 20:00</span><div class="tog" onclick="toggleDia(this)"></div>
+        </div>
+        <div class="day-row">
+          <span class="d">Jueves</span><span class="h">12:00 · 20:00</span><div class="tog" onclick="toggleDia(this)"></div>
+        </div>
+        <div class="day-row">
+          <span class="d">Viernes</span><span class="h">12:00 · 22:00</span><div class="tog" onclick="toggleDia(this)"></div>
+        </div>
+        <div class="day-row">
+          <span class="d">Sábado</span><span class="h">12:00 · 22:00</span><div class="tog" onclick="toggleDia(this)"></div>
+        </div>
+        <div class="day-row closed">
+          <span class="d">Domingo</span><span class="h">Cerrado</span><div class="tog" onclick="toggleDia(this)"></div>
+        </div>
       </div>
       
-      <div style="padding:16px;">
+      <div style="padding:14px;">
         <button class="btn-save" onclick="toast('Horarios guardados','ok'); navegar('biz-dash');">Guardar Cambios</button>
       </div>
     </div>
   </div>
 
-</div>
-
-<script>
+</div> <script>
 // ==========================================
 // 1. CONFIGURACIÓN BÁSICA
 // ==========================================
@@ -471,7 +505,8 @@ function toast(msg, type='ok'){
 function navegar(panelId) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.getElementById('panel-' + panelId).classList.add('active');
-  window.scrollTo({top: 0, behavior: 'smooth'});
+  // Scroll de la tarjeta interior (panel) hacia arriba
+  document.getElementById('panel-' + panelId).scrollTop = 0;
 }
 
 function toggleDia(elemento) {
@@ -514,38 +549,33 @@ function aplicarFiltros(){
 function renderNegocios(list){
   const cont = document.getElementById('lista-negocios');
   if(!cont) return;
-  if(!list.length){ cont.innerHTML = '<p style="text-align:center; padding:30px; color:var(--muted)">No se encontraron negocios.</p>'; return; }
+  if(!list.length){ cont.innerHTML = '<p style="text-align:center; padding:30px; color:var(--muted); font-size:13px;">No se encontraron negocios.</p>'; return; }
   
+  // Renderizado idéntico al prototipo
   cont.innerHTML = list.map(n => `
-    <div class="product-card" style="flex-direction:column; align-items:stretch; gap:10px;">
-      <div style="display:flex; gap:12px; align-items:center;">
-        ${n.imagen_url ? `<div class="product-img" style="background-image:url('${n.imagen_url}')"></div>` : `<div class="product-img" style="background:#e8f5ec; color:var(--green); display:grid; place-items:center; font-weight:800; font-size:24px;">${n.nombre.charAt(0)}</div>`}
-        <div class="product-info">
-          <div class="product-name">${n.nombre}</div>
-          <div class="product-biz"><span class="verify">✓</span> ${n.categoria || 'Negocio'}</div>
-          <div class="product-biz" style="margin-top:4px; font-size:11px;">📍 ${n.direccion || 'Vicente Guerrero'}</div>
-        </div>
-      </div>
-      <div style="display:flex; gap:8px;">
-        ${n.whatsapp ? `<button class="btn-save" style="padding:10px; font-size:13px; border-radius:8px;" onclick="window.open('https://wa.me/${n.whatsapp}')">💬 WhatsApp</button>` : ''}
-        <button class="btn-save btn-outline" style="padding:10px; font-size:13px; border-radius:8px;" onclick="abrirPerfilPublico('${n.id}')">Ver Perfil</button>
+    <div class="product-card" onclick="abrirPerfilPublico('${n.id}')">
+      ${n.imagen_url 
+        ? `<div class="product-img" style="background-image:url('${n.imagen_url}')"></div>` 
+        : `<div class="product-img" style="background:#e8f5ec; color:var(--green);">${n.nombre.charAt(0)}</div>`}
+      <div class="product-info">
+        <div class="product-name">${n.nombre}</div>
+        <div class="product-biz"><span class="verify">✓</span> ${n.categoria || 'Negocio'}</div>
+        <div class="product-biz" style="color:var(--green); font-weight:600;">● Abierto</div>
       </div>
     </div>
   `).join('');
 }
 
-// ESTA FUNCIÓN ABRE EL PERFIL COMPLETO PARA EL CLIENTE
 async function abrirPerfilPublico(idNegocio) {
   toast('Cargando perfil...', 'ok');
   const neg = negociosCache.find(n => n.id === idNegocio);
   if(!neg) return toast('No se encontró el negocio', 'err');
 
-  // Llenar datos básicos
+  document.getElementById('pub-header-title').textContent = neg.nombre;
   document.getElementById('pub-nombre').textContent = neg.nombre;
-  document.getElementById('pub-ava').textContent = neg.nombre.charAt(0).toUpperCase();
-  document.getElementById('pub-info').innerHTML = `📍 ${neg.direccion || 'Sin dirección registrada'}<br>🕒 ${neg.horario || 'Horario no especificado'}`;
+  document.getElementById('pub-info').innerHTML = `🕐 ${neg.horario || 'Horario no especificado'} · 📍 ${neg.direccion || 'Sin dirección'}`;
   
-  // Botón de whatsapp
+  // Botón de whatsapp estilo prototipo
   const waBtn = document.getElementById('pub-wa-btn');
   if(neg.whatsapp) {
     waBtn.style.display = 'block';
@@ -554,21 +584,23 @@ async function abrirPerfilPublico(idNegocio) {
     waBtn.style.display = 'none';
   }
 
-  // Buscar sus productos
+  // Productos
   const { data: prods } = await db.from('ofertas').select('*').eq('negocio_id', neg.id).eq('activa', true);
   const cont = document.getElementById('pub-productos');
   
   if(!prods || prods.length === 0) {
-    cont.innerHTML = '<p style="text-align:center; color:var(--muted); padding:20px;">Este negocio aún no ha subido productos.</p>';
+    cont.innerHTML = '<p style="text-align:center; color:var(--muted); padding:20px; font-size:13px;">Este negocio aún no ha subido productos.</p>';
   } else {
     cont.innerHTML = prods.map(p => `
-      <div class="product-card">
-        ${p.imagen_url ? `<div class="product-img" style="background-image:url('${p.imagen_url}')"></div>` : `<div class="product-img" style="background:#fff4ec; color:var(--orange); display:grid; place-items:center; font-size:24px;">📦</div>`}
+      <div class="product-card" style="margin-bottom:8px">
+        ${p.imagen_url 
+          ? `<div class="product-img" style="width:54px; height:54px; background-image:url('${p.imagen_url}')"></div>` 
+          : `<div class="product-img" style="width:54px; height:54px; background:#fff4ec; color:var(--orange); font-size:18px;">📦</div>`}
         <div class="product-info">
-          <div class="product-name">${p.titulo}</div>
-          <div class="product-biz">${p.descripcion || 'Disponible'}</div>
+          <div class="product-name" style="font-size:13px">${p.titulo}</div>
+          <div class="product-biz" style="font-size:10px">${p.descripcion || 'Disponible'}</div>
         </div>
-        <div class="product-price">$${p.precio}</div>
+        <div class="product-price" style="font-size:13px">$${p.precio}</div>
       </div>
     `).join('');
   }
@@ -593,41 +625,41 @@ function renderizarPantallaCuenta() {
       <button class="btn-save" onclick="doLogin()">Entrar</button>
       
       <div style="margin-top:40px; border-top:1px solid var(--line); padding-top:30px; text-align:center;">
-        <h3 style="font-size:16px; margin-bottom:10px;">¿Tienes un negocio?</h3>
-        <p class="muted" style="margin-bottom:16px;">Súbelo a Mercado Guerrero y recibe pedidos por WhatsApp.</p>
-        <button class="btn-save btn-outline" onclick="navegar('onb-1')">Registrar mi negocio</button>
+        <h3 style="font-size:15px; margin-bottom:8px; font-weight:700;">¿Tienes un negocio?</h3>
+        <p style="color:var(--muted); font-size:13px; margin-bottom:14px;">Súbelo a Mercado Guerrero y recibe pedidos por WhatsApp.</p>
+        <button class="btn-save btn-outline" style="font-size:14px; padding:12px;" onclick="navegar('onb-1')">Registrar mi negocio</button>
       </div>
     `;
   } else {
     cont.style.justifyContent = 'flex-start';
     const botonNegocio = currentProfile?.rol === 'negocio' 
-      ? `<div style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid var(--green); border-radius:12px; cursor:pointer; background:var(--green-soft);" onclick="irAPanelNegocioSeguro()">
-          <span style="font-size:20px;">🏪</span>
-          <span style="flex:1; font-size:15px; font-weight:700; color:var(--green-deep)">Ir a mi Panel de Negocio</span>
-          <span style="color:var(--green-deep)">›</span>
+      ? `<div style="display:flex; align-items:center; gap:12px; padding:14px 16px; border-bottom:1px solid var(--line); cursor:pointer;" onclick="irAPanelNegocioSeguro()">
+          <span style="font-size:18px; width:28px; text-align:center;">🏪</span>
+          <span style="flex:1; font-size:14px; font-weight:500; color:var(--green)">Ir a mi Panel de Negocio</span>
+          <span style="color:var(--muted); font-size:14px;">›</span>
         </div>`
-      : `<div style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid var(--orange); border-radius:12px; cursor:pointer; background:var(--orange-soft);" onclick="navegar('onb-1')">
-          <span style="font-size:20px;">🏪</span>
-          <span style="flex:1; font-size:15px; font-weight:700; color:var(--orange-deep)">Registrar mi negocio</span>
-          <span style="color:var(--orange-deep)">›</span>
+      : `<div style="display:flex; align-items:center; gap:12px; padding:14px 16px; border-bottom:1px solid var(--line); cursor:pointer;" onclick="navegar('onb-1')">
+          <span style="font-size:18px; width:28px; text-align:center;">🏪</span>
+          <span style="flex:1; font-size:14px; font-weight:500; color:var(--orange)">Registrar mi negocio</span>
+          <span style="color:var(--muted); font-size:14px;">›</span>
         </div>`;
 
     cont.innerHTML = `
-      <div style="background:linear-gradient(135deg,var(--green),var(--green-deep)); color:#fff; padding:24px 16px; border-radius:16px; display:flex; align-items:center; gap:16px; margin-bottom:20px;">
-        <div style="width:56px; height:56px; border-radius:50%; background:#fff; display:grid; place-items:center; font-size:24px;">👤</div>
+      <div style="background:linear-gradient(135deg,var(--green),var(--green-deep)); color:#fff; padding:24px 16px; display:flex; align-items:center; gap:12px; border-radius:12px; margin-bottom:14px;">
+        <div style="width:52px; height:52px; border-radius:50%; background:#fff; display:grid; place-items:center; font-size:22px;">👤</div>
         <div>
-          <h3 style="font-family:'Bricolage Grotesque'; font-size:20px; margin-bottom:4px;">Hola, ${currentProfile?.nombre || 'Usuario'}</h3>
-          <small style="opacity:0.85; font-size:13px;">${currentProfile?.rol === 'negocio' ? 'Cuenta de Negocio' : 'Cuenta de Cliente'}</small>
+          <h3 style="font-family:'Bricolage Grotesque',serif; font-size:18px;">Hola, ${currentProfile?.nombre || 'Usuario'}</h3>
+          <small style="opacity:.85; font-size:12px;">${currentProfile?.rol === 'negocio' ? 'Cuenta de Negocio' : 'Cuenta de Cliente'}</small>
         </div>
       </div>
 
-      <div style="display:flex; flex-direction:column; gap:8px;">
-        <div style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid var(--line); border-radius:12px; cursor:pointer;" onclick="toast('En desarrollo', 'ok')">
-          <span style="font-size:20px;">📦</span><span style="flex:1; font-size:15px; font-weight:600;">Mis pedidos</span><span style="color:var(--muted)">›</span>
+      <div style="padding:8px 0;">
+        <div style="display:flex; align-items:center; gap:12px; padding:14px 16px; border-bottom:1px solid var(--line); cursor:pointer;" onclick="toast('En desarrollo', 'ok')">
+          <span style="font-size:18px; width:28px; text-align:center;">📦</span><span style="flex:1; font-size:14px; font-weight:500;">Mis pedidos</span><span style="color:var(--muted); font-size:14px;">›</span>
         </div>
         ${botonNegocio}
-        <div style="display:flex; align-items:center; gap:12px; padding:16px; border:1px solid #fecaca; border-radius:12px; cursor:pointer; background:#fef2f2; margin-top:20px;" onclick="doLogout()">
-          <span style="font-size:20px;">🚪</span><span style="flex:1; font-size:15px; font-weight:700; color:var(--danger)">Cerrar sesión</span><span style="color:var(--danger)">›</span>
+        <div style="display:flex; align-items:center; gap:12px; padding:14px 16px; border-bottom:1px solid var(--line); cursor:pointer;" onclick="doLogout()">
+          <span style="font-size:18px; width:28px; text-align:center;">🚪</span><span style="flex:1; font-size:14px; font-weight:500; color:var(--danger)">Cerrar sesión</span><span style="color:var(--muted); font-size:14px;">›</span>
         </div>
       </div>
     `;
@@ -649,17 +681,14 @@ async function doLogout(){
   location.reload();
 }
 
-// ESTA FUNCIÓN TE PROTEGE SI TU REGISTRO SE QUEDÓ A LA MITAD
 async function irAPanelNegocioSeguro() {
   toast('Cargando tu negocio...', 'ok');
   const { data, error } = await db.from('negocios').select('*').eq('user_id', currentUser.id).maybeSingle();
-  
   if (data) {
     negocioActual = data;
     await cargarDashNegocio();
     navegar('biz-dash');
   } else {
-    // Si dice que es negocio pero no hay datos en la tabla, lo mandamos a terminar de registrarse
     toast('Termina de configurar los datos de tu local', 'ok');
     navegar('onb-2');
   }
@@ -698,14 +727,11 @@ async function onboardingPaso2() {
   if(!currentUser) return toast('Espera a que inicie sesión...', 'err');
   
   toast('Guardando datos...', 'ok');
-  
-  // Usamos upsert por si el usuario ya existía pero no había terminado
   const { data, error } = await db.from('negocios').upsert({
     user_id: currentUser.id, nombre, categoria: cat, whatsapp: wa, telefono: wa, direccion: dir, horario, activo: true, suscripcion_activa: false 
   }, { onConflict: 'user_id' }).select().single();
   
   if(error) return toast(error.message, 'err');
-  
   negocioTempID = data.id; 
   await cargarPlanes();
   navegar('onb-3');
@@ -714,14 +740,19 @@ async function onboardingPaso2() {
 async function cargarPlanes(){
   const { data, error } = await db.from('planes').select('*').order('precio');
   const cont = document.getElementById('planes-container');
-  if(error) { cont.innerHTML = 'Error al cargar planes: ' + error.message; return; }
+  if(error) { cont.innerHTML = '<p style="font-size:13px; color:var(--danger)">Error al cargar planes: ' + error.message + '</p>'; return; }
+  
   cont.innerHTML = data.map(p => `
     <div class="plan-card ${p.id==='pro' ? 'featured' : ''}">
       ${p.id==='pro' ? '<div class="rib">⭐ Más popular</div>' : ''}
       <div class="pname">${p.nombre}</div>
-      <div class="pprice">$${p.precio} <small>/ mes</small></div>
-      <ul class="plan-feats"><li>Hasta ${p.max_ofertas} productos</li><li>${p.descripcion}</li><li>Botón WhatsApp</li></ul>
-      <button class="btn-save ${p.id==='pro'?'btn-orange':'btn-outline'}" onclick="seleccionarPlan('${p.id}')">
+      <div class="pprice">$${p.precio} <small>/ mes MXN</small></div>
+      <ul class="plan-feats">
+        <li>Hasta ${p.max_ofertas} productos</li>
+        <li>${p.descripcion}</li>
+        <li>Botón WhatsApp</li>
+      </ul>
+      <button class="btn-save ${p.id==='pro'?'btn-orange':''}" style="margin-top:8px" onclick="seleccionarPlan('${p.id}')">
         ${p.precio === 0 ? 'Empezar Gratis' : 'Elegir Plan'}
       </button>
     </div>
@@ -754,7 +785,6 @@ async function cargarMisProductos() {
   const cont = document.getElementById('biz-productos-lista');
   const countText = document.getElementById('dash-prod-count');
   
-  // Actualizar los badges circulares naranjas de la parte inferior
   const num = (data && !error) ? data.length : 0;
   document.getElementById('badge-prod-1').textContent = num;
   document.getElementById('badge-prod-2').textContent = num;
@@ -766,23 +796,24 @@ async function cargarMisProductos() {
       <div style="text-align:center; padding:40px 20px;">
         <div style="font-size:48px; margin-bottom:10px;">📦</div>
         <h3 style="font-family:'Bricolage Grotesque'; font-size:18px; margin-bottom:8px;">Aún no tienes productos</h3>
-        <p style="color:var(--muted); font-size:14px; margin-bottom:20px;">Agrega tu primer platillo, producto o servicio para que tus clientes lo vean.</p>
+        <p style="color:var(--muted); font-size:13px; margin-bottom:20px;">Agrega tu primer platillo, producto o servicio.</p>
         <button class="btn-save" onclick="navegar('biz-add-producto')">+ Agregar Producto</button>
       </div>`;
     return;
   }
 
-  // Renderizar la lista de productos del negocio
   cont.innerHTML = data.map(o => `
-    <div class="product-card" style="margin: 0 16px 12px;">
-      ${o.imagen_url ? `<div class="product-img" style="background-image:url('${o.imagen_url}')"></div>` : `<div class="product-img" style="background:#fff4ec; color:var(--orange); display:grid; place-items:center; font-size:24px;">📦</div>`}
+    <div class="product-card">
+      ${o.imagen_url 
+        ? `<div class="product-img" style="background-image:url('${o.imagen_url}')"></div>` 
+        : `<div class="product-img" style="background:#fff4ec; color:var(--orange); font-size:24px;">📦</div>`}
       <div class="product-info">
         <div class="product-name">${o.titulo || 'Sin nombre'}</div>
         <div class="product-biz">${o.activa ? 'Disponible' : 'Pausado'}</div>
       </div>
       <div class="product-price">$${o.precio || '0'}</div>
     </div>
-  `).join('') + `<div style="padding: 16px;"><button class="btn-save btn-outline" onclick="navegar('biz-add-producto')">+ Nuevo Producto</button></div>`;
+  `).join('') + `<button class="btn-save btn-outline" style="margin-top:10px" onclick="navegar('biz-add-producto')">+ Nuevo Producto</button>`;
 }
 
 async function guardarNuevoProducto() {
@@ -793,14 +824,9 @@ async function guardarNuevoProducto() {
   if(!nombre || !precio) return toast('Llena el nombre y precio', 'err');
   if(!negocioActual) return toast('Error: No se detectó negocio', 'err');
 
-  toast('Guardando producto...', 'ok');
-  
+  toast('Guardando...', 'ok');
   const { error } = await db.from('ofertas').insert({ 
-    negocio_id: negocioActual.id, 
-    titulo: nombre, 
-    precio: precio, 
-    descripcion: desc,
-    activa: true 
+    negocio_id: negocioActual.id, titulo: nombre, precio: precio, descripcion: desc, activa: true 
   });
   
   if(error) return toast(error.message, 'err');
@@ -823,7 +849,6 @@ async function iniciarApp() {
     if (currentUser) {
       const { data: prof } = await db.from('profiles').select('*').eq('id', currentUser.id).single();
       currentProfile = prof;
-      // Pre-cargamos los datos del negocio por si le da click a ir al panel
       if(prof?.rol === 'negocio') {
          const { data: neg } = await db.from('negocios').select('*').eq('user_id', currentUser.id).maybeSingle();
          if(neg) negocioActual = neg;
@@ -831,7 +856,6 @@ async function iniciarApp() {
     }
     renderizarPantallaCuenta();
     await cargarNegociosPublicos();
-    
   } catch (error) {
     console.error("Error arrancando la app:", error);
   }
