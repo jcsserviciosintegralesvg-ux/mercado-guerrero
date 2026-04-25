@@ -597,49 +597,59 @@ async function guardarPerfilUsuario() {
   btn.textContent = 'Guardando...';
   toast('Actualizando datos...', 'ok');
 
-  let avatarUrl = currentProfile?.avatar_url;
+  let avatarUrl = currentProfile?.avatar_url || null;
 
-  // Lógica de Foto
-  if (fotoFile) {
-    toast('Subiendo foto...', 'ok');
-    const fileExt = fotoFile.name.split('.').pop();
-    const fileName = `${currentUser.id}_${Math.random()}.${fileExt}`;
-    
-    const { error: uploadError } = await db.storage.from('avatars').upload(fileName, fotoFile);
-    
-    if (uploadError) {
-      toast('Error subiendo foto', 'err');
-    } else {
-      const { data: publicUrlData } = db.storage.from('avatars').getPublicUrl(fileName);
-      avatarUrl = publicUrlData.publicUrl;
+  try {
+    // 1. Lógica de Foto
+    if (fotoFile) {
+      toast('Subiendo foto...', 'ok');
+      const fileExt = fotoFile.name.split('.').pop();
+      const fileName = `${currentUser.id}_${Math.random()}.${fileExt}`;
+      
+      const { error: uploadError } = await db.storage.from('avatars').upload(fileName, fotoFile);
+      
+      if (uploadError) {
+        toast('Error subiendo foto: ' + uploadError.message, 'err');
+      } else {
+        const { data: publicUrlData } = db.storage.from('avatars').getPublicUrl(fileName);
+        avatarUrl = publicUrlData.publicUrl;
+      }
     }
-  }
 
-  const { error } = await db.from('profiles').update({ 
-    nombre: nombre, 
-    direccion: direccion, 
-    edad: edad, 
-    telefono: telefono, 
-    whatsapp: whatsapp,
-    avatar_url: avatarUrl 
-  }).eq('id', currentUser.id);
+    // 2. Usar UPSERT por si el perfil no existía en la base de datos
+    const { error } = await db.from('profiles').upsert({ 
+      id: currentUser.id, // Le pasamos tu ID para que sepa quién eres
+      nombre: nombre, 
+      direccion: direccion, 
+      edad: edad, 
+      telefono: telefono, 
+      whatsapp: whatsapp,
+      avatar_url: avatarUrl 
+    });
 
-  if(error) {
-    toast(error.message, 'err');
-  } else {
-    // Actualizar datos locales
-    currentProfile.nombre = nombre;
-    currentProfile.direccion = direccion;
-    currentProfile.edad = edad;
-    currentProfile.telefono = telefono;
-    currentProfile.whatsapp = whatsapp;
-    currentProfile.avatar_url = avatarUrl;
-    
-    toast('¡Datos actualizados!', 'ok');
-    renderizarPantallaCuenta();
-    navegar('cuenta');
+    if(error) {
+      toast('Error en BD: ' + error.message, 'err');
+    } else {
+      // Si currentProfile estaba nulo, lo preparamos
+      if (!currentProfile) currentProfile = {};
+      
+      currentProfile.nombre = nombre;
+      currentProfile.direccion = direccion;
+      currentProfile.edad = edad;
+      currentProfile.telefono = telefono;
+      currentProfile.whatsapp = whatsapp;
+      currentProfile.avatar_url = avatarUrl;
+      
+      toast('¡Datos actualizados!', 'ok');
+      renderizarPantallaCuenta();
+      navegar('cuenta');
+    }
+  } catch (err) {
+    console.error("Error inesperado:", err);
+    toast('Ocurrió un error inesperado', 'err');
   }
   
+  // Esto asegura que el botón siempre vuelva a la normalidad
   btn.disabled = false;
   btn.textContent = 'Guardar Cambios';
 }
