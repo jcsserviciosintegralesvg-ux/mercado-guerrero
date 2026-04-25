@@ -414,7 +414,9 @@
     </div>
   </div>
 
-</div> <script>
+</div> 
+
+<script>
 const SUPABASE_URL = 'https://djddsqbmaxgpryabvktt.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqZGRzcWJtYXhncHJ5YWJ2a3R0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2MzUxMTEsImV4cCI6MjA5MjIxMTExMX0.3JO1RU1_NY4cTCO23_QanF0kFBE8VWPqzsU6yTvLx1c';
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -477,7 +479,7 @@ function guardarHorarios() {
 }
 
 // ==========================================
-// AUTH Y CUENTA
+// AUTH Y CUENTA (MEJORADO SIN RELOAD)
 // ==========================================
 async function doLogin(){
   const email = document.getElementById('login-email').value.trim();
@@ -486,7 +488,12 @@ async function doLogin(){
   toast('Iniciando...', 'ok');
   const { error } = await db.auth.signInWithPassword({ email, password });
   if(error) return toast(error.message, 'err');
-  location.reload(); 
+  
+  // Limpiar campos y arrancar app sin recargar
+  document.getElementById('login-email').value = '';
+  document.getElementById('login-pass').value = '';
+  toast('¡Bienvenido!', 'ok');
+  iniciarApp(); 
 }
 
 async function doRegister(){
@@ -497,11 +504,22 @@ async function doRegister(){
   toast('Creando cuenta...', 'ok');
   const { error } = await db.auth.signUp({ email, password, options:{ data:{ nombre: name, rol: 'cliente' } } });
   if(error) return toast(error.message, 'err');
+  
+  // Limpiar campos y arrancar app sin recargar
+  document.getElementById('reg-name').value = '';
+  document.getElementById('reg-email').value = '';
+  document.getElementById('reg-pass').value = '';
   toast('Cuenta creada! Iniciando...', 'ok');
-  setTimeout(() => location.reload(), 1500);
+  setTimeout(() => iniciarApp(), 1000);
 }
 
-async function doLogout(){ await db.auth.signOut(); location.reload(); }
+async function doLogout(){ 
+  await db.auth.signOut(); 
+  currentUser = null;
+  currentProfile = null;
+  negocioActual = null;
+  navegar('auth');
+}
 
 function renderizarPantallaCuenta() {
   const cont = document.getElementById('cuenta-contenido');
@@ -716,7 +734,6 @@ async function onboardingPaso2() {
   
   if(currentProfile.rol !== 'negocio') { await db.from('profiles').update({ rol: 'negocio' }).eq('id', currentUser.id); }
 
-  // Solucionado error de Supabase al no poder seleccionar tras upsert por RLS. Lo insertamos seguro.
   const { error } = await db.from('negocios').upsert({ user_id: currentUser.id, nombre, categoria: cat, whatsapp: wa, telefono: wa, direccion: dir, activo: true, suscripcion_activa: false }, { onConflict: 'user_id' });
   if(error) { console.error(error); return toast('Error guardando', 'err'); }
   
@@ -746,7 +763,7 @@ async function seleccionarPlan(planId) {
   toast('Configurando plan...', 'ok');
   await db.from('negocios').update({ plan_id: planId, suscripcion_activa: planId === 'gratis' }).eq('id', negocioTempID);
   toast('¡Bienvenido! Tu negocio está listo.', 'ok');
-  setTimeout(()=> location.reload(), 1500); 
+  iniciarApp(); // Ya no usamos reload
 }
 
 async function cargarDashNegocio() {
