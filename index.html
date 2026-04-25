@@ -13,19 +13,27 @@
     --green:#0f7a3f; --green-deep:#0a5a2e; --green-soft:#e8f5ec;
     --orange:#ea580c; --orange-soft:#fff4ec; --orange-deep:#c2410c;
     --ink:#101418; --muted:#6b7280; --line:#e5e7eb;
-    --bg:#f4f6f8; --card:#ffffff; --star:#f59e0b;
+    --bg:#f8faf9; --card:#ffffff; --star:#f59e0b;
     --danger:#dc2626;
     --radius:16px;
-    --sh: 0 4px 12px rgba(0,0,0,0.05);
+    --sh: 0 10px 25px -12px rgba(0,0,0,.15), 0 4px 8px -4px rgba(0,0,0,.08);
   }
 
   *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
-  html,body{background:var(--bg);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;height:100%; overflow:hidden;}
+  html,body{color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;height:100%; overflow:hidden;}
   
+  /* FONDO CON VIDA (Tomado del prototipo original) */
+  body {
+    background-color: var(--bg);
+    background-image:
+      radial-gradient(circle at 10% 0%, rgba(15,122,63,.08), transparent 40%),
+      radial-gradient(circle at 90% 100%, rgba(234,88,12,.08), transparent 40%);
+  }
+
   /* CONTENEDOR PRINCIPAL */
   .app-layout { 
     width: 100%; height: 100vh; display: flex; flex-direction: column; 
-    position: relative; background: var(--bg);
+    position: relative; background: transparent;
   }
 
   /* VISTA ESCRITORIO (PC/LAPTOP) */
@@ -41,8 +49,9 @@
 
     /* Cabecera verde dentro del sidebar */
     .sidebar-header {
-        background: var(--green); padding: 24px 20px; color: #fff;
-        border-bottom: 4px solid var(--green-deep);
+        background: linear-gradient(135deg, var(--green), var(--green-deep)); 
+        padding: 24px 20px; color: #fff;
+        border-bottom: 4px solid var(--orange);
     }
 
     .sidebar-menu { padding: 20px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
@@ -68,34 +77,35 @@
   /* VISTA MÓVIL (Por defecto) */
   #sidebar-desktop { display: none; }
   .main-content { flex: 1; overflow-y: auto; height: 100%; display: flex; flex-direction: column;}
-  .panel { display: none; padding: 0 0 40px; background: var(--bg); flex: 1; }
+  .panel { display: none; padding: 0 0 40px; background: transparent; flex: 1; }
   .panel.active { display: flex; flex-direction: column; }
 
   /* HEADER MÓVIL */
   .app-header { 
-    background: var(--green); color: #fff; padding: 16px; 
+    background: linear-gradient(135deg, var(--green), var(--green-deep)); color: #fff; padding: 16px; 
     display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 50; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   }
-  .app-header.orange { background: var(--orange); }
+  .app-header.orange { background: linear-gradient(135deg, var(--orange), var(--orange-deep)); }
 
   /* TARJETAS MODERNAS */
   .product-card, .promo-card {
     background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
     padding: 16px; display: flex; align-items: center; gap: 15px; cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s; box-shadow: var(--sh); margin-bottom: 12px;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; box-shadow: var(--sh); margin-bottom: 12px;
   }
   @media (min-width: 769px) { .product-card { margin-bottom: 0; height: 100%; } }
-  .product-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
+  .product-card:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,0,0,0.08); border-color: var(--green-soft); }
 
   .product-img { 
     width: 70px; height: 70px; border-radius: 12px; background: #eee; 
     flex-shrink: 0; object-fit: cover; display:grid; place-items:center; font-weight:800; font-size:24px; color:var(--muted);
   }
 
-  /* FOOTER Acomodado */
+  /* FOOTER */
   .app-footer {
-    margin-top: auto; padding: 20px; background: rgba(255,255,255,0.8);
-    border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin-top: auto; padding: 20px; background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(10px); border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: center; gap: 10px;
     font-size: 12px; font-weight: 600; color: var(--muted); width: 100%; flex-shrink: 0;
   }
 
@@ -104,14 +114,16 @@
     width: 100%; background: var(--green); color: #fff; border: none; border-radius: 12px;
     padding: 14px; font-weight: 800; font-size: 15px; cursor: pointer; transition: 0.2s; display:flex; align-items:center; justify-content:center; gap:8px;
   }
-  .btn-save:hover { filter: brightness(1.1); }
+  .btn-save:hover { filter: brightness(1.1); box-shadow: 0 4px 12px rgba(15,122,63,.3); }
+  .btn-orange { background: var(--orange); }
+  .btn-orange:hover { box-shadow: 0 4px 12px rgba(234,88,12,.3); }
   .btn-outline { background: #fff; color: var(--ink); border: 1px solid var(--line); }
-  .btn-outline:hover { background: #f9fafb; }
+  .btn-outline:hover { background: #f9fafb; box-shadow:none; border-color:var(--green);}
   
   .field { margin-bottom: 16px; text-align: left; }
   .field label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; display: block; }
-  .field input, .field select { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 12px; font-size: 14px; outline: none; background:#fff;}
-  .field input:focus { border-color: var(--green); }
+  .field input, .field select { width: 100%; border: 1.5px solid var(--line); border-radius: 10px; padding: 12px; font-size: 14px; outline: none; background:#fff; transition:0.2s;}
+  .field input:focus { border-color: var(--green); box-shadow: 0 0 0 3px var(--green-soft); }
 
   .profile-pic { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; }
   .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--ink); color:#fff; padding:12px 24px; border-radius:50px; z-index:9999; font-weight:600; transition: 0.3s; box-shadow: 0 10px 25px rgba(0,0,0,0.2);}
@@ -134,7 +146,8 @@
         <button class="btn-save btn-outline" style="justify-content:flex-start;" onclick="navegar('inicio')">🏠 Inicio</button>
         <button class="btn-save btn-outline" style="justify-content:flex-start;" onclick="navegar('promos')">🔥 Promociones</button>
         <button class="btn-save btn-outline" style="justify-content:flex-start;" onclick="navegar('cuenta')">👤 Mi Cuenta</button>
-        <div id="btn-negocio-pc"></div>
+        <div id="btn-negocio-pc">
+           </div>
     </div>
     <div style="margin-top:auto; padding:20px; border-top:1px solid var(--line); display:flex; align-items:center; gap:10px;" id="pc-user-info">
         </div>
@@ -153,31 +166,32 @@
       </div>
     </header>
 
-    <div style="flex: 1; display:flex; flex-direction:column;">
+    <div style="flex: 1; display:flex; flex-direction:column; padding:14px;">
       
       <section id="panel-inicio" class="panel active">
-          <div class="app-body" style="background:transparent;">
-              <h2 style="font-family:'Bricolage Grotesque'; margin-bottom:15px; font-size:22px;">Explora el comercio local</h2>
-              <div class="search-box" style="background:#fff; border: 1px solid var(--line); padding:14px; border-radius:12px; margin-bottom:24px; box-shadow: var(--sh);">
-                  <input type="text" id="buscar" autocomplete="off" placeholder="🔍 ¿Qué estás buscando hoy?" oninput="aplicarFiltros()" style="background:transparent; border:none; width:100%; outline:none; font-size:15px;">
+          <div style="background:transparent;">
+              <h2 style="font-family:'Bricolage Grotesque'; margin-bottom:15px; font-size:26px; font-weight:800; color:var(--ink);">Explora el comercio local</h2>
+              <div class="search-box" style="background:#fff; border: 1px solid var(--line); padding:16px; border-radius:14px; margin-bottom:24px; box-shadow: var(--sh); display:flex; align-items:center; gap:10px;">
+                  <span style="font-size:20px;">🔍</span>
+                  <input type="text" id="buscar" autocomplete="off" placeholder="¿Qué estás buscando hoy?" oninput="aplicarFiltros()" style="background:transparent; border:none; width:100%; outline:none; font-size:16px;">
               </div>
               <div id="lista-negocios">Cargando negocios...</div>
           </div>
       </section>
 
       <section id="panel-promos" class="panel">
-          <div class="app-body" style="background:transparent;">
-              <h2 style="font-family:'Bricolage Grotesque'; margin-bottom:15px; font-size:22px;">🔥 Ofertas Imperdibles</h2>
+          <div style="background:transparent;">
+              <h2 style="font-family:'Bricolage Grotesque'; margin-bottom:15px; font-size:26px; font-weight:800; color:var(--orange-deep);">🔥 Ofertas Imperdibles</h2>
               <div id="lista-promos"></div>
           </div>
       </section>
 
       <section id="panel-cuenta" class="panel">
-          <div class="app-body" id="cuenta-contenido" style="background:transparent; max-width: 600px; margin: 0 auto; width: 100%;"></div>
+          <div id="cuenta-contenido" style="background:transparent; max-width: 600px; margin: 0 auto; width: 100%;"></div>
       </section>
 
       <section id="panel-editar-perfil" class="panel">
-          <div class="app-body" style="max-width:500px; margin: 0 auto; background:#fff; border-radius:var(--radius); box-shadow:var(--sh); padding: 30px;">
+          <div style="max-width:500px; margin: 0 auto; width:100%; background:#fff; border-radius:var(--radius); box-shadow:var(--sh); padding: 30px;">
               <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
                 <div style="font-size:24px; cursor:pointer;" onclick="navegar('cuenta')">‹</div>
                 <h2 style="font-family:'Bricolage Grotesque'; margin:0;">Editar mi información</h2>
@@ -192,7 +206,7 @@
       </section>
 
       <section id="panel-onb-1" class="panel">
-          <div class="app-body" style="max-width:500px; margin: 0 auto; background:#fff; border-radius:var(--radius); box-shadow:var(--sh); padding: 30px;">
+          <div style="max-width:500px; margin: 0 auto; width:100%; background:#fff; border-radius:var(--radius); box-shadow:var(--sh); padding: 30px;">
               <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
                 <div style="font-size:24px; cursor:pointer;" onclick="navegar('cuenta')">‹</div>
                 <h2 style="font-family:'Bricolage Grotesque'; margin:0;">Registra tu negocio</h2>
@@ -204,6 +218,27 @@
               <button class="btn-save" onclick="guardarNegocioRapido()">Dar de alta negocio</button>
           </div>
       </section>
+
+      <section id="panel-biz-dash" class="panel">
+          <div style="max-width:800px; margin: 0 auto; width:100%;">
+              <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
+                <div style="font-size:24px; cursor:pointer;" onclick="navegar('cuenta')">‹</div>
+                <h2 style="font-family:'Bricolage Grotesque'; font-size:26px; font-weight:800;" id="dash-nombre-titulo">Mi Panel</h2>
+              </div>
+              
+              <div style="background:#fff; border-radius:var(--radius); box-shadow:var(--sh); padding:24px; display:grid; gap:16px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                  <div style="background:var(--green-soft); border:1px solid var(--green); padding:20px; border-radius:12px; text-align:center; cursor:pointer;" onclick="toast('Productos en desarrollo', 'ok')">
+                      <div style="font-size:30px; margin-bottom:10px;">📦</div>
+                      <h3 style="color:var(--green-deep); font-weight:800;">Mis Productos</h3>
+                  </div>
+                  <div style="background:var(--orange-soft); border:1px solid var(--orange); padding:20px; border-radius:12px; text-align:center; cursor:pointer;" onclick="toast('Estadísticas en desarrollo', 'ok')">
+                      <div style="font-size:30px; margin-bottom:10px;">📊</div>
+                      <h3 style="color:var(--orange-deep); font-weight:800;">Estadísticas</h3>
+                  </div>
+              </div>
+          </div>
+      </section>
+
     </div>
 
     <footer class="app-footer">
@@ -213,14 +248,14 @@
   </main>
 
   <div id="panel-auth" style="position:fixed; inset:0; z-index:10000; background:var(--bg); display:none; align-items:center; justify-content:center;">
-    <div style="max-width:380px; width:100%; padding:30px; background:#fff; border-radius:var(--radius); box-shadow:var(--sh); text-align:center;">
+    <div style="max-width:380px; width:100%; padding:40px 30px; background:#fff; border-radius:var(--radius); box-shadow:0 20px 40px rgba(0,0,0,0.1); text-align:center;">
         <div style="display:flex; justify-content:center; margin-bottom:20px;">
-          <svg width="60" height="60" viewBox="0 -22 100 122"><path d="M 32 2 Q 32 -18 50 -18 Q 68 -18 68 2" fill="none" stroke="#0f7a3f" stroke-width="7" stroke-linecap="round"/><rect x="0" y="0" width="100" height="100" rx="22" fill="#0f7a3f"/><path d="M70 0 L100 0 L100 30 L88 30 A18 18 0 0 0 70 12 Z" fill="#ea580c"/><text x="50" y="66" text-anchor="middle" font-family="Unbounded" font-size="38" font-weight="900" fill="#fff" letter-spacing="-1">MG</text></svg>
+          <svg width="70" height="70" viewBox="0 -22 100 122"><path d="M 32 2 Q 32 -18 50 -18 Q 68 -18 68 2" fill="none" stroke="#0f7a3f" stroke-width="7" stroke-linecap="round"/><rect x="0" y="0" width="100" height="100" rx="22" fill="#0f7a3f"/><path d="M70 0 L100 0 L100 30 L88 30 A18 18 0 0 0 70 12 Z" fill="#ea580c"/><text x="50" y="66" text-anchor="middle" font-family="Unbounded" font-size="38" font-weight="900" fill="#fff" letter-spacing="-1">MG</text></svg>
         </div>
-        <h2 style="font-family:'Bricolage Grotesque'; margin-bottom:20px;">Inicia Sesión</h2>
+        <h2 style="font-family:'Bricolage Grotesque'; margin-bottom:24px; font-size:24px;">Inicia Sesión</h2>
         <div class="field"><label>Email</label><input type="email" id="login-email"></div>
         <div class="field"><label>Contraseña</label><input type="password" id="login-pass"></div>
-        <button class="btn-save" onclick="doLogin()">Entrar</button>
+        <button class="btn-save" onclick="doLogin()" style="margin-top:20px; padding:16px;">Entrar a mi cuenta</button>
     </div>
   </div>
 
@@ -234,6 +269,7 @@ const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let currentUser = null;
 let currentProfile = null;
+let negocioActual = null;
 let negociosCache = [];
 
 function toast(msg, type='ok'){
@@ -251,14 +287,12 @@ function navegar(panelId) {
 }
 
 // ==========================================
-// CERRAR SESIÓN ARREGLADO
+// CERRAR SESIÓN
 // ==========================================
 async function doLogout(){
   toast('Cerrando sesión...', 'ok');
   await db.auth.signOut();
-  currentUser = null;
-  currentProfile = null;
-  location.reload(); // Recarga limpia la app
+  location.reload(); 
 }
 
 // ==========================================
@@ -309,6 +343,23 @@ function aplicarFiltros(){
 }
 
 // ==========================================
+// LÓGICA DE NEGOCIO (EL ERROR ARREGLADO)
+// ==========================================
+async function abrirDashboardNegocio() {
+    toast('Cargando tu panel...', 'ok');
+    const { data, error } = await db.from('negocios').select('*').eq('user_id', currentUser.id).maybeSingle();
+    
+    if (data) {
+        negocioActual = data;
+        document.getElementById('dash-nombre-titulo').textContent = data.nombre;
+        navegar('biz-dash');
+    } else {
+        toast('Aún no configuras tu negocio', 'err');
+        navegar('onb-1');
+    }
+}
+
+// ==========================================
 // PERFIL Y DATOS
 // ==========================================
 async function guardarPerfilUsuario() {
@@ -339,7 +390,7 @@ async function guardarPerfilUsuario() {
 
   if(!error) {
     toast('¡Perfil actualizado!', 'ok');
-    iniciarApp(); // Refresca los datos en la pantalla
+    iniciarApp(); 
   } else {
     toast('Error: ' + error.message, 'err');
   }
@@ -349,24 +400,37 @@ async function guardarPerfilUsuario() {
 function renderizarPantallaCuenta() {
   const cont = document.getElementById('cuenta-contenido');
   const foto = currentProfile?.avatar_url || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+  const esNegocio = currentProfile?.rol === 'negocio';
   
+  // LOGICA CORREGIDA PARA MOSTRAR "PANEL DE NEGOCIO" O "REGISTRAR NEGOCIO"
+  const botonNegocioHTML = esNegocio 
+    ? `<button class="product-card" style="width:100%; justify-content:flex-start; border-color:var(--green); background:var(--green-soft);" onclick="abrirDashboardNegocio()">
+         <span style="font-size:20px;">🏪</span> <span style="font-weight:800; color:var(--green-deep);">Mi Panel de Negocio</span>
+       </button>`
+    : `<button class="product-card" style="width:100%; justify-content:flex-start;" onclick="navegar('onb-1')">
+         <span style="font-size:20px;">🏪</span> <span style="font-weight:700;">Registrar mi negocio</span>
+       </button>`;
+
+  // APLICANDO EL DISEÑO HERMOSO DE LA TARJETA VERDE DEL PROTOTIPO
   cont.innerHTML = `
-    <div style="background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:40px 20px; display:flex; flex-direction:column; align-items:center; text-align:center; box-shadow:var(--sh); margin-bottom:20px;">
-        <img src="${foto}" style="width:100px; height:100px; border-radius:50%; border:4px solid var(--green-soft); object-fit:cover; margin-bottom:15px;">
-        <h2 style="font-family:'Bricolage Grotesque'; font-size:24px;">${currentProfile?.nombre || 'Usuario'}</h2>
-        <p style="font-size:14px; color:var(--muted);">${currentUser?.email}</p>
-        <div style="background:var(--green-soft); color:var(--green-deep); padding:5px 12px; border-radius:50px; font-size:12px; font-weight:700; margin-top:10px;">${currentProfile?.rol === 'negocio' ? 'Cuenta de Negocio' : 'Cuenta de Cliente'}</div>
+    <div style="background:linear-gradient(135deg, var(--green), var(--green-deep)); color:#fff; border-radius:24px; padding:40px 20px; display:flex; flex-direction:column; align-items:center; text-align:center; box-shadow: 0 15px 30px -10px rgba(15,122,63,0.5); margin-bottom:30px;">
+        <img src="${foto}" style="width:110px; height:110px; border-radius:50%; border:4px solid #fff; object-fit:cover; margin-bottom:15px; box-shadow: var(--sh);">
+        <h2 style="font-family:'Bricolage Grotesque'; font-size:28px; font-weight:800;">${currentProfile?.nombre || 'Usuario'}</h2>
+        <p style="font-size:14px; opacity:0.9;">${currentUser?.email}</p>
+        <div style="background:rgba(255,255,255,0.2); color:#fff; padding:6px 16px; border-radius:50px; font-size:12px; font-weight:800; margin-top:16px; letter-spacing:0.05em; text-transform:uppercase;">
+            ${esNegocio ? 'Cuenta de Negocio' : 'Cuenta de Cliente'}
+        </div>
     </div>
     
-    <div style="display:flex; flex-direction:column; gap:12px;">
+    <div style="display:flex; flex-direction:column; gap:14px;">
         <button class="product-card" style="width:100%; justify-content:flex-start;" onclick="navegar('editar-perfil')">
            <span style="font-size:20px;">✏️</span> <span style="font-weight:700;">Editar mis datos</span>
         </button>
-        <button class="product-card" style="width:100%; justify-content:flex-start;" onclick="navegar('onb-1')">
-           <span style="font-size:20px;">🏪</span> <span style="font-weight:700;">Registrar mi negocio</span>
-        </button>
-        <button class="product-card" style="width:100%; justify-content:flex-start; color:var(--danger);" onclick="doLogout()">
-           <span style="font-size:20px;">🚪</span> <span style="font-weight:700;">Cerrar Sesión</span>
+        
+        ${botonNegocioHTML}
+        
+        <button class="product-card" style="width:100%; justify-content:flex-start; border-color:#fecaca; background:#fef2f2; color:var(--danger);" onclick="doLogout()">
+           <span style="font-size:20px;">🚪</span> <span style="font-weight:800;">Cerrar Sesión</span>
         </button>
     </div>
   `;
@@ -393,7 +457,7 @@ async function guardarNegocioRapido() {
   } else {
     await db.from('profiles').update({ rol: 'negocio' }).eq('id', currentUser.id);
     toast('¡Negocio registrado!', 'ok');
-    navegar('inicio');
+    iniciarApp(); // Refresca todo para que detecte que ya es negocio
   }
 }
 
@@ -414,6 +478,8 @@ async function iniciarApp() {
     // Actualizar avatares e info en la vista
     const foto = prof?.avatar_url || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
     document.getElementById('nav-avatar').src = foto;
+    
+    // PC SIDEBAR INFO
     document.getElementById('pc-user-info').innerHTML = `
         <img src="${foto}" class="profile-pic">
         <div style="font-size:13px; font-weight:700; display:flex; flex-direction:column;">
@@ -421,6 +487,12 @@ async function iniciarApp() {
             <span style="font-size:11px; color:var(--muted); font-weight:500;">Conectado</span>
         </div>
     `;
+
+    // PC SIDEBAR BOTON NEGOCIO
+    const btnNegocioSide = prof?.rol === 'negocio'
+        ? `<button class="btn-save btn-outline" style="justify-content:flex-start; color:var(--green); border-color:var(--green);" onclick="abrirDashboardNegocio()">🏪 Mi Panel de Negocio</button>`
+        : `<button class="btn-save btn-outline" style="justify-content:flex-start;" onclick="navegar('onb-1')">🏪 Registrar negocio</button>`;
+    document.getElementById('btn-negocio-pc').innerHTML = btnNegocioSide;
 
     renderizarPantallaCuenta();
     await cargarNegocios();
