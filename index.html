@@ -202,10 +202,13 @@
         <p style="margin-top:20px; font-size:13px; color:var(--muted);">¿No tienes cuenta? <strong style="color:var(--green); cursor:pointer;" onclick="toggleAuthForm('register')">Regístrate aquí</strong></p>
       </div>
 
-      <div id="auth-form-register" style="display:none;">
-        <div class="field"><label>Nombre Completo</label><input type="text" id="reg-name" placeholder="Tu nombre"></div>
-        <div class="field"><label>Correo Electrónico</label><input type="email" id="reg-email" placeholder="correo@ejemplo.com"></div>
-        <div class="field"><label>Contraseña</label><input type="password" id="reg-pass" placeholder="Mínimo 6 letras"></div>
+     <div id="auth-form-register" style="display:none;">
+        <div class="field"><label>Nombre Completo *</label><input type="text" id="reg-name" placeholder="Tu nombre"></div>
+        <div class="field"><label>Edad *</label><input type="number" id="reg-edad" placeholder="Ej: 30"></div>
+        <div class="field"><label>Teléfono Celular *</label><input type="number" id="reg-tel" placeholder="10 dígitos"></div>
+        <div class="field"><label>WhatsApp *</label><input type="number" id="reg-wa" placeholder="10 dígitos"></div>
+        <div class="field"><label>Correo Electrónico *</label><input type="email" id="reg-email" placeholder="correo@ejemplo.com"></div>
+        <div class="field"><label>Contraseña *</label><input type="password" id="reg-pass" placeholder="Mínimo 6 letras"></div>
         <button class="btn-save" onclick="doRegister()">Crear Cuenta</button>
         <p style="margin-top:20px; font-size:13px; color:var(--muted);">¿Ya tienes cuenta? <strong style="color:var(--green); cursor:pointer;" onclick="toggleAuthForm('login')">Inicia sesión</strong></p>
       </div>
