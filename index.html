@@ -275,18 +275,19 @@
     <div class="app-body" id="cuenta-contenido" style="padding:0;"></div>
   </div>
 
-  <div id="panel-editar-perfil" class="panel">
+<div id="panel-editar-perfil" class="panel">
     <div class="app-header"><div class="back-btn" onclick="navegar('cuenta')">‹</div><div class="app-header-title">Editar mis datos</div><div style="width:20px"></div></div>
     <div class="app-body">
       <div class="field" style="text-align: center; margin-bottom: 20px;">
         <label>Foto de Perfil</label>
         <input type="file" id="edit-user-foto" accept="image/*" style="padding: 5px; font-size: 12px;">
       </div>
-      <div class="field"><label>Nombre Completo</label><input type="text" id="edit-user-nombre"></div>
+      <div class="field"><label>Nombre Completo *</label><input type="text" id="edit-user-nombre"></div>
+      <div class="field"><label>Edad *</label><input type="number" id="edit-user-edad" placeholder="Ej: 25"></div>
+      <div class="field"><label>Teléfono Celular *</label><input type="number" id="edit-user-tel" placeholder="10 dígitos"></div>
+      <div class="field"><label>WhatsApp *</label><input type="number" id="edit-user-wa" placeholder="10 dígitos"></div>
       <div class="field"><label>Dirección (Opcional)</label><input type="text" id="edit-user-dir" placeholder="Calle, Número, Colonia"></div>
-      <div class="field"><label>Edad (Opcional)</label><input type="number" id="edit-user-edad" placeholder="Ej: 25"></div>
-      <div class="field"><label>Teléfono Celular (Opcional)</label><input type="number" id="edit-user-tel" placeholder="10 dígitos"></div>
-      <div class="field"><label>WhatsApp (Opcional)</label><input type="number" id="edit-user-wa" placeholder="10 dígitos"></div>
+      
       <button class="btn-save" id="btn-save-perfil" onclick="guardarPerfilUsuario()" style="margin-top:20px;">Guardar Cambios</button>
     </div>
   </div>
@@ -523,17 +524,41 @@ async function doLogin(){
 
 async function doRegister(){
   const name = document.getElementById('reg-name').value.trim();
+  const edad = document.getElementById('reg-edad').value.trim();
+  const tel = document.getElementById('reg-tel').value.trim();
+  const wa = document.getElementById('reg-wa').value.trim();
   const email = document.getElementById('reg-email').value.trim();
   const password = document.getElementById('reg-pass').value;
-  if(!name || !email || !password) return toast('Completa todos los campos', 'err');
+  
+  if(!name || !edad || !tel || !wa || !email || !password) {
+    return toast('Por favor completa todos los campos obligatorios', 'err');
+  }
+
   toast('Creando cuenta...', 'ok');
-  const { error } = await db.auth.signUp({ email, password, options:{ data:{ nombre: name, rol: 'cliente' } } });
+  const { error } = await db.auth.signUp({ 
+    email, 
+    password, 
+    options:{ 
+      data:{ 
+        nombre: name, 
+        edad: edad,
+        telefono: tel,
+        whatsapp: wa,
+        rol: 'cliente' 
+      } 
+    } 
+  });
+  
   if(error) return toast(error.message, 'err');
   
   document.getElementById('reg-name').value = '';
+  document.getElementById('reg-edad').value = '';
+  document.getElementById('reg-tel').value = '';
+  document.getElementById('reg-wa').value = '';
   document.getElementById('reg-email').value = '';
   document.getElementById('reg-pass').value = '';
-  toast('Cuenta creada! Iniciando...', 'ok');
+  
+  toast('¡Cuenta creada! Iniciando...', 'ok');
   setTimeout(() => iniciarApp(), 1000);
 }
 
@@ -594,7 +619,10 @@ async function guardarPerfilUsuario() {
   const whatsapp = document.getElementById('edit-user-wa').value.trim();
   const fotoFile = document.getElementById('edit-user-foto').files[0];
 
-  if(!nombre) return toast('El nombre es obligatorio', 'err');
+  // NUEVO BLOQUEO: Verificar que no estén vacíos
+  if(!nombre || !edad || !telefono || !whatsapp) {
+    return toast('Nombre, Edad, Teléfono y WhatsApp son obligatorios', 'err');
+  }
   
   btn.disabled = true;
   btn.textContent = 'Guardando...';
@@ -603,7 +631,6 @@ async function guardarPerfilUsuario() {
   let avatarUrl = currentProfile?.avatar_url || null;
 
   try {
-    // 1. Lógica de Foto
     if (fotoFile) {
       toast('Subiendo foto...', 'ok');
       const fileExt = fotoFile.name.split('.').pop();
@@ -619,9 +646,8 @@ async function guardarPerfilUsuario() {
       }
     }
 
-    // 2. Usar UPSERT por si el perfil no existía en la base de datos
     const { error } = await db.from('profiles').upsert({ 
-      id: currentUser.id, // Le pasamos tu ID para que sepa quién eres
+      id: currentUser.id,
       nombre: nombre, 
       direccion: direccion, 
       edad: edad, 
@@ -633,7 +659,6 @@ async function guardarPerfilUsuario() {
     if(error) {
       toast('Error en BD: ' + error.message, 'err');
     } else {
-      // Si currentProfile estaba nulo, lo preparamos
       if (!currentProfile) currentProfile = {};
       
       currentProfile.nombre = nombre;
@@ -648,15 +673,13 @@ async function guardarPerfilUsuario() {
       navegar('cuenta');
     }
   } catch (err) {
-    console.error("Error inesperado:", err);
+    console.error("Error:", err);
     toast('Ocurrió un error inesperado', 'err');
   }
   
-  // Esto asegura que el botón siempre vuelva a la normalidad
   btn.disabled = false;
   btn.textContent = 'Guardar Cambios';
 }
-
 // ==========================================
 // VISTA PÚBLICA, PROMOS Y FAVORITOS
 // ==========================================
