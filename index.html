@@ -22,7 +22,7 @@
   *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
   html,body{color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;height:100%; overflow:hidden;}
   
-  /* FONDO CON VIDA (Tomado del prototipo original) */
+  /* FONDO CON VIDA */
   body {
     background-color: var(--bg);
     background-image:
@@ -30,51 +30,32 @@
       radial-gradient(circle at 90% 100%, rgba(234,88,12,.08), transparent 40%);
   }
 
-  /* CONTENEDOR PRINCIPAL */
-  .app-layout { 
-    width: 100%; height: 100vh; display: flex; flex-direction: column; 
-    position: relative; background: transparent;
-  }
+  .app-layout { width: 100%; height: 100vh; display: flex; flex-direction: column; position: relative; background: transparent;}
 
   /* VISTA ESCRITORIO (PC/LAPTOP) */
   @media (min-width: 769px) {
     .app-layout { flex-direction: row; }
     
-    /* Sidebar Fijo a la izquierda con color de marca */
     #sidebar-desktop {
         display: flex !important; width: 280px; background: #fff;
         border-right: 1px solid var(--line); flex-direction: column; 
         z-index: 100; box-shadow: 2px 0 15px rgba(0,0,0,0.03);
     }
-
-    /* Cabecera verde dentro del sidebar */
     .sidebar-header {
         background: linear-gradient(135deg, var(--green), var(--green-deep)); 
-        padding: 24px 20px; color: #fff;
-        border-bottom: 4px solid var(--orange);
+        padding: 24px 20px; color: #fff; border-bottom: 4px solid var(--orange);
     }
+    .sidebar-menu { padding: 20px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
 
-    .sidebar-menu { padding: 20px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
-
-    /* Contenido a la derecha */
     .main-content { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
-    
-    .panel { 
-        max-width: 1100px; margin: 0 auto; width: 100%; 
-        padding: 40px 30px !important; background: transparent !important;
-    }
-
-    /* Cuadrículas para los negocios y productos */
+    .panel { max-width: 1100px; margin: 0 auto; width: 100%; padding: 40px 30px !important; background: transparent !important; }
     #lista-negocios, #lista-promos, #pub-productos, #biz-productos-lista {
-        display: grid !important;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 20px;
+        display: grid !important; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;
     }
-
-    .app-header { display: none !important; } /* Ocultar cabecera móvil en PC */
+    .app-header { display: none !important; } 
   }
 
-  /* VISTA MÓVIL (Por defecto) */
+  /* VISTA MÓVIL */
   #sidebar-desktop { display: none; }
   .main-content { flex: 1; overflow-y: auto; height: 100%; display: flex; flex-direction: column;}
   .panel { display: none; padding: 0 0 40px; background: transparent; flex: 1; }
@@ -83,12 +64,10 @@
   /* HEADER MÓVIL */
   .app-header { 
     background: linear-gradient(135deg, var(--green), var(--green-deep)); color: #fff; padding: 16px; 
-    display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 50; 
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 50; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   }
-  .app-header.orange { background: linear-gradient(135deg, var(--orange), var(--orange-deep)); }
 
-  /* TARJETAS MODERNAS */
+  /* TARJETAS DE NEGOCIO/PRODUCTO */
   .product-card, .promo-card {
     background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
     padding: 16px; display: flex; align-items: center; gap: 15px; cursor: pointer;
@@ -97,15 +76,21 @@
   @media (min-width: 769px) { .product-card { margin-bottom: 0; height: 100%; } }
   .product-card:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,0,0,0.08); border-color: var(--green-soft); }
 
-  .product-img { 
-    width: 70px; height: 70px; border-radius: 12px; background: #eee; 
-    flex-shrink: 0; object-fit: cover; display:grid; place-items:center; font-weight:800; font-size:24px; color:var(--muted);
+  .product-img { width: 70px; height: 70px; border-radius: 12px; background: #eee; flex-shrink: 0; object-fit: cover; display:grid; place-items:center; font-weight:800; font-size:24px; color:var(--muted); }
+
+  /* TARJETAS DEL PANEL DE NEGOCIO (DASHBOARD) */
+  .stat-card {
+    background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 16px;
+    display: flex; align-items: center; gap: 14px; cursor: pointer; transition: all 0.2s ease; box-shadow: var(--sh);
   }
+  .stat-card:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(0,0,0,0.08); border-color: var(--green-soft); }
+  .stat-card .ico-box { width: 48px; height: 48px; border-radius: 14px; background: var(--green-soft); color: var(--green); display: grid; place-items: center; font-size: 22px; flex-shrink: 0; }
+  .stat-card .t { font-size: 15px; font-weight: 800; color: var(--ink); line-height:1.2; }
+  .stat-card .s { font-size: 12px; color: var(--muted); margin-top: 3px; }
 
   /* FOOTER */
   .app-footer {
-    margin-top: auto; padding: 20px; background: rgba(255,255,255,0.7);
-    backdrop-filter: blur(10px); border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin-top: auto; padding: 20px; background: rgba(255,255,255,0.7); backdrop-filter: blur(10px); border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: center; gap: 10px;
     font-size: 12px; font-weight: 600; color: var(--muted); width: 100%; flex-shrink: 0;
   }
 
@@ -143,10 +128,16 @@
         </div>
     </div>
     <div class="sidebar-menu">
-        <button class="btn-save btn-outline" style="justify-content:flex-start;" onclick="navegar('inicio')">🏠 Inicio</button>
-        <button class="btn-save btn-outline" style="justify-content:flex-start;" onclick="navegar('promos')">🔥 Promociones</button>
-        <button class="btn-save btn-outline" style="justify-content:flex-start;" onclick="navegar('cuenta')">👤 Mi Cuenta</button>
-        <div id="btn-negocio-pc">
+        <button class="btn-save btn-outline" style="justify-content:flex-start;" onclick="navegar('inicio')">
+            <span style="font-size:20px; width:24px;">🏠</span> <span style="font-weight:700;">Inicio</span>
+        </button>
+        <button class="btn-save btn-outline" style="justify-content:flex-start; border-color:var(--orange-soft); background:var(--orange-soft); color:var(--orange-deep);" onclick="navegar('promos')">
+            <span style="font-size:20px; width:24px;">🔥</span> <span style="font-weight:800;">Promociones</span>
+        </button>
+        <button class="btn-save btn-outline" style="justify-content:flex-start;" onclick="navegar('cuenta')">
+            <span style="font-size:20px; width:24px;">👤</span> <span style="font-weight:700;">Mi Cuenta</span>
+        </button>
+        <div id="btn-negocio-pc" style="margin-top:10px;">
            </div>
     </div>
     <div style="margin-top:auto; padding:20px; border-top:1px solid var(--line); display:flex; align-items:center; gap:10px;" id="pc-user-info">
@@ -170,10 +161,15 @@
       
       <section id="panel-inicio" class="panel active">
           <div style="background:transparent;">
-              <h2 style="font-family:'Bricolage Grotesque'; margin-bottom:15px; font-size:26px; font-weight:800; color:var(--ink);">Explora el comercio local</h2>
+              <h2 style="font-family:'Bricolage Grotesque'; margin-bottom:15px; font-size:32px; font-weight:800; color:var(--green-deep); letter-spacing:-0.02em;">
+                  Explora el <em style="color:var(--orange); font-style:italic;">comercio local</em>
+              </h2>
+              
               <div class="search-box" style="background:#fff; border: 1px solid var(--line); padding:16px; border-radius:14px; margin-bottom:24px; box-shadow: var(--sh); display:flex; align-items:center; gap:10px;">
                   <span style="font-size:20px;">🔍</span>
-                  <input type="text" id="buscar" autocomplete="off" placeholder="¿Qué estás buscando hoy?" oninput="aplicarFiltros()" style="background:transparent; border:none; width:100%; outline:none; font-size:16px;">
+                  <form autocomplete="off" onsubmit="event.preventDefault();" style="width:100%;">
+                      <input type="search" name="search-query" id="buscar" autocomplete="new-password" placeholder="¿Qué estás buscando hoy?" oninput="aplicarFiltros()" style="background:transparent; border:none; width:100%; outline:none; font-size:16px;">
+                  </form>
               </div>
               <div id="lista-negocios">Cargando negocios...</div>
           </div>
@@ -181,7 +177,7 @@
 
       <section id="panel-promos" class="panel">
           <div style="background:transparent;">
-              <h2 style="font-family:'Bricolage Grotesque'; margin-bottom:15px; font-size:26px; font-weight:800; color:var(--orange-deep);">🔥 Ofertas Imperdibles</h2>
+              <h2 style="font-family:'Bricolage Grotesque'; margin-bottom:15px; font-size:32px; font-weight:800; color:var(--orange-deep); letter-spacing:-0.02em;">🔥 Ofertas Imperdibles</h2>
               <div id="lista-promos"></div>
           </div>
       </section>
@@ -220,22 +216,48 @@
       </section>
 
       <section id="panel-biz-dash" class="panel">
-          <div style="max-width:800px; margin: 0 auto; width:100%;">
-              <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
-                <div style="font-size:24px; cursor:pointer;" onclick="navegar('cuenta')">‹</div>
-                <h2 style="font-family:'Bricolage Grotesque'; font-size:26px; font-weight:800;" id="dash-nombre-titulo">Mi Panel</h2>
+          <div style="max-width:900px; margin: 0 auto; width:100%;">
+              <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:24px;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div style="font-size:26px; cursor:pointer; color:var(--muted);" onclick="navegar('cuenta')">‹</div>
+                    <div>
+                        <h2 style="font-family:'Bricolage Grotesque'; font-size:28px; font-weight:800; color:var(--ink);" id="dash-nombre-titulo">Mi Negocio</h2>
+                        <span style="display:inline-block; font-size:11px; font-weight:700; color:var(--green); background:var(--green-soft); padding:4px 10px; border-radius:50px; margin-top:4px;">● Abierto · Gestiona tu local</span>
+                    </div>
+                </div>
               </div>
               
-              <div style="background:#fff; border-radius:var(--radius); box-shadow:var(--sh); padding:24px; display:grid; gap:16px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
-                  <div style="background:var(--green-soft); border:1px solid var(--green); padding:20px; border-radius:12px; text-align:center; cursor:pointer;" onclick="toast('Productos en desarrollo', 'ok')">
-                      <div style="font-size:30px; margin-bottom:10px;">📦</div>
-                      <h3 style="color:var(--green-deep); font-weight:800;">Mis Productos</h3>
+              <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:16px;">
+                  
+                  <div class="stat-card" onclick="toast('Productos en desarrollo', 'ok')">
+                      <div class="ico-box">📦</div>
+                      <div style="flex:1"><div class="t">Mis Productos</div><div class="s">Publica y gestiona tu menú</div></div>
+                      <div style="color:var(--muted); font-size:20px;">›</div>
                   </div>
-                  <div style="background:var(--orange-soft); border:1px solid var(--orange); padding:20px; border-radius:12px; text-align:center; cursor:pointer;" onclick="toast('Estadísticas en desarrollo', 'ok')">
-                      <div style="font-size:30px; margin-bottom:10px;">📊</div>
-                      <h3 style="color:var(--orange-deep); font-weight:800;">Estadísticas</h3>
+
+                  <div class="stat-card" onclick="toast('Editar negocio en desarrollo', 'ok')">
+                      <div class="ico-box" style="background:#f3f4f6; color:var(--ink);">✏️</div>
+                      <div style="flex:1"><div class="t">Editar Negocio</div><div class="s">Cambia nombre, foto y contacto</div></div>
+                      <div style="color:var(--muted); font-size:20px;">›</div>
+                  </div>
+
+                  <div class="stat-card" onclick="toast('Horarios en desarrollo', 'ok')">
+                      <div class="ico-box" style="background:#eef2ff; color:#4f46e5;">📍</div>
+                      <div style="flex:1"><div class="t">Mi Horario</div><div class="s">Configura apertura y cierre</div></div>
+                      <div style="color:var(--muted); font-size:20px;">›</div>
+                  </div>
+
+                  <div class="stat-card" onclick="toast('Estadísticas en desarrollo', 'ok')" style="border-color:var(--orange-soft);">
+                      <div class="ico-box" style="background:var(--orange-soft); color:var(--orange);">📊</div>
+                      <div style="flex:1"><div class="t">Estadísticas</div><div class="s">Visitas y clics en WhatsApp</div></div>
+                      <div style="color:var(--muted); font-size:20px;">›</div>
                   </div>
               </div>
+
+              <div style="margin-top:24px; display:flex; justify-content:center;">
+                  <button class="btn-save btn-orange" style="max-width: 400px; padding:16px;" onclick="toast('Vista pública en desarrollo', 'ok')">👁️ Ver cómo te ven tus clientes</button>
+              </div>
+
           </div>
       </section>
 
@@ -262,7 +284,6 @@
 </div>
 
 <script>
-// LLAVES DE SUPABASE CORRECTAS
 const SUPABASE_URL = 'https://djddsqbmaxgpryabvktt.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqZGRzcWJtYXhncHJ5YWJ2a3R0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2MzUxMTEsImV4cCI6MjA5MjIxMTExMX0.3JO1RU1_NY4cTCO23_QanF0kFBE8VWPqzsU6yTvLx1c';
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -286,18 +307,14 @@ function navegar(panelId) {
   document.querySelector('.main-content').scrollTo(0,0);
 }
 
-// ==========================================
 // CERRAR SESIÓN
-// ==========================================
 async function doLogout(){
   toast('Cerrando sesión...', 'ok');
   await db.auth.signOut();
   location.reload(); 
 }
 
-// ==========================================
-// AUTH Y LOGIN
-// ==========================================
+// LOGIN
 async function doLogin(){
   const email = document.getElementById('login-email').value;
   const password = document.getElementById('login-pass').value;
@@ -312,9 +329,7 @@ async function doLogin(){
   iniciarApp();
 }
 
-// ==========================================
 // NEGOCIOS Y FILTROS
-// ==========================================
 async function cargarNegocios(){
   const { data, error } = await db.from('negocios').select('*').eq('activo', true);
   negociosCache = data || [];
@@ -342,9 +357,7 @@ function aplicarFiltros(){
     renderizarNegocios(filtrados);
 }
 
-// ==========================================
-// LÓGICA DE NEGOCIO (EL ERROR ARREGLADO)
-// ==========================================
+// LÓGICA DE NEGOCIO
 async function abrirDashboardNegocio() {
     toast('Cargando tu panel...', 'ok');
     const { data, error } = await db.from('negocios').select('*').eq('user_id', currentUser.id).maybeSingle();
@@ -359,9 +372,7 @@ async function abrirDashboardNegocio() {
     }
 }
 
-// ==========================================
 // PERFIL Y DATOS
-// ==========================================
 async function guardarPerfilUsuario() {
   const btn = document.getElementById('btn-save-perfil');
   const nombre = document.getElementById('edit-user-nombre').value.trim();
@@ -402,7 +413,6 @@ function renderizarPantallaCuenta() {
   const foto = currentProfile?.avatar_url || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
   const esNegocio = currentProfile?.rol === 'negocio';
   
-  // LOGICA CORREGIDA PARA MOSTRAR "PANEL DE NEGOCIO" O "REGISTRAR NEGOCIO"
   const botonNegocioHTML = esNegocio 
     ? `<button class="product-card" style="width:100%; justify-content:flex-start; border-color:var(--green); background:var(--green-soft);" onclick="abrirDashboardNegocio()">
          <span style="font-size:20px;">🏪</span> <span style="font-weight:800; color:var(--green-deep);">Mi Panel de Negocio</span>
@@ -411,7 +421,6 @@ function renderizarPantallaCuenta() {
          <span style="font-size:20px;">🏪</span> <span style="font-weight:700;">Registrar mi negocio</span>
        </button>`;
 
-  // APLICANDO EL DISEÑO HERMOSO DE LA TARJETA VERDE DEL PROTOTIPO
   cont.innerHTML = `
     <div style="background:linear-gradient(135deg, var(--green), var(--green-deep)); color:#fff; border-radius:24px; padding:40px 20px; display:flex; flex-direction:column; align-items:center; text-align:center; box-shadow: 0 15px 30px -10px rgba(15,122,63,0.5); margin-bottom:30px;">
         <img src="${foto}" style="width:110px; height:110px; border-radius:50%; border:4px solid #fff; object-fit:cover; margin-bottom:15px; box-shadow: var(--sh);">
@@ -436,9 +445,7 @@ function renderizarPantallaCuenta() {
   `;
 }
 
-// ==========================================
 // REGISTRO RÁPIDO DE NEGOCIO
-// ==========================================
 async function guardarNegocioRapido() {
   const nombre = document.getElementById('onb-nombre').value.trim();
   const cat = document.getElementById('onb-categoria').value;
@@ -457,13 +464,11 @@ async function guardarNegocioRapido() {
   } else {
     await db.from('profiles').update({ rol: 'negocio' }).eq('id', currentUser.id);
     toast('¡Negocio registrado!', 'ok');
-    iniciarApp(); // Refresca todo para que detecte que ya es negocio
+    iniciarApp(); 
   }
 }
 
-// ==========================================
 // ARRANQUE
-// ==========================================
 async function iniciarApp() {
   const { data: { session } } = await db.auth.getSession();
   currentUser = session?.user || null;
@@ -475,11 +480,9 @@ async function iniciarApp() {
     const { data: prof } = await db.from('profiles').select('*').eq('id', currentUser.id).single();
     currentProfile = prof;
     
-    // Actualizar avatares e info en la vista
     const foto = prof?.avatar_url || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
     document.getElementById('nav-avatar').src = foto;
     
-    // PC SIDEBAR INFO
     document.getElementById('pc-user-info').innerHTML = `
         <img src="${foto}" class="profile-pic">
         <div style="font-size:13px; font-weight:700; display:flex; flex-direction:column;">
@@ -488,10 +491,9 @@ async function iniciarApp() {
         </div>
     `;
 
-    // PC SIDEBAR BOTON NEGOCIO
     const btnNegocioSide = prof?.rol === 'negocio'
-        ? `<button class="btn-save btn-outline" style="justify-content:flex-start; color:var(--green); border-color:var(--green);" onclick="abrirDashboardNegocio()">🏪 Mi Panel de Negocio</button>`
-        : `<button class="btn-save btn-outline" style="justify-content:flex-start;" onclick="navegar('onb-1')">🏪 Registrar negocio</button>`;
+        ? `<button class="btn-save btn-outline" style="justify-content:flex-start; color:var(--green); border-color:var(--green);" onclick="abrirDashboardNegocio()"><span style="font-size:20px; width:24px;">🏪</span> <span style="font-weight:800;">Mi Panel</span></button>`
+        : `<button class="btn-save btn-outline" style="justify-content:flex-start;" onclick="navegar('onb-1')"><span style="font-size:20px; width:24px;">🏪</span> <span style="font-weight:700;">Registrar Negocio</span></button>`;
     document.getElementById('btn-negocio-pc').innerHTML = btnNegocioSide;
 
     renderizarPantallaCuenta();
