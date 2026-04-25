@@ -41,9 +41,18 @@
     }
   }
 
-  .panel { display: none; flex: 1; flex-direction: column; overflow-y: auto; background: #fff; position: relative; }
+  /* Ajuste para que los paneles no tapen el footer */
+  .panel { display: none; flex: 1; flex-direction: column; overflow-y: auto; background: #fff; position: relative; padding-bottom: 60px; }
   .panel.active { display: flex; }
   .panel::-webkit-scrollbar { width: 0; }
+
+  /* FOOTER FIJO */
+  .app-footer {
+    position: absolute; bottom: 0; width: 100%; height: 50px;
+    background: #fff; border-top: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    z-index: 100; font-size: 11px; font-weight: 700; color: var(--muted);
+  }
 
   /* HEADER & BUSCADOR */
   .app-header { background: var(--green); color: #fff; padding: 14px 16px 16px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; position: sticky; top: 0; z-index: 10; }
@@ -53,99 +62,25 @@
   .app-header-title { font-weight: 700; font-size: 17px; flex: 1; text-align: center; }
   .back-btn { cursor: pointer; font-size: 20px; line-height: 1; opacity: .9; padding: 0 10px 0 0; }
   .app-body { flex: 1; padding: 14px; background: #fff; }
-  .app-body.warm { background: var(--bg-warm); }
-  
-  .search-box { background: #f3f4f6; border-radius: 12px; padding: 10px 14px; display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); margin-bottom: 12px; }
-  .search-box input { background: transparent; border: none; outline: none; width: 100%; font-family: inherit; font-size: 13px; color: var(--ink);}
-  .chips { display: flex; gap: 6px; margin-bottom: 14px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
-  .chip { padding: 7px 14px; border-radius: 999px; background: #f3f4f6; color: var(--ink); font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; transition:all .2s;}
-  .chip.active { background: var(--green); color: #fff; }
-
-  /* MENÚ LATERAL */
-  .menu-overlay { position: absolute; inset: 0; z-index: 9999; display: flex; visibility: hidden; }
-  .menu-overlay.active { visibility: visible; }
-  .menu-bg { position: absolute; inset: 0; background: rgba(0,0,0,0.5); opacity: 0; transition: opacity 0.3s; }
-  .menu-overlay.active .menu-bg { opacity: 1; }
-  .menu-content { position: relative; width: 280px; height: 100%; background: #fff; box-shadow: 2px 0 15px rgba(0,0,0,0.2); transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); display:flex; flex-direction:column; }
-  .menu-overlay.active .menu-content { transform: translateX(0); }
-  
-  .menu-list { padding: 8px 0; }
-  .menu-item { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 1px solid var(--line); cursor: pointer; background: #fff; transition: background .2s;}
-  .menu-item:active { background: #f9fafb; }
-  .menu-item .ico { font-size: 20px; width: 28px; text-align: center; }
-  .menu-item .txt { flex: 1; font-size: 15px; font-weight: 600; color: var(--ink); }
-  .menu-item .arr { color: var(--muted); font-size: 16px; }
-
-  /* PROMOS Y TARJETAS */
-  .promo-banner { background: linear-gradient(135deg, var(--orange) 0%, var(--orange-deep) 100%); color: #fff; padding: 12px 14px; border-radius: var(--radius); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; cursor: pointer; box-shadow: 0 4px 10px rgba(234,88,12,.3);}
-  .promo-banner .fire { font-size: 24px; }
-  .promo-banner .t { font-weight: 800; font-size: 15px; }
-  .promo-banner .s { font-size: 12px; font-weight:500; opacity: .9; }
-  
-  .promo-card { background: #fff; border: 2px solid var(--orange); border-radius: var(--radius); overflow: hidden; margin-bottom: 12px; box-shadow:0 4px 12px rgba(0,0,0,.05);}
-  .promo-card .cat { background: var(--orange); color: #fff; font-size: 11px; font-weight: 800; padding: 6px 12px; letter-spacing: .05em; text-transform: uppercase; }
-  .promo-card .body { padding: 12px; display: flex; gap: 12px; align-items: center; }
-  .promo-card .text { flex: 1; }
-  .promo-card .title { font-family: 'Bricolage Grotesque', serif; font-weight: 700; font-size: 16px; margin-bottom: 4px; line-height:1.1;}
-  .promo-card .prices { display: flex; align-items: baseline; gap: 6px; font-size: 13px; margin-bottom: 2px;}
-  .promo-card .new { color: var(--orange); font-weight: 900; font-size: 18px; }
-  .promo-card .tag { color: var(--orange-deep); font-size: 11px; font-weight: 700; }
-  .promo-card .img { width: 70px; height: 70px; border-radius: 10px; background: #ddd; background-size: cover; background-position: center; flex-shrink: 0; }
   
   .product-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; padding: 10px; cursor: pointer; position:relative;}
   .product-img { width: 74px; height: 74px; border-radius: 10px; background: #ddd; flex-shrink: 0; background-size: cover; background-position: center; display:grid; place-items:center; font-weight:800; font-size:24px; color:var(--muted); }
   .product-info { flex: 1; min-width: 0; }
   .product-name { font-weight: 700; font-size: 14px; line-height: 1.2; margin-bottom: 3px; }
   .product-biz { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 3px; margin-top:2px; }
-  .verify { color: var(--green); font-size: 10px; font-weight:bold; }
-  .product-price { font-weight: 800; color: var(--orange); font-size: 15px; white-space: nowrap; margin-left:auto;}
-
-  /* CORAZÓN (FAVORITOS) */
-  .heart-btn { font-size: 22px; color: #e5e7eb; cursor: pointer; padding: 5px; margin-left: auto; transition: transform .2s, color .2s; }
-  .heart-btn:active { transform: scale(1.2); }
-  .heart-btn.active { color: var(--danger); }
-
-  /* FORMS & BOTONES */
+  
   .field { margin-bottom: 12px; text-align:left;}
   .field label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 5px; display: block; }
   .field input, .field select, .field textarea { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font-family: inherit; font-size: 14px; background: #fff; outline:none;}
-  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--green); }
-  .field .peso-input { position: relative; }
-  .field .peso-input::before { content: '$'; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-weight: 700; }
-  .field .peso-input input { padding-left: 26px; }
+  
   .btn-save { width: 100%; background: var(--green); color: #fff; border: none; border-radius: 12px; padding: 14px; font-weight: 800; font-size: 15px; font-family: inherit; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 6px;}
   .btn-orange { background: var(--orange); }
-  .btn-outline { background: #fff; color: var(--ink); border: 1px solid var(--line); }
 
-  /* PERFIL PÚBLICO HERO */
-  .biz-header { height: 160px; background-size: cover; background-position: center; position: relative; flex-shrink: 0; background-color: var(--green-soft); }
-  .biz-header::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,.6)); }
-  .biz-header .name { position: absolute; bottom: 12px; left: 14px; right: 14px; color: #fff; font-family: 'Bricolage Grotesque', serif; font-size: 22px; font-weight: 700; z-index: 2; }
-  .biz-meta { padding: 14px; background: #fff; display: flex; flex-direction: column; gap: 8px; border-bottom:1px solid var(--line); margin-bottom:10px;}
-  .biz-meta .badge-open { display: inline-flex; align-items: center; gap: 4px; background: var(--green-soft); color: var(--green); font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 999px; align-self: flex-start; }
+  /* ESTILO PARA FOTO CIRCULAR */
+  .profile-pic { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #fff; background: #eee; }
 
-  /* HORARIOS EDITABLES */
-  .day-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--line); font-size: 13px; gap:8px;}
-  .day-row .d { font-weight: 700; width:75px;}
-  .day-row .tog { width: 40px; height: 22px; background: var(--green); border-radius: 999px; position: relative; cursor: pointer; flex-shrink:0;}
-  .day-row .tog::after { content: ''; position: absolute; top: 2px; right: 2px; width: 18px; height: 18px; background: #fff; border-radius: 50%; transition: 0.2s;}
-  .day-row.closed .tog { background: #e5e7eb; }
-  .day-row.closed .tog::after { right: auto; left: 2px; }
-  .h-inputs { display: flex; align-items: center; justify-content:center; gap: 6px; flex: 1; color:var(--muted); font-size:11px;}
-  .h-inputs input { width: auto; border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px; font-family: inherit; font-size: 12px; text-align: center; color:var(--ink); font-weight:600;}
-  .h-closed { display: none; color: var(--danger); font-weight: 800; font-size: 13px; flex: 1; text-align: center; letter-spacing:.05em; text-transform:uppercase;}
-  .day-row.closed .h-inputs { display: none; }
-  .day-row.closed .h-closed { display: block; }
-
-  /* UTILS */
   .toast { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 12px 20px; border-radius: 999px; z-index: 10000; font-size: 13px; font-weight: 600; box-shadow: var(--sh); transition: 0.3s; white-space: nowrap; }
   .toast.hidden { top: -60px; opacity: 0; }
-  .toast.err { background: var(--danger); }
-  .toast.ok { background: var(--green); }
-  .emoji-big { font-size: 56px; margin-bottom: 14px; text-align: center; }
-
-  .pedido-item { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; margin-bottom: 10px; display:flex; align-items:center; gap:12px; cursor:pointer;}
-  .pedido-item .wa-icon { width: 40px; height: 40px; background: #e8f5ec; color: #25d366; border-radius: 50%; display: grid; place-items: center; font-size: 20px; flex-shrink:0;}
 </style>
 </head>
 <body>
@@ -153,283 +88,69 @@
 <div class="app-layout">
   <div id="toast" class="toast hidden"></div>
 
-  <div id="side-menu" class="menu-overlay">
-    <div class="menu-bg" onclick="toggleMenu()"></div>
-    <div class="menu-content">
-      <div style="background:var(--green); color:#fff; padding:30px 20px 20px; display:flex; flex-direction:column; gap:10px;">
-        <span style="font-size:24px; cursor:pointer; align-self:flex-end; line-height:1;" onclick="toggleMenu()">✕</span>
-        <div class="logo" style="font-family:'Bricolage Grotesque'; font-size:22px; font-weight:800; display:flex; align-items:center; gap:8px;">
-          <svg width="28" height="28" viewBox="0 -22 100 122"><path d="M 32 2 Q 32 -18 50 -18 Q 68 -18 68 2" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/><rect x="0" y="0" width="100" height="100" rx="22" fill="#fff"/><path d="M70 0 L100 0 L100 30 L88 30 A18 18 0 0 0 70 12 Z" fill="#ea580c"/><text x="50" y="66" text-anchor="middle" font-family="Unbounded" font-size="38" font-weight="900" fill="#0f7a3f" letter-spacing="-1">MG</text></svg>
-          Mercado <em>Guerrero</em>
-        </div>
-      </div>
-      <div class="menu-list" style="flex:1; overflow-y:auto; padding-top:10px;" id="menu-dinamico">
-        </div>
-    </div>
+  <div class="app-footer">
+    <svg width="18" height="18" viewBox="0 -22 100 122">
+      <path d="M 32 2 Q 32 -18 50 -18 Q 68 -18 68 2" fill="none" stroke="#0f7a3f" stroke-width="7" stroke-linecap="round"/>
+      <rect x="0" y="0" width="100" height="100" rx="22" fill="#0f7a3f"/>
+      <path d="M70 0 L100 0 L100 30 L88 30 A18 18 0 0 0 70 12 Z" fill="#ea580c"/>
+    </svg>
+    <span>Mercado Guerrero · El corazón de tu comunidad</span>
   </div>
 
   <div id="panel-auth" class="panel active">
     <div class="app-body" style="display:flex; flex-direction:column; justify-content:center; padding:30px 24px; text-align:center;">
-      <div style="display:flex; justify-content:center; margin-bottom:20px;">
-        <svg width="60" height="60" viewBox="0 -22 100 122"><path d="M 32 2 Q 32 -18 50 -18 Q 68 -18 68 2" fill="none" stroke="#0f7a3f" stroke-width="7" stroke-linecap="round"/><rect x="0" y="0" width="100" height="100" rx="22" fill="#0f7a3f"/><path d="M70 0 L100 0 L100 30 L88 30 A18 18 0 0 0 70 12 Z" fill="#ea580c"/><text x="50" y="66" text-anchor="middle" font-family="Unbounded" font-size="38" font-weight="900" fill="#fff" letter-spacing="-1">MG</text></svg>
-      </div>
-      <h2 style="font-family:'Bricolage Grotesque', serif; font-size:26px; font-weight:800; line-height:1.1; margin-bottom:10px; color:var(--ink);">Bienvenido a Mercado Guerrero</h2>
-      <p style="color:var(--muted); font-size:14px; margin-bottom:30px;">Inicia sesión para explorar negocios locales, guardar favoritos y hacer pedidos.</p>
-      
-      <div id="auth-form-login">
-        <div class="field"><label>Correo Electrónico</label><input type="email" id="login-email" placeholder="correo@ejemplo.com"></div>
-        <div class="field"><label>Contraseña</label><input type="password" id="login-pass" placeholder="Tu contraseña"></div>
-        <button class="btn-save" onclick="doLogin()">Iniciar Sesión</button>
-        <p style="margin-top:20px; font-size:13px; color:var(--muted);">¿No tienes cuenta? <strong style="color:var(--green); cursor:pointer;" onclick="toggleAuthForm('register')">Regístrate aquí</strong></p>
-      </div>
-
-      <div id="auth-form-register" style="display:none;">
-        <div class="field"><label>Nombre Completo</label><input type="text" id="reg-name" placeholder="Tu nombre"></div>
-        <div class="field"><label>Correo Electrónico</label><input type="email" id="reg-email" placeholder="correo@ejemplo.com"></div>
-        <div class="field"><label>Contraseña</label><input type="password" id="reg-pass" placeholder="Mínimo 6 letras"></div>
-        <button class="btn-save" onclick="doRegister()">Crear Cuenta</button>
-        <p style="margin-top:20px; font-size:13px; color:var(--muted);">¿Ya tienes cuenta? <strong style="color:var(--green); cursor:pointer;" onclick="toggleAuthForm('login')">Inicia sesión</strong></p>
-      </div>
+       <h2 style="font-family:'Bricolage Grotesque';">Bienvenido</h2>
+       <div id="auth-form-login">
+          <div class="field"><label>Email</label><input type="email" id="login-email"></div>
+          <div class="field"><label>Pass</label><input type="password" id="login-pass"></div>
+          <button class="btn-save" onclick="doLogin()">Entrar</button>
+       </div>
     </div>
   </div>
 
   <div id="panel-inicio" class="panel">
     <div class="app-header">
-      <div class="icon-btn" style="font-size:22px; cursor:pointer; padding-right:10px;" onclick="toggleMenu()">☰</div>
-      <div class="logo">
-        <svg width="24" height="24" viewBox="0 -22 100 122">
-          <path d="M 32 2 Q 32 -18 50 -18 Q 68 -18 68 2" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/>
-          <rect x="0" y="0" width="100" height="100" rx="22" fill="#fff"/>
-          <path d="M70 0 L100 0 L100 30 L88 30 A18 18 0 0 0 70 12 Z" fill="#ea580c"/>
-          <text x="50" y="66" text-anchor="middle" font-family="Unbounded" font-size="38" font-weight="900" fill="#0f7a3f" letter-spacing="-1">MG</text>
-        </svg>
-        Mercado <em>Guerrero</em>
-      </div>
-      <div class="icon-btn" style="margin-left:auto; font-size:18px; cursor:pointer;" onclick="toast('Notificaciones en desarrollo','ok')">🔔</div>
+      <div class="logo">MG <em>Guerrero</em></div>
+      <div style="margin-left:auto" onclick="navegar('cuenta')">👤</div>
     </div>
-    
     <div class="app-body">
-      <div class="search-box"><span>🔍</span><input type="text" id="buscar" placeholder="Buscar productos, negocios..." oninput="aplicarFiltros()"></div>
-      
-      <div class="chips" id="category-chips">
-        <div class="chip active" onclick="filtrarPorCategoria('Todos', this)">Todos</div>
-        <div class="chip" onclick="filtrarPorCategoria('Comida', this)">Comida</div>
-        <div class="chip" onclick="filtrarPorCategoria('Ferretería', this)">Ferretería</div>
-        <div class="chip" onclick="filtrarPorCategoria('Servicios', this)">Servicios</div>
-      </div>
-
-      <div class="promo-banner" onclick="navegar('promos')">
-        <span class="fire">🔥</span>
-        <div><div class="t">Promos del Día</div><div class="s" id="inicio-promo-text">Verificando...</div></div>
-      </div>
-
-      <div style="font-family:'Bricolage Grotesque',serif; font-size:18px; font-weight:700; margin: 18px 0 10px;">Directorio Local</div>
-      <div id="lista-negocios"><p style="text-align:center; padding:20px; color:var(--muted); font-size:13px;">Cargando negocios...</p></div>
-    </div>
-  </div>
-
-  <div id="panel-promos" class="panel">
-    <div class="app-header orange"><div class="back-btn" onclick="navegar('inicio')">‹</div><div class="app-header-title">🔥 Promos del Día</div><div style="width:20px"></div></div>
-    <div class="app-body warm" id="lista-promos" style="padding:16px;"></div>
-  </div>
-
-  <div id="panel-perfil-pub" class="panel">
-    <div class="app-header"><div class="back-btn" onclick="navegar('inicio')">‹</div><div class="app-header-title" id="pub-header-title">Perfil</div><div class="icon-btn" style="font-size:18px;">♥</div></div>
-    <div class="biz-header" id="pub-hero" style="background-image:url('https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=600')"><div class="name" id="pub-nombre">Cargando...</div></div>
-    <div class="biz-meta">
-      <span class="badge-open">● Abierto ahora</span>
-      <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);"><div style="color:var(--star);font-size:14px">★★★★★</div><strong style="font-size:14px">4.8</strong><span style="font-size:11px;color:var(--muted);flex:1">127 reseñas</span></div>
-      <div style="font-size:12px;color:var(--muted)" id="pub-info">🕐 Cargando... · 📍 Cargando...</div>
-    </div>
-    <div class="app-body" style="padding-top:0">
-      <div style="margin-bottom:14px;"><button class="btn-save btn-orange" id="pub-wa-btn" style="box-shadow:0 6px 18px -4px rgba(234,88,12,.5); font-size:14px;">💬 Pedir por WhatsApp</button></div>
-      <div style="font-weight:700;font-size:13px;color:var(--ink);text-transform:uppercase;letter-spacing:.1em; margin-bottom:10px;">Nuestros Productos</div>
-      <div id="pub-productos"></div>
+      <h3>Explora Negocios</h3>
+      <div id="lista-negocios">Cargando...</div>
     </div>
   </div>
 
   <div id="panel-cuenta" class="panel">
-    <div class="app-header"><div class="icon-btn" style="font-size:22px; cursor:pointer; padding-right:10px;" onclick="toggleMenu()">☰</div><div class="app-header-title">Mi Cuenta</div><div style="width:20px"></div></div>
-    <div class="app-body" id="cuenta-contenido" style="padding:0;"></div>
+    <div class="app-header">
+      <div class="back-btn" onclick="navegar('inicio')">‹</div>
+      <div class="app-header-title">Mi Perfil</div>
+    </div>
+    <div class="app-body" id="cuenta-contenido" style="padding:0;">
+      </div>
   </div>
 
   <div id="panel-editar-perfil" class="panel">
-    <div class="app-header"><div class="back-btn" onclick="navegar('cuenta')">‹</div><div class="app-header-title">Editar mis datos</div><div style="width:20px"></div></div>
+    <div class="app-header"><div class="back-btn" onclick="navegar('cuenta')">‹</div><div class="app-header-title">Editar Datos</div></div>
     <div class="app-body">
+      <div class="field">
+        <label>Foto de Perfil</label>
+        <input type="file" id="edit-user-foto" accept="image/*">
+      </div>
       <div class="field"><label>Nombre Completo</label><input type="text" id="edit-user-nombre"></div>
-      <div class="field"><label>Dirección (Opcional)</label><input type="text" id="edit-user-dir" placeholder="Calle, Número, Colonia"></div>
-      <div class="field"><label>Edad (Opcional)</label><input type="number" id="edit-user-edad" placeholder="Ej: 25"></div>
-      <div class="field"><label>Teléfono Celular (Opcional)</label><input type="number" id="edit-user-tel" placeholder="10 dígitos"></div>
-      <div class="field"><label>WhatsApp (Opcional)</label><input type="number" id="edit-user-wa" placeholder="10 dígitos"></div>
-      <button class="btn-save" onclick="guardarPerfilUsuario()" style="margin-top:20px;">Guardar Cambios</button>
+      <div class="field"><label>Dirección</label><input type="text" id="edit-user-dir"></div>
+      <div class="field"><label>WhatsApp</label><input type="number" id="edit-user-wa"></div>
+      <button class="btn-save" id="btn-save-perfil" onclick="guardarPerfilUsuario()">Guardar Cambios</button>
     </div>
   </div>
 
-  <div id="panel-mis-pedidos" class="panel">
-    <div class="app-header"><div class="back-btn" onclick="navegar('cuenta')">‹</div><div class="app-header-title">Mis Pedidos</div><div style="width:20px"></div></div>
-    <div class="app-body warm" id="lista-mis-pedidos"></div>
-  </div>
-
-  <div id="panel-mis-favoritos" class="panel">
-    <div class="app-header"><div class="back-btn" onclick="navegar('cuenta')">‹</div><div class="app-header-title">Mis Favoritos ❤️</div><div style="width:20px"></div></div>
-    <div class="app-body" id="lista-mis-favoritos"></div>
-  </div>
-
-  <div id="panel-onb-0" class="panel">
-    <div class="app-header" style="background:transparent; color:var(--ink); padding:14px 16px;"><div class="back-btn" onclick="navegar('inicio')">‹</div></div>
-    <div class="app-body" style="display:flex;flex-direction:column;justify-content:center;text-align:center;padding:20px 22px;">
-      <div class="emoji-big">🏪</div>
-      <h2 style="font-family:'Bricolage Grotesque', serif; font-size:26px; font-weight:800; line-height:1.1; margin-bottom:12px; color:var(--ink);">Pon tu negocio en el mapa de Vicente Guerrero</h2>
-      <p style="color:var(--muted); font-size:14px; margin-bottom:26px; line-height:1.5;">Miles de vecinos buscando comida, ferretería y servicios cada semana.</p>
-      <button class="btn-save btn-orange" onclick="navegar('onb-1')">Registrar mi negocio</button>
-    </div>
-  </div>
-
-  <div id="panel-onb-1" class="panel">
-    <div class="app-header" style="background:#fff; color:var(--ink); padding:18px 16px 10px; border-bottom:1px solid var(--line);"><div class="back-btn" onclick="navegar('onb-0')">‹</div><div style="height:4px; background:#e5e7eb; border-radius:999px; flex:1; margin:0 12px; overflow:hidden;"><div style="height:100%; background:var(--green); width:33%; border-radius:999px;"></div></div><span style="font-size:11px;color:var(--muted)">1/3</span></div>
-    <div class="app-body">
-      <h2 style="font-family:'Bricolage Grotesque'; font-size:24px; font-weight:700; margin-bottom:8px;">Cuéntanos de tu negocio</h2><p style="color:var(--muted); font-size:13px; margin-bottom:20px;">Paso 1 de 3 · Info básica</p>
-      <div class="field"><label>Nombre del negocio</label><input type="text" id="onb-nombre" placeholder="Ej: Pollos El Güero"></div>
-      <div class="field"><label>Tipo de negocio</label><select id="onb-categoria"><option value="">Selecciona una categoría</option><option>Comida</option><option>Ferretería</option><option>Servicios</option><option>Abarrotes</option><option>Otros</option></select></div>
-      <button class="btn-save" style="margin-top:20px" onclick="onboardingPaso1()">Continuar</button>
-    </div>
-  </div>
-
-  <div id="panel-onb-2" class="panel">
-    <div class="app-header" style="background:#fff; color:var(--ink); padding:18px 16px 10px; border-bottom:1px solid var(--line);"><div class="back-btn" onclick="navegar('onb-1')">‹</div><div style="height:4px; background:#e5e7eb; border-radius:999px; flex:1; margin:0 12px; overflow:hidden;"><div style="height:100%; background:var(--green); width:66%; border-radius:999px;"></div></div><span style="font-size:11px;color:var(--muted)">2/3</span></div>
-    <div class="app-body">
-      <h2 style="font-family:'Bricolage Grotesque'; font-size:24px; font-weight:700; margin-bottom:8px;">WhatsApp y ubicación</h2><p style="color:var(--muted); font-size:13px; margin-bottom:20px;">Aquí llegarán los pedidos de tus clientes</p>
-      <div class="field"><label>WhatsApp del negocio</label><input type="number" id="onb-wa" placeholder="Ej: 6741234567"></div>
-      <div style="background:var(--green-soft);padding:10px 12px;border-radius:10px;font-size:11px;color:var(--green-deep);margin-bottom:12px;line-height:1.4">💡 Al tocar "Pedir", el cliente te escribirá directo a este número.</div>
-      <div class="field"><label>Dirección del negocio</label><input type="text" id="onb-dir" placeholder="Calle, número, colonia"></div>
-      <button class="btn-save" style="margin-top:20px" onclick="onboardingPaso2()">Continuar</button>
-    </div>
-  </div>
-
-  <div id="panel-onb-3" class="panel">
-    <div class="app-header" style="background:#fff; color:var(--ink); padding:18px 16px 10px; border-bottom:1px solid var(--line);"><div class="back-btn" onclick="navegar('onb-2')">‹</div><div style="height:4px; background:#e5e7eb; border-radius:999px; flex:1; margin:0 12px; overflow:hidden;"><div style="height:100%; background:var(--green); width:100%; border-radius:999px;"></div></div><span style="font-size:11px;color:var(--muted)">3/3</span></div>
-    <div class="app-body">
-      <h2 style="font-family:'Bricolage Grotesque'; font-size:24px; font-weight:700; margin-bottom:8px;">Elige tu plan</h2><p style="color:var(--muted); font-size:13px; margin-bottom:20px;">Puedes cambiar o cancelar cuando quieras</p>
-      <div id="planes-container"><p style="font-size:13px; color:var(--muted);">Cargando planes...</p></div>
-    </div>
-  </div>
-
-  <div id="panel-biz-dash" class="panel">
-    <div class="app-header" style="padding: 18px 16px;"><div class="icon-btn" style="font-size:22px; cursor:pointer; padding-right:10px;" onclick="toggleMenu()">☰</div><div class="app-header-title">Panel de Negocio</div></div>
-    <div style="background:var(--green); color:#fff; padding:0 16px 18px; display:flex; align-items:center; gap:12px; flex-shrink:0;">
-      <div id="dash-ava" style="width:46px;height:46px;border-radius:50%;background:#fff;border:2px solid #fff;display:grid;place-items:center;font-size:20px;color:var(--green);font-weight:bold;">N</div>
-      <div><h3 id="dash-nombre" style="font-family:'Bricolage Grotesque'; font-size:18px; font-weight:700; margin-bottom:2px;">Mi Negocio</h3><span style="display:inline-flex; align-items:center; gap:5px; background:rgba(255,255,255,.2); padding:4px 10px; border-radius:999px; font-size:11px; font-weight:600;">● Abierto · Gestiona abajo</span></div>
-    </div>
-    <div class="app-body" style="padding:0">
-      <div style="display:inline-flex; align-items:center; gap:4px; background:#fef3c7; color:#92400e; padding:5px 10px; border-radius:999px; font-size:11px; font-weight:700; margin:10px 14px 4px;">⭐ 4.8 · Responde rápido</div>
-      
-      <div style="background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:14px; margin:10px 14px; display:flex; align-items:center; gap:12px; cursor:pointer;" onclick="navegar('biz-productos'); cargarMisProductos()">
-        <div style="width:40px; height:40px; border-radius:10px; background:var(--green-soft); color:var(--green); display:grid; place-items:center; font-size:18px;">📦</div>
-        <div style="flex:1"><div style="font-size:14px; font-weight:700;">Mis Productos</div><div style="font-size:11px; color:var(--muted);" id="dash-prod-count">0 publicados</div></div>
-        <div style="color:var(--muted)">›</div>
-      </div>
-      
-      <div style="background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:14px; margin:10px 14px; display:flex; align-items:center; gap:12px; cursor:pointer;" onclick="toast('Estadísticas en desarrollo','ok')">
-        <div style="width:40px; height:40px; border-radius:10px; background:var(--orange-soft); color:var(--orange); display:grid; place-items:center; font-size:18px;">📊</div>
-        <div style="flex:1"><div style="font-size:14px; font-weight:700;">Estadísticas</div><div style="font-size:11px; color:var(--muted);">25 clics esta semana</div></div>
-        <div style="color:var(--muted)">›</div>
-      </div>
-
-      <div style="background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:14px; margin:10px 14px; display:flex; align-items:center; gap:12px; cursor:pointer;" onclick="navegar('biz-horario')">
-        <div style="width:40px; height:40px; border-radius:10px; background:#f3e8ff; color:#7c3aed; display:grid; place-items:center; font-size:18px;">📍</div>
-        <div style="flex:1"><div style="font-size:14px; font-weight:700;">Mis Horarios</div><div style="font-size:11px; color:var(--muted);">Configurar apertura y cierre</div></div>
-        <div style="color:var(--muted)">›</div>
-      </div>
-      
-      <button class="btn-save btn-orange" style="width:calc(100% - 28px); margin:14px; padding:14px;" onclick="verMiPropioPerfil()">👁️ Ver cómo te ven tus clientes</button>
-    </div>
-  </div>
-
-  <div id="panel-biz-productos" class="panel">
-    <div class="app-header"><div class="back-btn" onclick="navegar('biz-dash')">‹</div><div class="app-header-title">Mis Productos</div><div style="font-size:24px; cursor:pointer;" onclick="navegar('biz-add-producto')">+</div></div>
-    <div class="app-body" id="biz-productos-lista" style="padding-top:14px;"></div>
-  </div>
-
-  <div id="panel-biz-add-producto" class="panel">
-    <div class="app-header"><div class="back-btn" onclick="navegar('biz-productos')">‹</div><div class="app-header-title">Agregar Producto</div><div style="width:20px"></div></div>
-    <div class="app-body">
-      <div class="field"><label>Nombre del producto</label><input type="text" id="add-prod-nombre" placeholder="Ej: Medio Pollo"></div>
-      <div class="field"><label>Precio (MXN)</label><div class="peso-input"><input type="number" id="add-prod-precio" placeholder="Ej: 95"></div></div>
-      <div class="field"><label>Descripción corta</label><textarea id="add-prod-desc" rows="2" placeholder="Ej: Asado al carbón"></textarea></div>
-      <button class="btn-save" onclick="guardarNuevoProducto()">Guardar producto</button>
-    </div>
-  </div>
-
-  <div id="panel-biz-horario" class="panel">
-    <div class="app-header"><div class="back-btn" onclick="navegar('biz-dash')">‹</div><div class="app-header-title">Mis Horarios</div><div style="width:20px"></div></div>
-    <div class="app-body" style="padding:0">
-      <div style="background:var(--green-soft); padding:12px 16px; border-radius:10px; font-size:12px; margin:14px; line-height:1.4; color:var(--green-deep);">
-        💡 Configura tus horarios. Usa el botón verde para marcar el día como <strong>Cerrado</strong>.
-      </div>
-      <div style="padding:0 16px;">
-        <div class="day-row">
-          <span class="d">Lunes</span>
-          <div class="h-inputs"><input type="time" value="09:00"> a <input type="time" value="18:00"></div>
-          <div class="h-closed">Cerrado</div>
-          <div class="tog" onclick="toggleDiaEditable(this)"></div>
-        </div>
-        <div class="day-row">
-          <span class="d">Martes</span>
-          <div class="h-inputs"><input type="time" value="09:00"> a <input type="time" value="18:00"></div>
-          <div class="h-closed">Cerrado</div>
-          <div class="tog" onclick="toggleDiaEditable(this)"></div>
-        </div>
-        <div class="day-row">
-          <span class="d">Miércoles</span>
-          <div class="h-inputs"><input type="time" value="09:00"> a <input type="time" value="18:00"></div>
-          <div class="h-closed">Cerrado</div>
-          <div class="tog" onclick="toggleDiaEditable(this)"></div>
-        </div>
-        <div class="day-row">
-          <span class="d">Jueves</span>
-          <div class="h-inputs"><input type="time" value="09:00"> a <input type="time" value="18:00"></div>
-          <div class="h-closed">Cerrado</div>
-          <div class="tog" onclick="toggleDiaEditable(this)"></div>
-        </div>
-        <div class="day-row">
-          <span class="d">Viernes</span>
-          <div class="h-inputs"><input type="time" value="09:00"> a <input type="time" value="18:00"></div>
-          <div class="h-closed">Cerrado</div>
-          <div class="tog" onclick="toggleDiaEditable(this)"></div>
-        </div>
-        <div class="day-row">
-          <span class="d">Sábado</span>
-          <div class="h-inputs"><input type="time" value="10:00"> a <input type="time" value="15:00"></div>
-          <div class="h-closed">Cerrado</div>
-          <div class="tog" onclick="toggleDiaEditable(this)"></div>
-        </div>
-        <div class="day-row closed">
-          <span class="d">Domingo</span>
-          <div class="h-inputs"><input type="time" value="10:00"> a <input type="time" value="15:00"></div>
-          <div class="h-closed">Cerrado</div>
-          <div class="tog" onclick="toggleDiaEditable(this)"></div>
-        </div>
-      </div>
-      <div style="padding:20px 16px;"><button class="btn-save" onclick="guardarHorarios()">Guardar Horarios</button></div>
-    </div>
-  </div>
-
-</div> 
+</div>
 
 <script>
 const SUPABASE_URL = 'https://djddsqbmaxgpryabvktt.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqZGRzcWJtYXhncHJ5YWJ2a3R0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2MzUxMTEsImV4cCI6MjA5MjIxMTExMX0.3JO1RU1_NY4cTCO23_QanF0kFBE8VWPqzsU6yTvLx1c';
+const SUPABASE_KEY = 'TU_KEY_AQUI'; // Asegúrate de que esta sea tu clave real
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let currentUser = null;
 let currentProfile = null;
-let negocioActual = null; 
-let negocioTempID = null; 
-let negociosCache = [];
-let categoriaActual = 'Todos';
-
-let misFavoritos = JSON.parse(localStorage.getItem('mg_favoritos') || '[]');
-let misPedidos = JSON.parse(localStorage.getItem('mg_pedidos') || '[]');
 
 function toast(msg, type='ok'){
   const t = document.getElementById('toast');
@@ -442,105 +163,38 @@ function toast(msg, type='ok'){
 function navegar(panelId) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.getElementById('panel-' + panelId).classList.add('active');
-  document.getElementById('panel-' + panelId).scrollTop = 0;
-}
-
-function toggleMenu() {
-  const menu = document.getElementById('side-menu');
-  menu.classList.toggle('active');
-  
-  if (menu.classList.contains('active')) {
-    const list = document.getElementById('menu-dinamico');
-    const btnNegocio = currentProfile?.rol === 'negocio' 
-      ? `<div class="menu-item" onclick="toggleMenu(); accionMenuNegocio()"><span class="ico" style="color:var(--green)">🏪</span><span class="txt" style="color:var(--green); font-weight:800;">Mi Panel de Negocio</span><span class="arr">›</span></div>`
-      : `<div class="menu-item" onclick="toggleMenu(); navegar('onb-0')"><span class="ico" style="color:var(--orange)">📋</span><span class="txt" style="color:var(--orange)">Registrar mi negocio</span></div>`;
-
-    list.innerHTML = `
-      <div class="menu-item" onclick="toggleMenu(); navegar('inicio')"><span class="ico">🏠</span><span class="txt">Inicio</span></div>
-      ${btnNegocio}
-      <div class="menu-item" onclick="toggleMenu(); navegar('cuenta')"><span class="ico">👤</span><span class="txt">Mi Cuenta</span></div>
-    `;
-  }
-}
-
-function toggleAuthForm(type) {
-  document.getElementById('auth-form-login').style.display = type === 'login' ? 'block' : 'none';
-  document.getElementById('auth-form-register').style.display = type === 'register' ? 'block' : 'none';
-}
-
-function toggleDiaEditable(elemento) {
-  const row = elemento.parentElement;
-  row.classList.toggle('closed');
-}
-
-function guardarHorarios() {
-  toast('Horarios guardados correctamente', 'ok');
-  navegar('biz-dash');
 }
 
 // ==========================================
-// AUTH Y CUENTA (MEJORADO SIN RELOAD)
+// AUTH
 // ==========================================
 async function doLogin(){
-  const email = document.getElementById('login-email').value.trim();
+  const email = document.getElementById('login-email').value;
   const password = document.getElementById('login-pass').value;
-  if(!email || !password) return toast('Llena tus datos', 'err');
-  toast('Iniciando...', 'ok');
-  const { error } = await db.auth.signInWithPassword({ email, password });
+  const { data, error } = await db.auth.signInWithPassword({ email, password });
   if(error) return toast(error.message, 'err');
-  
-  // Limpiar campos y arrancar app sin recargar
-  document.getElementById('login-email').value = '';
-  document.getElementById('login-pass').value = '';
-  toast('¡Bienvenido!', 'ok');
-  iniciarApp(); 
+  iniciarApp();
 }
 
-async function doRegister(){
-  const name = document.getElementById('reg-name').value.trim();
-  const email = document.getElementById('reg-email').value.trim();
-  const password = document.getElementById('reg-pass').value;
-  if(!name || !email || !password) return toast('Completa todos los campos', 'err');
-  toast('Creando cuenta...', 'ok');
-  const { error } = await db.auth.signUp({ email, password, options:{ data:{ nombre: name, rol: 'cliente' } } });
-  if(error) return toast(error.message, 'err');
-  
-  // Limpiar campos y arrancar app sin recargar
-  document.getElementById('reg-name').value = '';
-  document.getElementById('reg-email').value = '';
-  document.getElementById('reg-pass').value = '';
-  toast('Cuenta creada! Iniciando...', 'ok');
-  setTimeout(() => iniciarApp(), 1000);
-}
-
-async function doLogout(){ 
-  await db.auth.signOut(); 
-  currentUser = null;
-  currentProfile = null;
-  negocioActual = null;
-  navegar('auth');
-}
-
+// ==========================================
+// LOGICA DE CUENTA
+// ==========================================
 function renderizarPantallaCuenta() {
   const cont = document.getElementById('cuenta-contenido');
-  const btnNegocio = currentProfile?.rol === 'negocio' 
-    ? `<div class="menu-item" onclick="accionMenuNegocio()"><span class="ico" style="color:var(--green)">🏪</span><span class="txt" style="color:var(--green); font-weight:800;">Mi Panel de Negocio</span><span class="arr">›</span></div>`
-    : `<div class="menu-item" onclick="navegar('onb-0')"><span class="ico" style="color:var(--orange)">🏪</span><span class="txt" style="color:var(--orange)">Registrar mi negocio</span><span class="arr">›</span></div>`;
+  // Usar foto guardada o un icono por defecto
+  const fotoSrc = currentProfile?.avatar_url || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
 
   cont.innerHTML = `
-    <div style="background:linear-gradient(135deg,var(--green),var(--green-deep)); color:#fff; padding:24px 20px; display:flex; align-items:center; gap:14px; flex-shrink:0;">
-      <div style="width:56px; height:56px; border-radius:50%; background:#fff; display:grid; place-items:center; font-size:24px;">👤</div>
+    <div style="background:linear-gradient(135deg,var(--green),var(--green-deep)); color:#fff; padding:30px 20px; display:flex; align-items:center; gap:14px;">
+      <img src="${fotoSrc}" class="profile-pic" id="mi-foto-perfil">
       <div>
-        <h3 style="font-family:'Bricolage Grotesque',serif; font-size:20px; margin-bottom:2px;">Hola, ${currentProfile?.nombre || 'Usuario'}</h3>
-        <small style="opacity:.85; font-size:13px;">${currentProfile?.rol === 'negocio' ? 'Cuenta de Negocio' : 'Cuenta de Cliente'}</small>
+        <h3 style="font-family:'Bricolage Grotesque'; font-size:20px;">Hola, ${currentProfile?.nombre || 'Usuario'}</h3>
+        <small style="opacity:.85;">Miembro de Mercado Guerrero</small>
       </div>
     </div>
-    <div class="menu-list" style="padding-top:10px;">
-      <div class="menu-item" onclick="abrirEditarPerfil()"><span class="ico">✏️</span><span class="txt">Editar mis datos</span><span class="arr">›</span></div>
-      <div class="menu-item" onclick="cargarPantallaPedidos()"><span class="ico">📦</span><span class="txt">Mis pedidos</span><span class="arr">›</span></div>
-      <div class="menu-item" onclick="cargarPantallaFavoritos()"><span class="ico" style="color:var(--danger)">♥</span><span class="txt">Mis Favoritos</span><span class="arr">›</span></div>
-      ${btnNegocio}
-      <div class="menu-item" onclick="doLogout()"><span class="ico" style="color:var(--danger)">🚪</span><span class="txt" style="color:var(--danger)">Cerrar sesión</span><span class="arr">›</span></div>
+    <div style="padding:20px;">
+      <button class="btn-save btn-outline" style="background:#f3f4f6; color:#111;" onclick="abrirEditarPerfil()">✏️ Editar mis datos</button>
+      <button class="btn-save" style="margin-top:10px; background:var(--danger);" onclick="db.auth.signOut(); location.reload();">Cerrar Sesión</button>
     </div>
   `;
 }
@@ -548,289 +202,84 @@ function renderizarPantallaCuenta() {
 function abrirEditarPerfil() {
   document.getElementById('edit-user-nombre').value = currentProfile?.nombre || '';
   document.getElementById('edit-user-dir').value = currentProfile?.direccion || '';
-  document.getElementById('edit-user-edad').value = currentProfile?.edad || '';
-  document.getElementById('edit-user-tel').value = currentProfile?.telefono || '';
   document.getElementById('edit-user-wa').value = currentProfile?.whatsapp || '';
   navegar('editar-perfil');
 }
 
 async function guardarPerfilUsuario() {
+  const btn = document.getElementById('btn-save-perfil');
   const nombre = document.getElementById('edit-user-nombre').value.trim();
   const direccion = document.getElementById('edit-user-dir').value.trim();
-  const edad = document.getElementById('edit-user-edad').value.trim();
-  const telefono = document.getElementById('edit-user-tel').value.trim();
   const whatsapp = document.getElementById('edit-user-wa').value.trim();
+  const fotoFile = document.getElementById('edit-user-foto').files[0];
 
   if(!nombre) return toast('El nombre es obligatorio', 'err');
-  toast('Guardando cambios...', 'ok');
   
-  const { error } = await db.from('profiles').update({ nombre, direccion, edad, telefono, whatsapp }).eq('id', currentUser.id);
-  if(error) return toast(error.message, 'err');
-  
-  currentProfile.nombre = nombre;
-  currentProfile.direccion = direccion;
-  currentProfile.edad = edad;
-  currentProfile.telefono = telefono;
-  currentProfile.whatsapp = whatsapp;
-  
-  toast('Datos actualizados', 'ok');
-  renderizarPantallaCuenta();
-  navegar('cuenta');
-}
+  btn.disabled = true;
+  btn.textContent = 'Guardando...';
+  toast('Actualizando perfil...', 'ok');
 
-// ==========================================
-// VISTA PÚBLICA, PROMOS Y FAVORITOS
-// ==========================================
-async function cargarNegociosPublicos(){
-  const { data, error } = await db.from('negocios').select('*').eq('activo', true);
-  if(!error) negociosCache = data || [];
-  aplicarFiltros(); 
-}
+  let avatarUrl = currentProfile?.avatar_url;
 
-function aplicarFiltros(){
-  const q = document.getElementById('buscar').value.toLowerCase();
-  let filtrados = negociosCache;
-  if(categoriaActual !== 'Todos') filtrados = filtrados.filter(n => (n.categoria || '').includes(categoriaActual));
-  if(q) filtrados = filtrados.filter(n => n.nombre.toLowerCase().includes(q) || (n.categoria||'').toLowerCase().includes(q));
-  
-  const cont = document.getElementById('lista-negocios');
-  if(!filtrados.length){ cont.innerHTML = '<p style="text-align:center; padding:30px; color:var(--muted); font-size:13px;">No se encontraron negocios.</p>'; return; }
-  cont.innerHTML = filtrados.map(n => generarTarjetaNegocioHTML(n)).join('');
-}
+  // 1. SI HAY FOTO NUEVA, SUBIRLA AL STORAGE
+  if (fotoFile) {
+    const fileExt = fotoFile.name.split('.').pop();
+    const fileName = `${currentUser.id}_${Math.random()}.${fileExt}`;
+    const filePath = `${fileName}`;
 
-function generarTarjetaNegocioHTML(n) {
-  const isFav = misFavoritos.includes(n.id) ? 'active' : '';
-  return `
-    <div class="product-card" onclick="abrirPerfilPublico('${n.id}')">
-      ${n.imagen_url ? `<div class="product-img" style="background-image:url('${n.imagen_url}')"></div>` : `<div class="product-img" style="background:#e8f5ec; color:var(--green);">${n.nombre.charAt(0)}</div>`}
-      <div class="product-info"><div class="product-name">${n.nombre}</div><div class="product-biz"><span class="verify">✓</span> ${n.categoria || 'Negocio'}</div><div class="product-biz" style="color:var(--green); font-weight:600;">● Abierto</div></div>
-      <div class="heart-btn ${isFav}" onclick="toggleFavorito(event, '${n.id}')">♥</div>
-    </div>
-  `;
-}
+    const { error: uploadError } = await db.storage
+      .from('avatars')
+      .upload(filePath, fotoFile);
 
-function toggleFavorito(e, id) {
-  e.stopPropagation(); 
-  const icono = e.currentTarget;
-  if(misFavoritos.includes(id)) { misFavoritos = misFavoritos.filter(f => f !== id); icono.classList.remove('active'); } 
-  else { misFavoritos.push(id); icono.classList.add('active'); toast('Guardado en favoritos ♥', 'ok'); }
-  localStorage.setItem('mg_favoritos', JSON.stringify(misFavoritos));
-}
+    if (uploadError) {
+      toast('Error subiendo foto', 'err');
+    } else {
+      const { data: publicUrlData } = db.storage.from('avatars').getPublicUrl(filePath);
+      avatarUrl = publicUrlData.publicUrl;
+    }
+  }
 
-function filtrarPorCategoria(cat, el) {
-  categoriaActual = cat;
-  document.querySelectorAll('#category-chips .chip').forEach(c => c.classList.remove('active'));
-  if(el) el.classList.add('active');
-  aplicarFiltros();
-}
+  // 2. ACTUALIZAR TABLA PROFILES
+  const { error } = await db.from('profiles').update({ 
+    nombre: nombre, 
+    direccion: direccion, 
+    whatsapp: whatsapp,
+    avatar_url: avatarUrl 
+  }).eq('id', currentUser.id);
 
-async function cargarPromos() {
-  const { data, error } = await db.from('ofertas').select('*, negocios(nombre)').eq('activa', true).limit(10);
-  const txtBanner = document.getElementById('inicio-promo-text');
-  const panelPromos = document.getElementById('lista-promos');
-  if (error || !data || data.length === 0) {
-    txtBanner.textContent = "Aún sin promociones";
-    panelPromos.innerHTML = `<div style="background:var(--orange-soft); border:2px dashed var(--orange); border-radius:14px; padding:40px 20px; text-align:center; margin-top:10px;"><div style="font-size:48px; margin-bottom:10px;">🔥</div><h3 style="color:var(--orange-deep); font-family:'Bricolage Grotesque', serif; font-size:20px; margin-bottom:8px; line-height:1.1;">Aún sin promociones</h3><p style="color:var(--orange); font-size:14px;">Vuelve más tarde para ver ofertas.</p></div>`;
+  if(error) {
+    toast(error.message, 'err');
   } else {
-    txtBanner.textContent = "¡Aprovecha ahora!";
-    panelPromos.innerHTML = data.map(p => `
-      <div class="promo-card"><div class="cat">Oferta 🔥</div><div class="body">
-        ${p.imagen_url ? `<div class="img" style="background-image:url('${p.imagen_url}')"></div>` : `<div class="img" style="background:#fff4ec; color:var(--orange); display:grid; place-items:center; font-size:24px;">📦</div>`}
-        <div class="text"><div class="title">${p.titulo}</div><div class="prices"><span class="new">$${p.precio}</span></div><div class="tag">${p.negocios?.nombre || 'Negocio Local'}</div></div>
-      </div></div>
-    `).join('');
+    // ACTUALIZAR VARIABLE LOCAL PARA QUE EL CAMBIO SE VEA DE INMEDIATO
+    currentProfile.nombre = nombre;
+    currentProfile.direccion = direccion;
+    currentProfile.whatsapp = whatsapp;
+    currentProfile.avatar_url = avatarUrl;
+
+    toast('¡Datos actualizados!', 'ok');
+    renderizarPantallaCuenta(); // Re-dibujar la pantalla de cuenta
+    navegar('cuenta'); // Regresar a la pantalla de cuenta
   }
-}
-
-async function abrirPerfilPublico(idNegocio) {
-  toast('Cargando perfil...', 'ok');
-  const neg = negociosCache.find(n => n.id === idNegocio);
-  if(!neg) return toast('No se encontró el negocio', 'err');
-
-  document.getElementById('pub-header-title').textContent = neg.nombre;
-  document.getElementById('pub-nombre').textContent = neg.nombre;
-  document.getElementById('pub-info').innerHTML = `📍 ${neg.direccion || 'Sin dirección'}`;
   
-  const waBtn = document.getElementById('pub-wa-btn');
-  if(neg.whatsapp) { 
-    waBtn.style.display = 'block'; 
-    waBtn.onclick = () => {
-      registrarPedido(neg); 
-      window.open(`https://wa.me/${neg.whatsapp}?text=Hola, vengo de Mercado Guerrero y quiero hacer un pedido.`);
-    };
-  } else { waBtn.style.display = 'none'; }
-
-  const { data: prods } = await db.from('ofertas').select('*').eq('negocio_id', neg.id).eq('activa', true);
-  const cont = document.getElementById('pub-productos');
-  if(!prods || prods.length === 0) { cont.innerHTML = '<p style="text-align:center; color:var(--muted); padding:20px; font-size:13px;">Sin productos.</p>'; } 
-  else {
-    cont.innerHTML = prods.map(p => `
-      <div class="product-card" style="margin-bottom:8px">
-        ${p.imagen_url ? `<div class="product-img" style="width:54px; height:54px; background-image:url('${p.imagen_url}')"></div>` : `<div class="product-img" style="width:54px; height:54px; background:#fff4ec; color:var(--orange); font-size:18px;">📦</div>`}
-        <div class="product-info"><div class="product-name" style="font-size:13px">${p.titulo}</div><div class="product-biz" style="font-size:10px">${p.descripcion || 'Disponible'}</div></div>
-        <div class="product-price" style="font-size:13px">$${p.precio}</div>
-      </div>
-    `).join('');
-  }
-  navegar('perfil-pub');
+  btn.disabled = false;
+  btn.textContent = 'Guardar Cambios';
 }
-
-// ==========================================
-// PEDIDOS Y FAVORITOS (LOCAL)
-// ==========================================
-function registrarPedido(negocio) {
-  const nuevoPedido = { id: Date.now(), negocioNombre: negocio.nombre, negocioId: negocio.id, fecha: new Date().toLocaleDateString('es-MX', { day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit' }) };
-  misPedidos.unshift(nuevoPedido); 
-  localStorage.setItem('mg_pedidos', JSON.stringify(misPedidos));
-}
-
-function cargarPantallaPedidos() {
-  const cont = document.getElementById('lista-mis-pedidos');
-  if(misPedidos.length === 0) {
-    cont.innerHTML = `<div style="text-align:center; padding:40px 20px;"><div style="font-size:48px; margin-bottom:10px;">📦</div><h3 style="font-family:'Bricolage Grotesque'; font-size:18px; margin-bottom:8px;">Aún no tienes pedidos</h3><p style="color:var(--muted); font-size:13px;">Explora los negocios y pide por WhatsApp para verlos aquí.</p></div>`;
-  } else {
-    cont.innerHTML = misPedidos.map(p => `
-      <div class="pedido-item" onclick="abrirPerfilPublico('${p.negocioId}')">
-        <div class="wa-icon">💬</div><div style="flex:1"><div style="font-weight:700; font-size:14px; margin-bottom:2px;">${p.negocioNombre}</div><div style="font-size:11px; color:var(--muted);">Contacto por WhatsApp</div></div><div style="font-size:11px; color:var(--muted); text-align:right;">${p.fecha}</div>
-      </div>
-    `).join('');
-  }
-  navegar('mis-pedidos');
-}
-
-function cargarPantallaFavoritos() {
-  const cont = document.getElementById('lista-mis-favoritos');
-  const negociosFavoritos = negociosCache.filter(n => misFavoritos.includes(n.id));
-  if(negociosFavoritos.length === 0) {
-    cont.innerHTML = `<div style="text-align:center; padding:40px 20px;"><div style="font-size:48px; margin-bottom:10px; color:#e5e7eb;">♥</div><h3 style="font-family:'Bricolage Grotesque'; font-size:18px; margin-bottom:8px;">Sin favoritos</h3><p style="color:var(--muted); font-size:13px;">Toca el corazón en tus negocios preferidos para guardarlos aquí.</p></div>`;
-  } else { cont.innerHTML = negociosFavoritos.map(n => generarTarjetaNegocioHTML(n)).join(''); }
-  navegar('mis-favoritos');
-}
-
-// ==========================================
-// ONBOARDING Y NEGOCIO
-// ==========================================
-async function accionMenuNegocio() {
-  toast('Cargando tu panel...', 'ok');
-  const { data } = await db.from('negocios').select('*').eq('user_id', currentUser.id).maybeSingle();
-  if (data) { negocioActual = data; await cargarDashNegocio(); navegar('biz-dash'); } 
-  else { toast('Configura tu negocio', 'ok'); navegar('onb-1'); }
-}
-
-async function onboardingPaso1() {
-  const nombre = document.getElementById('onb-nombre').value.trim();
-  const cat = document.getElementById('onb-categoria').value;
-  if(!nombre || !cat) return toast('Completa nombre y categoría', 'err');
-  toast('Paso 2...', 'ok'); navegar('onb-2');
-}
-
-async function onboardingPaso2() {
-  const wa = document.getElementById('onb-wa').value.trim();
-  const dir = document.getElementById('onb-dir').value.trim();
-  const nombre = document.getElementById('onb-nombre').value.trim(); 
-  const cat = document.getElementById('onb-categoria').value; 
-  if(!wa || !dir) return toast('Falta WhatsApp o Dirección', 'err');
-  toast('Guardando negocio...', 'ok');
-  
-  if(currentProfile.rol !== 'negocio') { await db.from('profiles').update({ rol: 'negocio' }).eq('id', currentUser.id); }
-
-  const { error } = await db.from('negocios').upsert({ user_id: currentUser.id, nombre, categoria: cat, whatsapp: wa, telefono: wa, direccion: dir, activo: true, suscripcion_activa: false }, { onConflict: 'user_id' });
-  if(error) { console.error(error); return toast('Error guardando', 'err'); }
-  
-  const { data: n } = await db.from('negocios').select('id').eq('user_id', currentUser.id).single();
-  if(n) negocioTempID = n.id;
-  
-  await cargarPlanes();
-  navegar('onb-3');
-}
-
-async function cargarPlanes(){
-  const { data, error } = await db.from('planes').select('*').order('precio');
-  const cont = document.getElementById('planes-container');
-  if(error) { cont.innerHTML = '<p style="color:var(--danger)">Error cargando planes</p>'; return; }
-  cont.innerHTML = data.map(p => `
-    <div class="plan-card ${p.id==='pro' ? 'featured' : ''}">
-      ${p.id==='pro' ? '<div class="rib">⭐ Más popular</div>' : ''}
-      <div class="pname">${p.nombre}</div>
-      <div class="pprice">$${p.precio} <small>/ mes MXN</small></div>
-      <ul class="plan-feats"><li>Hasta ${p.max_ofertas} productos</li><li>${p.descripcion}</li><li>Botón WhatsApp</li></ul>
-      <button class="btn-save ${p.id==='pro'?'btn-orange':''}" style="margin-top:8px" onclick="seleccionarPlan('${p.id}')">${p.precio === 0 ? 'Empezar Gratis' : 'Elegir Plan'}</button>
-    </div>
-  `).join('');
-}
-
-async function seleccionarPlan(planId) {
-  toast('Configurando plan...', 'ok');
-  await db.from('negocios').update({ plan_id: planId, suscripcion_activa: planId === 'gratis' }).eq('id', negocioTempID);
-  toast('¡Bienvenido! Tu negocio está listo.', 'ok');
-  iniciarApp(); // Ya no usamos reload
-}
-
-async function cargarDashNegocio() {
-  if(!negocioActual) return;
-  document.getElementById('dash-nombre').textContent = negocioActual.nombre;
-  document.getElementById('dash-ava').textContent = negocioActual.nombre.charAt(0).toUpperCase();
-  await cargarMisProductos();
-}
-
-async function cargarMisProductos() {
-  const { data, error } = await db.from('ofertas').select('*').eq('negocio_id', negocioActual.id);
-  const cont = document.getElementById('biz-productos-lista');
-  const num = (data && !error) ? data.length : 0;
-  document.getElementById('dash-prod-count').textContent = `${num} publicados`;
-
-  if(error || !data || data.length === 0) {
-    cont.innerHTML = `<div style="text-align:center; padding:40px 20px;"><div style="font-size:48px; margin-bottom:10px;">📦</div><h3 style="font-family:'Bricolage Grotesque'; font-size:18px; margin-bottom:8px;">Sin productos</h3><button class="btn-save" onclick="navegar('biz-add-producto')">+ Agregar Producto</button></div>`;
-    return;
-  }
-  cont.innerHTML = data.map(o => `
-    <div class="product-card" style="margin: 0 14px 10px;">
-      ${o.imagen_url ? `<div class="product-img" style="background-image:url('${o.imagen_url}')"></div>` : `<div class="product-img" style="background:#fff4ec; color:var(--orange); font-size:24px;">📦</div>`}
-      <div class="product-info"><div class="product-name">${o.titulo || 'Sin nombre'}</div><div class="product-biz">${o.activa ? 'Disponible' : 'Pausado'}</div></div>
-      <div class="product-price">$${o.precio || '0'}</div>
-    </div>
-  `).join('') + `<div style="padding:0 14px;"><button class="btn-save btn-outline" style="margin-top:4px" onclick="navegar('biz-add-producto')">+ Nuevo Producto</button></div>`;
-}
-
-async function guardarNuevoProducto() {
-  const nombre = document.getElementById('add-prod-nombre').value.trim();
-  const precio = document.getElementById('add-prod-precio').value;
-  const desc = document.getElementById('add-prod-desc').value.trim();
-  if(!nombre || !precio) return toast('Llena el nombre y precio', 'err');
-  toast('Guardando...', 'ok');
-  await db.from('ofertas').insert({ negocio_id: negocioActual.id, titulo: nombre, precio: precio, descripcion: desc, activa: true });
-  toast('¡Producto agregado!', 'ok');
-  document.getElementById('add-prod-nombre').value = '';
-  document.getElementById('add-prod-precio').value = '';
-  document.getElementById('add-prod-desc').value = '';
-  await cargarMisProductos();
-  navegar('biz-productos');
-}
-
-function verMiPropioPerfil() { if(negocioActual) abrirPerfilPublico(negocioActual.id); }
 
 // ==========================================
 // ARRANQUE
 // ==========================================
 async function iniciarApp() {
-  try {
-    const { data: { session } } = await db.auth.getSession();
-    currentUser = session?.user || null;
-    
-    if (!currentUser) { navegar('auth'); return; }
-
+  const { data: { session } } = await db.auth.getSession();
+  currentUser = session?.user || null;
+  
+  if (!currentUser) { 
+    navegar('auth'); 
+  } else {
     const { data: prof } = await db.from('profiles').select('*').eq('id', currentUser.id).single();
     currentProfile = prof;
-    if(prof?.rol === 'negocio') {
-       const { data: neg } = await db.from('negocios').select('*').eq('user_id', currentUser.id).maybeSingle();
-       if(neg) negocioActual = neg;
-    }
-    
     renderizarPantallaCuenta();
-    await cargarNegociosPublicos();
-    await cargarPromos();
     navegar('inicio');
-  } catch (error) { console.error("Error arrancando:", error); }
+  }
 }
 
 window.onload = iniciarApp;
