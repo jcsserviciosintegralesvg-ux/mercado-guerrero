@@ -33,11 +33,29 @@
     height: 100vh; display: flex; flex-direction: column; 
     position: relative; overflow: hidden;
   }
-  @media (min-width: 441px) {
+/* DISEÑO ELEGANTE PARA TABLETS Y COMPUTADORAS */
+  @media (min-width: 768px) {
     .app-layout {
-      height: 90vh; margin-top: 5vh; border-radius: 42px;
-      box-shadow: 0 30px 60px -15px rgba(0,0,0,.3);
-      border: 8px solid #111;
+      height: 100vh; 
+      max-width: 1000px; /* Un ancho elegante, no demasiado estirado */
+      margin: 0 auto; 
+      border-radius: 0;
+      border: none;
+      box-shadow: 0 0 40px rgba(0,0,0,0.05); /* Sombra muy sutil */
+    }
+
+    /* Convertimos las listas en vitrinas de 2 o 3 columnas */
+    #lista-negocios, #biz-productos-lista, #pub-productos {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+      padding-bottom: 20px;
+    }
+
+    /* Quitamos el margen inferior porque el Grid ya usa 'gap' */
+    .product-card {
+      margin-bottom: 0; 
+      height: 100%; /* Para que todas las tarjetas midan lo mismo */
     }
   }
 
