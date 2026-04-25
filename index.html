@@ -834,13 +834,35 @@ async function onboardingPaso2() {
   if(!wa || !dir) return toast('Falta WhatsApp o Dirección', 'err');
   toast('Guardando negocio...', 'ok');
   
-  if(currentProfile.rol !== 'negocio') { await db.from('profiles').update({ rol: 'negocio' }).eq('id', currentUser.id); }
+  if(currentProfile.rol !== 'negocio') { 
+    await db.from('profiles').update({ rol: 'negocio' }).eq('id', currentUser.id); 
+  }
 
-  const { error } = await db.from('negocios').upsert({ user_id: currentUser.id, nombre, categoria: cat, whatsapp: wa, telefono: wa, direccion: dir, activo: true, suscripcion_activa: false }, { onConflict: 'user_id' });
-  if(error) { console.error(error); return toast('Error guardando', 'err'); }
+  const { data, error } = await db.from('negocios').upsert({ 
+    user_id: currentUser.id, 
+    nombre: nombre, 
+    categoria: cat, 
+    whatsapp: wa, 
+    telefono: wa, 
+    direccion: dir, 
+    activo: true, 
+    suscripcion_activa: false 
+  }, { onConflict: 'user_id' }).select();
+
+  if(error) { 
+    console.error("Error detallado en Supabase:", error); 
+    // Ahora el toast te mostrará el error real en lugar de solo "Error guardando"
+    return toast('Error: ' + error.message, 'err'); 
+  }
   
-  const { data: n } = await db.from('negocios').select('id').eq('user_id', currentUser.id).single();
-  if(n) negocioTempID = n.id;
+  // Usamos la data que nos devuelve el upsert (por eso agregué .select() arriba)
+  if(data && data.length > 0) {
+      negocioTempID = data[0].id;
+  } else {
+      // Por si acaso no devuelve data el upsert, intentamos buscarlo
+      const { data: n } = await db.from('negocios').select('id').eq('user_id', currentUser.id).single();
+      if(n) negocioTempID = n.id;
+  }
   
   await cargarPlanes();
   navegar('onb-3');
