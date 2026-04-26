@@ -71,6 +71,15 @@
   .tab-switch{display:flex;background:#f3f4f6;border-radius:10px;padding:4px;margin-bottom:20px;}
   .tab-switch .t{flex:1;text-align:center;padding:8px;font-size:13px;font-weight:700;color:var(--muted);border-radius:8px;cursor:pointer;}
   .tab-switch .t.active{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+
+  /* --- NUEVA BARRA INFERIOR (MÓVIL) --- */
+  .bottom-nav { background: #fff; border-top: 1px solid var(--line); display: flex; flex-shrink: 0; padding: 10px 0 16px; position: sticky; bottom: 0; z-index: 100; width: 100%; box-shadow: 0 -4px 15px rgba(0,0,0,0.05); }
+  .nav-item { flex: 1; text-align: center; font-size: 11px; font-weight: 700; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; transition: 0.2s; }
+  .nav-item.active { color: var(--green); }
+  .nav-item .ico { font-size: 22px; line-height: 1; transition: transform 0.2s; }
+  .nav-item.active .ico { transform: scale(1.1); }
+  @media (min-width: 769px) { .bottom-nav { display: none !important; } }
+  @media (max-width: 768px) { .app-footer { display: none !important; } }
 </style>
 </head>
 <body>
@@ -156,6 +165,31 @@
 
               <h3 style="font-family:'Bricolage Grotesque'; margin-bottom:20px; font-size:24px; font-weight:800;">Nuestros Productos</h3>
               <div id="pub-productos" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;"></div>
+          </div>
+      </section>
+
+      <section id="panel-producto-detalle" class="panel">
+          <div style="max-width:600px; margin: 0 auto; width:100%; background:#fff; border-radius:var(--radius); box-shadow:var(--sh); overflow:hidden;">
+              <div id="det-img" style="height:280px; background-size:cover; background-position:center; position:relative; background-color:#eee;">
+                  <div style="position:absolute; top:16px; left:16px; width:40px; height:40px; background:rgba(255,255,255,0.9); border-radius:50%; display:grid; place-items:center; font-size:24px; cursor:pointer; color:var(--ink); box-shadow:var(--sh);" onclick="navegar('perfil-pub')">‹</div>
+              </div>
+              <div style="padding:24px;">
+                  <h2 id="det-titulo" style="font-family:'Bricolage Grotesque'; font-size:28px; font-weight:800; margin-bottom:8px;">Cargando...</h2>
+                  <div id="det-precio" style="font-size:24px; font-weight:900; color:var(--orange); margin-bottom:16px;">$0</div>
+                  <p id="det-desc" style="font-size:15px; color:var(--muted); margin-bottom:24px; line-height:1.5;"></p>
+                  
+                  <div style="display:flex; align-items:center; gap:12px; padding:16px 0; border-top:1px solid var(--line); margin-bottom:24px;">
+                      <div id="det-biz-img" style="width:48px; height:48px; border-radius:12px; background:#eee; background-size:cover; background-position:center;"></div>
+                      <div>
+                          <div id="det-biz-nombre" style="font-weight:700; font-size:15px;">Negocio</div>
+                          <div style="font-size:12px; color:var(--green); font-weight:700; display:flex; align-items:center; gap:4px;"><span>●</span> Abierto para pedidos</div>
+                      </div>
+                  </div>
+                  
+                  <button class="btn-save btn-orange" id="det-btn-wa" style="padding:16px; font-size:16px; border-radius:14px;">
+                    <span style="font-size:20px;">💬</span> Pedir por WhatsApp
+                  </button>
+              </div>
           </div>
       </section>
 
@@ -345,40 +379,50 @@
         <svg width="20" height="20" viewBox="0 -22 100 122"><rect x="0" y="0" width="100" height="100" rx="22" fill="#0f7a3f"/><path d="M70 0 L100 0 L100 30 L88 30 A18 18 0 0 0 70 12 Z" fill="#ea580c"/></svg>
         <span>Mercado Guerrero · El corazón de tu comunidad</span>
     </footer>
+
+    <nav class="bottom-nav" id="mobile-bottom-nav">
+      <div class="nav-item active" data-tab="inicio" onclick="navegar('inicio')">
+        <span class="ico">🏠</span>Inicio
+      </div>
+      <div class="nav-item" data-tab="promos" onclick="cargarPromos(); navegar('promos')">
+        <span class="ico">🔥</span>Promos
+      </div>
+      <div class="nav-item" data-tab="mis-pedidos" onclick="cargarPantallaPedidos()">
+        <span class="ico">📦</span>Pedidos
+      </div>
+      <div class="nav-item" data-tab="cuenta" onclick="navegar('cuenta')">
+        <span class="ico">👤</span>Cuenta
+      </div>
+    </nav>
+
   </main>
 
   <div id="panel-auth" style="position:fixed; inset:0; z-index:10000; background:var(--bg); display:none; align-items:center; justify-content:center; overflow-y:auto; padding:20px 0;">
   <div style="max-width:400px; width:100%; padding:40px 30px; background:#fff; border-radius:var(--radius); box-shadow:0 20px 40px rgba(0,0,0,0.1); text-align:center;">
     
-    <!-- LOGO -->
     <div style="display:flex; justify-content:center; margin-bottom:20px;">
       <svg width="70" height="70" viewBox="0 -22 100 122"><path d="M 32 2 Q 32 -18 50 -18 Q 68 -18 68 2" fill="none" stroke="#0f7a3f" stroke-width="7" stroke-linecap="round"/><rect x="0" y="0" width="100" height="100" rx="22" fill="#0f7a3f"/><path d="M70 0 L100 0 L100 30 L88 30 A18 18 0 0 0 70 12 Z" fill="#ea580c"/><text x="50" y="66" text-anchor="middle" font-family="Unbounded" font-size="38" font-weight="900" fill="#fff" letter-spacing="-1">MG</text></svg>
     </div>
     <h2 style="font-family:'Bricolage Grotesque'; margin-bottom:6px; font-size:24px;" id="auth-titulo">Inicia Sesión</h2>
     <p style="font-size:13px; color:var(--muted); margin-bottom:24px;" id="auth-subtitulo">Accede a tu cuenta de Mercado Guerrero</p>
 
-    <!-- TOGGLE LOGIN / REGISTRO -->
     <div class="tab-switch" style="margin-bottom:24px;">
       <div class="t active" id="tab-login" onclick="mostrarModoAuth('login')">Iniciar Sesión</div>
       <div class="t" id="tab-registro" onclick="mostrarModoAuth('registro')">Crear Cuenta</div>
     </div>
 
-    <!-- CAMPOS COMPARTIDOS -->
     <div class="field"><label>Email</label><input type="email" id="login-email" placeholder="tucorreo@ejemplo.com"></div>
     <div class="field"><label>Contraseña</label><input type="password" id="login-pass" placeholder="Mínimo 6 caracteres"></div>
 
-    <!-- CAMPOS SOLO PARA REGISTRO -->
     <div id="campos-registro" style="display:none;">
       <div class="field"><label>Nombre completo *</label><input type="text" id="reg-nombre" placeholder="Ej: Juan Pérez"></div>
       <div class="field"><label>WhatsApp *</label><input type="number" id="reg-wa" placeholder="Ej: 6181234567"></div>
     </div>
 
-    <!-- BOTÓN ACCIÓN -->
     <button class="btn-save" id="btn-auth-action" onclick="doLogin()" style="margin-top:8px; padding:16px;">
       Entrar a mi cuenta
     </button>
 
-    <!-- LINK ALTERNAR -->
     <p style="margin-top:18px; font-size:13px; color:var(--muted);">
       <span id="auth-link-texto">¿No tienes cuenta?</span>
       <span id="auth-link-accion" onclick="mostrarModoAuth('registro')" style="color:var(--green); font-weight:700; cursor:pointer; margin-left:4px;">Regístrate gratis</span>
@@ -408,10 +452,60 @@ function toast(msg, type='ok'){
   setTimeout(()=>t.classList.add('hidden'), 4000);
 }
 
+// --- ACTUALIZADO: Función navegar con Bottom Nav ---
 function navegar(panelId) {
+  // 1. Cambiar paneles
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.getElementById('panel-' + panelId).classList.add('active');
-  document.querySelector('.main-content').scrollTo(0,0);
+  document.querySelector('.main-content').scrollTo({top: 0, behavior: 'smooth'});
+
+  // 2. Actualizar Bottom Nav (Solo en vistas principales)
+  const navItems = document.querySelectorAll('.nav-item');
+  navItems.forEach(item => item.classList.remove('active'));
+  
+  // Si el panelId coincide con un tab, lo marcamos activo
+  const activeTab = document.querySelector(`.nav-item[data-tab="${panelId}"]`);
+  if (activeTab) {
+      activeTab.classList.add('active');
+  } else {
+      // Si estamos en un detalle (ej. perfil-pub), mantenemos seleccionado "Inicio" o "Promos" según el contexto
+      if(panelId === 'perfil-pub' || panelId === 'producto-detalle') {
+          const tabInicio = document.querySelector(`.nav-item[data-tab="inicio"]`);
+          if (tabInicio) tabInicio.classList.add('active');
+      }
+  }
+}
+
+// --- NUEVA FUNCIÓN: Abrir vista de Detalle de Producto ---
+function abrirDetalleProducto(productoStr, negocioStr) {
+  // Parsear los datos que vienen en formato texto
+  const p = JSON.parse(decodeURIComponent(productoStr));
+  const n = JSON.parse(decodeURIComponent(negocioStr));
+
+  // Llenar la interfaz
+  document.getElementById('det-img').style.backgroundImage = p.imagen_url ? `url('${p.imagen_url}')` : 'none';
+  document.getElementById('det-titulo').textContent = p.titulo;
+  document.getElementById('det-precio').textContent = `$${p.precio}`;
+  document.getElementById('det-desc').textContent = p.descripcion || 'Producto disponible.';
+  
+  document.getElementById('det-biz-img').style.backgroundImage = n.imagen_url ? `url('${n.imagen_url}')` : 'none';
+  document.getElementById('det-biz-nombre').textContent = n.nombre;
+
+  // Configurar botón de WhatsApp
+  const waBtn = document.getElementById('det-btn-wa');
+  if(n.whatsapp) { 
+    waBtn.style.display = 'flex'; 
+    waBtn.onclick = async () => {
+        await db.from('estadisticas_clics').insert({ negocio_id: n.id });
+        registrarPedidoLocal(n);
+        window.open(`https://wa.me/52${n.whatsapp}?text=Hola, vengo de Mercado Guerrero. Me interesa pedir: *${p.titulo}* ($${p.precio}).`);
+    };
+  } else { 
+    waBtn.style.display = 'none'; 
+  }
+
+  // Navegar a la pantalla
+  navegar('producto-detalle');
 }
 
 function toggleDiaEditable(elemento) {
@@ -597,8 +691,13 @@ async function abrirPerfilPublico(idNegocio) {
   if(!prods || prods.length === 0) { 
       cont.innerHTML = '<p style="color:var(--muted); font-size:14px;">Este negocio aún no tiene productos publicados.</p>'; 
   } else {
-    cont.innerHTML = prods.map(p => `
-      <div class="product-card">
+    // Convertimos los objetos a string seguro para pasarlos por HTML
+    const negocioStr = encodeURIComponent(JSON.stringify(neg));
+
+    cont.innerHTML = prods.map(p => {
+      const prodStr = encodeURIComponent(JSON.stringify(p));
+      return `
+      <div class="product-card" onclick="abrirDetalleProducto('${prodStr}', '${negocioStr}')" style="cursor:pointer;">
         ${p.imagen_url ? `<div class="product-img" style="background-image:url('${p.imagen_url}'); background-size:cover;"></div>` : `<div class="product-img" style="background:#fff4ec; color:var(--orange);">📦</div>`}
         <div class="product-info">
             <div style="font-weight:700; font-size:15px; margin-bottom:2px;">${p.titulo}</div>
@@ -607,7 +706,7 @@ async function abrirPerfilPublico(idNegocio) {
         </div>
         <div style="font-weight:800; color:var(--orange); font-size:16px;">$${p.precio}</div>
       </div>
-    `).join('');
+    `}).join('');
   }
   navegar('perfil-pub');
 }
