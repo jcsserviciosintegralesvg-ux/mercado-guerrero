@@ -9,28 +9,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Unbounded:wght@700;800;900&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --green:#0f7a3f; --green-deep:#0a5a2e; --green-soft:#e8f5ec;
-    --orange:#ea580c; --orange-soft:#fff4ec; --orange-deep:#c2410c;
-    --ink:#101418; --muted:#6b7280; --line:#e5e7eb;
-    --bg:#f8faf9; --card:#ffffff; --star:#f59e0b;
-    --danger:#dc2626;
-    --radius:16px;
-    --sh: 0 10px 25px -12px rgba(0,0,0,.15), 0 4px 8px -4px rgba(0,0,0,.08);
-  }
-
+  :root{ --green:#0f7a3f; --green-deep:#0a5a2e; --green-soft:#e8f5ec; --orange:#ea580c; --orange-soft:#fff4ec; --orange-deep:#c2410c; --ink:#101418; --muted:#6b7280; --line:#e5e7eb; --bg:#f8faf9; --card:#ffffff; --star:#f59e0b; --danger:#dc2626; --radius:16px; --sh: 0 10px 25px -12px rgba(0,0,0,.15), 0 4px 8px -4px rgba(0,0,0,.08); }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
   html,body{color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;height:100%; overflow:hidden;}
-  
-  body {
-    background-color: var(--bg);
-    background-image:
-      radial-gradient(circle at 10% 0%, rgba(15,122,63,.08), transparent 40%),
-      radial-gradient(circle at 90% 100%, rgba(234,88,12,.08), transparent 40%);
-  }
-
+  body { background-color: var(--bg); background-image: radial-gradient(circle at 10% 0%, rgba(15,122,63,.08), transparent 40%), radial-gradient(circle at 90% 100%, rgba(234,88,12,.08), transparent 40%); }
   .app-layout { width: 100%; height: 100vh; display: flex; flex-direction: column; position: relative; background: transparent;}
-
   @media (min-width: 769px) {
     .app-layout { flex-direction: row; }
     #sidebar-desktop { display: flex !important; width: 280px; background: #fff; border-right: 1px solid var(--line); flex-direction: column; z-index: 100; box-shadow: 2px 0 15px rgba(0,0,0,0.03); }
@@ -38,52 +21,41 @@
     .sidebar-menu { padding: 20px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
     .main-content { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
     .panel { max-width: 1100px; margin: 0 auto; width: 100%; padding: 40px 30px !important; background: transparent !important; }
-    #lista-negocios, #lista-promos, #pub-productos, #biz-productos-lista { display: grid !important; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+    #lista-negocios, #lista-promos, #pub-productos, #biz-productos-lista, #lista-mis-pedidos { display: grid !important; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
     .app-header { display: none !important; } 
   }
-
   #sidebar-desktop { display: none; }
   .main-content { flex: 1; overflow-y: auto; height: 100%; display: flex; flex-direction: column;}
   .panel { display: none; padding: 14px 14px 40px; background: transparent; flex: 1; }
   .panel.active { display: flex; flex-direction: column; }
-
   .app-header { background: linear-gradient(135deg, var(--green), var(--green-deep)); color: #fff; padding: 16px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 50; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-  
   .chips { display: flex; gap: 8px; margin-bottom: 24px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
   .chips::-webkit-scrollbar { display: none; }
   .chip { padding: 8px 16px; border-radius: 999px; background: #fff; border: 1px solid var(--line); color: var(--ink); font-size: 13px; font-weight: 700; white-space: nowrap; cursor: pointer; transition: all .2s; box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
   .chip.active { background: var(--green); color: #fff; border-color: var(--green); box-shadow: 0 4px 10px rgba(15,122,63,.2); }
-
   .product-card, .promo-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; box-shadow: var(--sh); margin-bottom: 12px; }
-  @media (min-width: 769px) { .product-card { margin-bottom: 0; height: 100%; } }
-  .product-card:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,0,0,0.08); border-color: var(--green-soft); }
+  @media (min-width: 769px) { .product-card, .promo-card { margin-bottom: 0; height: 100%; } }
+  .product-card:hover, .promo-card:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,0,0,0.08); border-color: var(--green-soft); }
   .product-img { width: 70px; height: 70px; border-radius: 12px; background: #eee; flex-shrink: 0; object-fit: cover; display:grid; place-items:center; font-weight:800; font-size:24px; color:var(--muted); }
-
   .stat-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: all 0.2s ease; box-shadow: var(--sh); }
   .stat-card:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(0,0,0,0.08); border-color: var(--green-soft); }
   .stat-card .ico-box { width: 48px; height: 48px; border-radius: 14px; background: var(--green-soft); color: var(--green); display: grid; place-items: center; font-size: 22px; flex-shrink: 0; }
   .stat-card .t { font-size: 15px; font-weight: 800; color: var(--ink); line-height:1.2; }
   .stat-card .s { font-size: 12px; color: var(--muted); margin-top: 3px; }
-
   .app-footer { margin-top: auto; padding: 20px; background: rgba(255,255,255,0.7); backdrop-filter: blur(10px); border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 12px; font-weight: 600; color: var(--muted); width: 100%; flex-shrink: 0; }
-
   .btn-save { width: 100%; background: var(--green); color: #fff; border: none; border-radius: 12px; padding: 14px; font-weight: 800; font-size: 15px; cursor: pointer; transition: 0.2s; display:flex; align-items:center; justify-content:center; gap:8px; }
   .btn-save:hover { filter: brightness(1.1); box-shadow: 0 4px 12px rgba(15,122,63,.3); }
   .btn-orange { background: var(--orange); }
   .btn-orange:hover { box-shadow: 0 4px 12px rgba(234,88,12,.3); }
   .btn-outline { background: #fff; color: var(--ink); border: 1px solid var(--line); }
   .btn-outline:hover { background: #f9fafb; box-shadow:none; border-color:var(--green);}
-  
   .field { margin-bottom: 16px; text-align: left; }
   .field label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; display: block; }
   .field input, .field select, .field textarea { width: 100%; border: 1.5px solid var(--line); border-radius: 10px; padding: 12px; font-size: 14px; outline: none; background:#fff; transition:0.2s; font-family:inherit;}
   .field input:focus, .field textarea:focus { border-color: var(--green); box-shadow: 0 0 0 3px var(--green-soft); }
-
   .profile-pic { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; }
   .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--ink); color:#fff; padding:12px 24px; border-radius:50px; z-index:9999; font-weight:600; transition: 0.3s; box-shadow: 0 10px 25px rgba(0,0,0,0.2);}
   .toast.hidden { top: -100px; opacity: 0; }
-
-  /* HORARIOS EDITABLES REFINADOS */
   .day-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px;}
   .day-row:last-child{border-bottom:none;}
   .day-row .d{font-weight:700; width:80px;}
@@ -96,7 +68,6 @@
   .h-closed{display:none;color:var(--danger);font-weight:800;font-size:13px;flex:1;text-transform:uppercase;letter-spacing:.05em;}
   .day-row.closed .h-inputs{display:none;}
   .day-row.closed .h-closed{display:block;}
-
   .tab-switch{display:flex;background:#f3f4f6;border-radius:10px;padding:4px;margin-bottom:20px;}
   .tab-switch .t{flex:1;text-align:center;padding:8px;font-size:13px;font-weight:700;color:var(--muted);border-radius:8px;cursor:pointer;}
   .tab-switch .t.active{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
@@ -118,7 +89,7 @@
         <button class="btn-save btn-outline" style="justify-content:flex-start;" onclick="navegar('inicio')">
             <span style="font-size:20px; width:24px;">🏠</span> <span style="font-weight:700;">Inicio</span>
         </button>
-        <button class="btn-save btn-outline" style="justify-content:flex-start; border-color:var(--orange-soft); background:var(--orange-soft); color:var(--orange-deep);" onclick="navegar('promos')">
+        <button class="btn-save btn-outline" style="justify-content:flex-start; border-color:var(--orange-soft); background:var(--orange-soft); color:var(--orange-deep);" onclick="navegar('promos'); cargarPromos();">
             <span style="font-size:20px; width:24px;">🔥</span> <span style="font-weight:800;">Promociones</span>
         </button>
         <button class="btn-save btn-outline" style="justify-content:flex-start;" onclick="navegar('cuenta')">
@@ -191,12 +162,22 @@
       <section id="panel-promos" class="panel">
           <div style="background:transparent; max-width:1100px; margin:0 auto; width:100%;">
               <h2 style="font-family:'Bricolage Grotesque'; margin-bottom:15px; font-size:32px; font-weight:800; color:var(--orange-deep); letter-spacing:-0.02em;">🔥 Ofertas Imperdibles</h2>
-              <div id="lista-promos"><p style="color:var(--muted);">Estamos programando esta sección.</p></div>
+              <div id="lista-promos"><p style="color:var(--muted);">Cargando ofertas del día...</p></div>
           </div>
       </section>
 
       <section id="panel-cuenta" class="panel">
           <div id="cuenta-contenido" style="background:transparent; max-width: 600px; margin: 0 auto; width: 100%;"></div>
+      </section>
+
+      <section id="panel-mis-pedidos" class="panel">
+          <div style="max-width:900px; margin: 0 auto; width:100%;">
+              <div style="display:flex; align-items:center; gap:10px; margin-bottom:24px;">
+                  <div style="font-size:26px; cursor:pointer; color:var(--muted);" onclick="navegar('cuenta')">‹</div>
+                  <h2 style="font-family:'Bricolage Grotesque'; font-size:28px; font-weight:800; color:var(--ink);">Mis Pedidos (Historial)</h2>
+              </div>
+              <div id="lista-mis-pedidos"></div>
+          </div>
       </section>
 
       <section id="panel-editar-perfil" class="panel">
@@ -295,6 +276,12 @@
               <div class="field"><label>Nombre del producto *</label><input type="text" id="add-prod-nombre"></div>
               <div class="field"><label>Precio (MXN) *</label><input type="number" id="add-prod-precio"></div>
               <div class="field"><label>Descripción corta</label><textarea id="add-prod-desc" rows="3"></textarea></div>
+              
+              <div class="field" style="display:flex; align-items:center; gap:8px; margin-top:20px; background:var(--orange-soft); padding:14px; border-radius:12px;">
+                  <input type="checkbox" id="add-prod-promo" style="width:20px; height:20px; cursor:pointer;">
+                  <label style="margin:0; font-size:13px; color:var(--orange-deep); font-weight:800; cursor:pointer;" for="add-prod-promo">🌟 Marcar como Oferta del Día</label>
+              </div>
+
               <button class="btn-save" id="btn-save-prod" onclick="guardarNuevoProducto()" style="margin-top:20px;">Guardar producto</button>
           </div>
       </section>
@@ -385,6 +372,9 @@ let negocioActual = null;
 let negociosCache = [];
 let categoriaActual = 'Todos';
 
+// LOCALSTORAGE PARA PEDIDOS
+let misPedidosLocales = JSON.parse(localStorage.getItem('mg_pedidos') || '[]');
+
 function toast(msg, type='ok'){
   const t = document.getElementById('toast');
   t.textContent = msg; t.className = 'toast ' + type; t.classList.remove('hidden');
@@ -401,61 +391,32 @@ function toggleDiaEditable(elemento) {
   elemento.parentElement.classList.toggle('closed');
 }
 
-// ==========================================
-// PASO 1: LÓGICA DE HORARIOS
-// ==========================================
+// HORARIOS
 async function guardarHorarioBD() {
     toast('Guardando horarios...', 'ok');
     const dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
     let horariosNuevos = {};
-    
-    // Leemos cada reloj de la pantalla
     dias.forEach(dia => {
         const row = document.querySelector(`.day-row[data-dia="${dia}"]`);
-        const isClosed = row.classList.contains('closed');
-        const tOpen = row.querySelector('.time-open').value;
-        const tClose = row.querySelector('.time-close').value;
-        horariosNuevos[dia] = { cerrado: isClosed, abre: tOpen, cierra: tClose };
+        horariosNuevos[dia] = { cerrado: row.classList.contains('closed'), abre: row.querySelector('.time-open').value, cierra: row.querySelector('.time-close').value };
     });
-
-    // Lo subimos a la columna "horarios" (que creamos en Supabase en el Paso 0)
     const { error } = await db.from('negocios').update({ horarios: horariosNuevos }).eq('id', negocioActual.id);
-    
-    if(error) {
-        toast('Error guardando horario: ' + error.message, 'err');
-    } else {
-        toast('¡Horario guardado con éxito!', 'ok');
-        negocioActual.horarios = horariosNuevos;
-        navegar('biz-dash');
-    }
+    if(!error) { toast('¡Horario guardado!', 'ok'); negocioActual.horarios = horariosNuevos; navegar('biz-dash'); }
 }
-
 function cargarHorariosUI() {
     if(!negocioActual || !negocioActual.horarios) return;
     const hor = negocioActual.horarios;
-    
-    // Si la base de datos tiene horario guardado, acomodamos los relojes
     for(let dia in hor) {
         const row = document.querySelector(`.day-row[data-dia="${dia}"]`);
         if(!row) continue;
-        const data = hor[dia];
-        
-        if(data.cerrado) row.classList.add('closed');
-        else row.classList.remove('closed');
-        
-        if(data.abre) row.querySelector('.time-open').value = data.abre;
-        if(data.cierra) row.querySelector('.time-close').value = data.cierra;
+        if(hor[dia].cerrado) row.classList.add('closed'); else row.classList.remove('closed');
+        if(hor[dia].abre) row.querySelector('.time-open').value = hor[dia].abre;
+        if(hor[dia].cierra) row.querySelector('.time-close').value = hor[dia].cierra;
     }
 }
 
-
-// CERRAR SESIÓN
-async function doLogout(){
-  toast('Cerrando sesión...', 'ok');
-  await db.auth.signOut(); location.reload(); 
-}
-
-// LOGIN
+// LOGIN Y LOGOUT
+async function doLogout(){ toast('Cerrando sesión...', 'ok'); await db.auth.signOut(); location.reload(); }
 async function doLogin(){
   const email = document.getElementById('login-email').value;
   const password = document.getElementById('login-pass').value;
@@ -467,7 +428,7 @@ async function doLogin(){
   toast('¡Bienvenido!', 'ok'); iniciarApp();
 }
 
-// CARGAR NEGOCIOS PUBLICOS
+// NEGOCIOS Y FILTROS
 async function cargarNegocios(){
   const { data } = await db.from('negocios').select('*').eq('activo', true);
   negociosCache = data || [];
@@ -482,19 +443,17 @@ function renderizarNegocios(lista){
             <div class="product-info">
               <div style="font-weight:800; font-size:16px;">${n.nombre}</div>
               <div style="font-size:13px; color:var(--muted); margin-top:2px;">${n.categoria || 'Comercio'}</div>
-              <div style="color:var(--green); font-size:11px; font-weight:700; margin-top:6px;">● Abierto ahora</div>
+              <div style="color:var(--green); font-size:11px; font-weight:700; margin-top:6px;">● Ver perfil y productos</div>
             </div>
         </div>
     `).join('');
 }
-
 function filtrarPorCategoria(cat, el) {
   categoriaActual = cat;
   document.querySelectorAll('#category-chips .chip').forEach(c => c.classList.remove('active'));
   if(el) el.classList.add('active');
   aplicarFiltros();
 }
-
 function aplicarFiltros(){
     const q = document.getElementById('buscar').value.toLowerCase();
     let filtrados = negociosCache;
@@ -503,7 +462,7 @@ function aplicarFiltros(){
     renderizarNegocios(filtrados);
 }
 
-// ABRIR PERFIL PUBLICO DE CUALQUIER NEGOCIO
+// ABRIR PERFIL PUBLICO DE NEGOCIO
 async function abrirPerfilPublico(idNegocio) {
   toast('Cargando perfil...', 'ok');
   const neg = negociosCache.find(n => n.id === idNegocio);
@@ -511,42 +470,35 @@ async function abrirPerfilPublico(idNegocio) {
 
   document.getElementById('pub-nombre-titulo').textContent = neg.nombre;
   document.getElementById('pub-info').innerHTML = `📍 ${neg.direccion || 'Sin dirección registrada'}`;
-  
-  // LOGICA PARA MOSTRAR HORARIO PÚBLICO
-  const horStat = document.getElementById('pub-horario-status');
-  if (neg.horarios) {
-      // (Aquí podríamos calcular si está abierto según la hora actual, por ahora mostramos que tiene horario configurado)
-      horStat.textContent = "● Horario Establecido";
-  } else {
-      horStat.textContent = "● Abierto";
-  }
+  document.getElementById('pub-horario-status').textContent = neg.horarios ? "● Horario Establecido" : "● Abierto";
 
   const waBtn = document.getElementById('pub-wa-btn');
   if(neg.whatsapp) { 
     waBtn.style.display = 'block'; 
     waBtn.onclick = async () => {
-        // ==========================================
-        // PASO 2: CONTAR EL CLIC REAL EN WHATSAPP
-        // ==========================================
+        // Guardar estadistica
         await db.from('estadisticas_clics').insert({ negocio_id: neg.id });
-        
+        // Guardar pedido local
+        registrarPedidoLocal(neg);
+        // Abrir WhatsApp
         window.open(`https://wa.me/52${neg.whatsapp}?text=Hola, vengo de Mercado Guerrero y quiero hacer un pedido.`);
     };
   } else { waBtn.style.display = 'none'; }
 
   // CARGAR PRODUCTOS PÚBLICOS
-  const { data: prods, error } = await db.from('ofertas').select('*').eq('negocio_id', neg.id).eq('activa', true);
+  const { data: prods } = await db.from('ofertas').select('*').eq('negocio_id', neg.id).eq('activa', true);
   const cont = document.getElementById('pub-productos');
-  
-  if(error) {
-      cont.innerHTML = `<p style="color:var(--danger); font-size:14px;">Error de BD: ${error.message}</p>`;
-  } else if(!prods || prods.length === 0) { 
+  if(!prods || prods.length === 0) { 
       cont.innerHTML = '<p style="color:var(--muted); font-size:14px;">Este negocio aún no tiene productos publicados.</p>'; 
   } else {
     cont.innerHTML = prods.map(p => `
       <div class="product-card">
         ${p.imagen_url ? `<div class="product-img" style="background-image:url('${p.imagen_url}'); background-size:cover;"></div>` : `<div class="product-img" style="background:#fff4ec; color:var(--orange);">📦</div>`}
-        <div class="product-info"><div style="font-weight:700; font-size:15px; margin-bottom:2px;">${p.titulo}</div><div style="font-size:12px; color:var(--muted);">${p.descripcion || 'Disponible'}</div></div>
+        <div class="product-info">
+            <div style="font-weight:700; font-size:15px; margin-bottom:2px;">${p.titulo}</div>
+            <div style="font-size:12px; color:var(--muted);">${p.descripcion || 'Disponible'}</div>
+            ${p.es_promo ? '<span style="display:inline-block; font-size:10px; background:var(--orange-soft); color:var(--orange-deep); padding:2px 8px; border-radius:50px; font-weight:800; margin-top:4px;">🔥 OFERTA</span>' : ''}
+        </div>
         <div style="font-weight:800; color:var(--orange); font-size:16px;">$${p.precio}</div>
       </div>
     `).join('');
@@ -554,7 +506,63 @@ async function abrirPerfilPublico(idNegocio) {
   navegar('perfil-pub');
 }
 
-// PERFIL Y DATOS DE CUENTA
+// ==========================================
+// MÓDULO MIS PEDIDOS LOCALES
+// ==========================================
+function registrarPedidoLocal(negocio) {
+  const fechaActual = new Date().toLocaleDateString('es-MX', { day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit' });
+  const nuevoPedido = { id: Date.now(), negocioNombre: negocio.nombre, negocioId: negocio.id, fecha: fechaActual };
+  misPedidosLocales.unshift(nuevoPedido); 
+  localStorage.setItem('mg_pedidos', JSON.stringify(misPedidosLocales));
+}
+
+function cargarPantallaPedidos() {
+  const cont = document.getElementById('lista-mis-pedidos');
+  if(misPedidosLocales.length === 0) {
+    cont.innerHTML = `<div style="text-align:center; padding:40px 20px;"><div style="font-size:48px; margin-bottom:10px;">📦</div><h3 style="font-family:'Bricolage Grotesque'; font-size:18px; margin-bottom:8px;">Aún no tienes pedidos</h3><p style="color:var(--muted); font-size:13px;">Explora los negocios y pide por WhatsApp para que aparezcan aquí.</p></div>`;
+  } else {
+    cont.innerHTML = misPedidosLocales.map(p => `
+      <div class="product-card" onclick="abrirPerfilPublico('${p.negocioId}')">
+        <div class="product-img" style="background:#e8f5ec; color:#25d366; font-size:28px;">💬</div>
+        <div class="product-info">
+            <div style="font-weight:800; font-size:15px; margin-bottom:2px;">${p.negocioNombre}</div>
+            <div style="font-size:12px; color:var(--muted);">Contacto por WhatsApp</div>
+        </div>
+        <div style="font-size:11px; color:var(--muted); text-align:right;">${p.fecha}</div>
+      </div>
+    `).join('');
+  }
+  navegar('mis-pedidos');
+}
+
+// ==========================================
+// MÓDULO PROMOCIONES REALES
+// ==========================================
+async function cargarPromos() {
+  const cont = document.getElementById('lista-promos');
+  const { data, error } = await db.from('ofertas').select('*, negocios(nombre)').eq('es_promo', true).eq('activa', true).limit(20);
+  
+  if (error) {
+    cont.innerHTML = `<p style="color:var(--danger)">Error: ${error.message}</p>`; return;
+  }
+  if (!data || data.length === 0) {
+    cont.innerHTML = `<div style="background:var(--orange-soft); border:2px dashed var(--orange); border-radius:14px; padding:40px 20px; text-align:center;"><div style="font-size:48px; margin-bottom:10px;">🔥</div><h3 style="color:var(--orange-deep); font-family:'Bricolage Grotesque', serif; font-size:20px; margin-bottom:8px; line-height:1.1;">Aún sin promociones</h3><p style="color:var(--orange); font-size:14px;">Los negocios de tu zona están preparando sus mejores ofertas.</p></div>`;
+  } else {
+    cont.innerHTML = data.map(p => `
+      <div class="promo-card" onclick="abrirPerfilPublico('${p.negocio_id}')">
+        ${p.imagen_url ? `<div class="product-img" style="width:90px; height:90px; background-image:url('${p.imagen_url}'); background-size:cover;"></div>` : `<div class="product-img" style="width:90px; height:90px; background:#fff4ec; color:var(--orange);">🔥</div>`}
+        <div class="product-info">
+            <div style="display:inline-block; font-size:10px; background:var(--orange); color:#fff; padding:2px 8px; border-radius:50px; font-weight:800; margin-bottom:4px; letter-spacing:0.05em; text-transform:uppercase;">OFERTA DEL DÍA</div>
+            <div style="font-weight:800; font-size:16px; margin-bottom:2px; line-height:1.1;">${p.titulo}</div>
+            <div style="font-size:12px; color:var(--muted); font-weight:600;">${p.negocios?.nombre || 'Negocio Local'}</div>
+            <div style="font-weight:900; color:var(--orange); font-size:18px; margin-top:4px;">$${p.precio}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+// PERFIL DE USUARIO
 async function guardarPerfilUsuario() {
   const btn = document.getElementById('btn-save-perfil');
   const nombre = document.getElementById('edit-user-nombre').value.trim();
@@ -567,15 +575,12 @@ async function guardarPerfilUsuario() {
   btn.disabled = true; btn.textContent = "Guardando..."; toast("Subiendo datos...", "ok");
   
   let avatarUrl = currentProfile?.avatar_url;
-
   if (fotoFile) {
     const fileName = `${currentUser.id}_${Date.now()}`;
     const { error: uploadError } = await db.storage.from('avatars').upload(fileName, fotoFile);
     if (!uploadError) {
       const { data: urlData } = db.storage.from('avatars').getPublicUrl(fileName);
       avatarUrl = urlData.publicUrl;
-    } else {
-        toast('Fallo al subir foto. ¿Corriste el SQL de Storage?', 'err');
     }
   }
 
@@ -602,13 +607,14 @@ function renderizarPantallaCuenta() {
     </div>
     <div style="display:flex; flex-direction:column; gap:14px;">
         <button class="product-card" style="width:100%; justify-content:flex-start;" onclick="navegar('editar-perfil')"><span style="font-size:20px;">✏️</span> <span style="font-weight:700;">Editar mis datos</span></button>
+        <button class="product-card" style="width:100%; justify-content:flex-start;" onclick="cargarPantallaPedidos()"><span style="font-size:20px;">📦</span> <span style="font-weight:700;">Mis Pedidos (Historial)</span></button>
         ${botonNegocioHTML}
         <button class="product-card" style="width:100%; justify-content:flex-start; border-color:#fecaca; background:#fef2f2; color:var(--danger);" onclick="doLogout()"><span style="font-size:20px;">🚪</span> <span style="font-weight:800;">Cerrar Sesión</span></button>
     </div>
   `;
 }
 
-// LÓGICA DE NEGOCIO (DASHBOARD)
+// DASHBOARD NEGOCIO Y PRODUCTOS
 async function abrirDashboardNegocio() {
     toast('Cargando tu panel...', 'ok');
     const { data } = await db.from('negocios').select('*').eq('user_id', currentUser.id).maybeSingle();
@@ -616,43 +622,34 @@ async function abrirDashboardNegocio() {
         negocioActual = data;
         document.getElementById('dash-nombre-titulo').textContent = data.nombre;
         document.getElementById('stats-nombre').textContent = "Hola, " + data.nombre;
-        
-        cargarHorariosUI(); // Acomoda los relojes de Mi Horario
-
-        // ==========================================
-        // PASO 2: CARGAR ESTADÍSTICAS REALES EN EL DASHBOARD
-        // ==========================================
+        cargarHorariosUI(); 
         const { count } = await db.from('estadisticas_clics').select('*', { count: 'exact', head: true }).eq('negocio_id', negocioActual.id);
         document.getElementById('stats-clics-count').textContent = count || 0;
-
         navegar('biz-dash');
     } else {
         toast('Aún no configuras tu negocio', 'err'); navegar('onb-1');
     }
 }
 
-// MIS PRODUCTOS (NEGOCIO)
 async function cargarMisProductos() {
   if(!negocioActual) return;
-  const { data, error } = await db.from('ofertas').select('*').eq('negocio_id', negocioActual.id);
+  const { data } = await db.from('ofertas').select('*').eq('negocio_id', negocioActual.id);
   const cont = document.getElementById('biz-productos-lista');
-  
-  if(error) {
-      cont.innerHTML = `<p style="color:var(--danger)">Error BD: ${error.message}</p>`; return;
-  }
-
   const labelDash = document.getElementById('dash-prod-count');
   if(labelDash) labelDash.textContent = `${data ? data.length : 0} publicados`;
 
   if(!data || data.length === 0) {
-    cont.innerHTML = `<div style="text-align:center; padding:40px 20px;"><div style="font-size:48px; margin-bottom:10px;">📦</div><h3 style="font-family:'Bricolage Grotesque'; font-size:18px; margin-bottom:8px;">Sin productos</h3><p style="color:var(--muted); font-size:13px;">No has subido nada a tu menú aún.</p></div>`;
-    return;
+    cont.innerHTML = `<div style="text-align:center; padding:40px 20px;"><div style="font-size:48px; margin-bottom:10px;">📦</div><h3 style="font-family:'Bricolage Grotesque'; font-size:18px; margin-bottom:8px;">Sin productos</h3><p style="color:var(--muted); font-size:13px;">No has subido nada a tu menú aún.</p></div>`; return;
   }
   
   cont.innerHTML = data.map(o => `
     <div class="product-card">
       ${o.imagen_url ? `<div class="product-img" style="background-image:url('${o.imagen_url}'); background-size:cover;"></div>` : `<div class="product-img" style="background:#fff4ec; color:var(--orange);">📦</div>`}
-      <div class="product-info"><div style="font-weight:700; font-size:15px; margin-bottom:2px;">${o.titulo}</div><div style="font-size:12px; color:var(--muted);">${o.activa ? 'Disponible' : 'Pausado'}</div></div>
+      <div class="product-info">
+          <div style="font-weight:700; font-size:15px; margin-bottom:2px;">${o.titulo}</div>
+          <div style="font-size:12px; color:var(--muted);">${o.activa ? 'Disponible' : 'Pausado'}</div>
+          ${o.es_promo ? '<span style="display:inline-block; font-size:10px; background:var(--orange-soft); color:var(--orange-deep); padding:2px 8px; border-radius:50px; font-weight:800; margin-top:4px;">🌟 En Promociones</span>' : ''}
+      </div>
       <div style="font-weight:800; color:var(--orange); font-size:16px;">$${o.precio}</div>
     </div>
   `).join('');
@@ -664,9 +661,9 @@ async function guardarNuevoProducto() {
   const precio = document.getElementById('add-prod-precio').value;
   const desc = document.getElementById('add-prod-desc').value.trim();
   const fotoFile = document.getElementById('add-prod-foto').files[0];
+  const esPromo = document.getElementById('add-prod-promo').checked;
 
   if(!nombre || !precio) return toast('Llena el nombre y precio', 'err');
-  
   btn.disabled = true; btn.textContent = 'Guardando...'; toast('Subiendo producto...', 'ok');
   let imgUrl = null;
 
@@ -676,39 +673,30 @@ async function guardarNuevoProducto() {
     if (!uploadError) {
       const { data: urlData } = db.storage.from('productos').getPublicUrl(fileName);
       imgUrl = urlData.publicUrl;
-    } else {
-      toast('Fallo al subir foto del producto.', 'err');
     }
   }
 
   const { error } = await db.from('ofertas').insert({ 
-      negocio_id: negocioActual.id, titulo: nombre, precio: precio, descripcion: desc, imagen_url: imgUrl, activa: true 
+      negocio_id: negocioActual.id, titulo: nombre, precio: precio, descripcion: desc, imagen_url: imgUrl, activa: true, es_promo: esPromo 
   });
   
-  if (error) {
-      toast('Error guardando en BD: ' + error.message, 'err');
-  } else {
+  if (error) { toast('Error: ' + error.message, 'err'); } 
+  else {
       toast('¡Producto agregado!', 'ok');
       document.getElementById('add-prod-nombre').value = '';
       document.getElementById('add-prod-precio').value = '';
       document.getElementById('add-prod-desc').value = '';
       document.getElementById('add-prod-foto').value = '';
-      await cargarMisProductos();
-      navegar('biz-productos');
+      document.getElementById('add-prod-promo').checked = false;
+      await cargarMisProductos(); navegar('biz-productos');
   }
   btn.disabled = false; btn.textContent = 'Guardar producto';
 }
 
-function abrirEditarNegocio() {
-    toast('Usando tu perfil personal para el contacto del negocio', 'ok');
-    navegar('editar-perfil');
-}
+function abrirEditarNegocio() { toast('Usando tu perfil personal para el contacto del negocio', 'ok'); navegar('editar-perfil'); }
+function verMiPropioPerfil() { if(negocioActual) abrirPerfilPublico(negocioActual.id); }
 
-function verMiPropioPerfil() {
-    if(negocioActual) abrirPerfilPublico(negocioActual.id);
-}
-
-// REGISTRO RÁPIDO DE NEGOCIO
+// REGISTRO NEGOCIO
 async function guardarNegocioRapido() {
   const nombre = document.getElementById('onb-nombre').value.trim();
   const cat = document.getElementById('onb-categoria').value;
@@ -716,19 +704,9 @@ async function guardarNegocioRapido() {
   const dir = document.getElementById('onb-dir').value.trim();
   
   if(!nombre || !wa || !dir) return toast('Llena nombre, WhatsApp y dirección', 'err');
-  
   toast('Registrando...', 'ok');
-  const { error } = await db.from('negocios').upsert({ 
-    user_id: currentUser.id, nombre, categoria: cat, whatsapp: wa, direccion: dir, activo: true 
-  }, { onConflict: 'user_id' });
-
-  if(error) {
-    toast('Error: ' + error.message, 'err');
-  } else {
-    await db.from('profiles').update({ rol: 'negocio' }).eq('id', currentUser.id);
-    toast('¡Negocio registrado!', 'ok');
-    iniciarApp(); 
-  }
+  const { error } = await db.from('negocios').upsert({ user_id: currentUser.id, nombre, categoria: cat, whatsapp: wa, direccion: dir, activo: true }, { onConflict: 'user_id' });
+  if(error) { toast('Error: ' + error.message, 'err'); } else { await db.from('profiles').update({ rol: 'negocio' }).eq('id', currentUser.id); toast('¡Negocio registrado!', 'ok'); iniciarApp(); }
 }
 
 // ARRANQUE
@@ -746,21 +724,14 @@ async function iniciarApp() {
     const foto = prof?.avatar_url || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
     document.getElementById('nav-avatar').src = foto;
     
-    document.getElementById('pc-user-info').innerHTML = `
-        <img src="${foto}" class="profile-pic">
-        <div style="font-size:13px; font-weight:700; display:flex; flex-direction:column;">
-            <span>${prof?.nombre || 'Usuario'}</span>
-            <span style="font-size:11px; color:var(--muted); font-weight:500;">Conectado</span>
-        </div>
-    `;
+    document.getElementById('pc-user-info').innerHTML = `<img src="${foto}" class="profile-pic"><div style="font-size:13px; font-weight:700; display:flex; flex-direction:column;"><span>${prof?.nombre || 'Usuario'}</span><span style="font-size:11px; color:var(--muted); font-weight:500;">Conectado</span></div>`;
 
-    const btnNegocioSide = prof?.rol === 'negocio'
-        ? `<button class="btn-save btn-outline" style="justify-content:flex-start; color:var(--green); border-color:var(--green);" onclick="abrirDashboardNegocio()"><span style="font-size:20px; width:24px;">🏪</span> <span style="font-weight:800;">Mi Panel</span></button>`
-        : `<button class="btn-save btn-outline" style="justify-content:flex-start;" onclick="navegar('onb-1')"><span style="font-size:20px; width:24px;">🏪</span> <span style="font-weight:700;">Registrar Negocio</span></button>`;
+    const btnNegocioSide = prof?.rol === 'negocio' ? `<button class="btn-save btn-outline" style="justify-content:flex-start; color:var(--green); border-color:var(--green);" onclick="abrirDashboardNegocio()"><span style="font-size:20px; width:24px;">🏪</span> <span style="font-weight:800;">Mi Panel</span></button>` : `<button class="btn-save btn-outline" style="justify-content:flex-start;" onclick="navegar('onb-1')"><span style="font-size:20px; width:24px;">🏪</span> <span style="font-weight:700;">Registrar Negocio</span></button>`;
     document.getElementById('btn-negocio-pc').innerHTML = btnNegocioSide;
 
     renderizarPantallaCuenta();
     await cargarNegocios();
+    await cargarPromos(); // Carga las promociones automáticamente al iniciar
     navegar('inicio');
   }
 }
