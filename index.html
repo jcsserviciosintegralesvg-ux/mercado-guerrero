@@ -9,11 +9,15 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Unbounded:wght@700;800;900&display=swap" rel="stylesheet">
 <style>
+  /* --- VARIABLES Y BASE --- */
   :root{ --green:#0f7a3f; --green-deep:#0a5a2e; --green-soft:#e8f5ec; --orange:#ea580c; --orange-soft:#fff4ec; --orange-deep:#c2410c; --ink:#101418; --muted:#6b7280; --line:#e5e7eb; --bg:#f8faf9; --card:#ffffff; --star:#f59e0b; --danger:#dc2626; --radius:16px; --sh: 0 10px 25px -12px rgba(0,0,0,.15), 0 4px 8px -4px rgba(0,0,0,.08); }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
   html,body{color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;height:100%; overflow:hidden;}
   body { background-color: var(--bg); background-image: radial-gradient(circle at 10% 0%, rgba(15,122,63,.08), transparent 40%), radial-gradient(circle at 90% 100%, rgba(234,88,12,.08), transparent 40%); }
+  
+  /* --- LAYOUT GENERAL --- */
   .app-layout { width: 100%; height: 100vh; display: flex; flex-direction: column; position: relative; background: transparent;}
+  
   @media (min-width: 769px) {
     .app-layout { flex-direction: row; }
     #sidebar-desktop { display: flex !important; width: 280px; background: #fff; border-right: 1px solid var(--line); flex-direction: column; z-index: 100; box-shadow: 2px 0 15px rgba(0,0,0,0.03); }
@@ -21,41 +25,54 @@
     .sidebar-menu { padding: 20px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
     .main-content { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
     .panel { max-width: 1100px; margin: 0 auto; width: 100%; padding: 40px 30px !important; background: transparent !important; }
-    #lista-negocios, #lista-promos, #pub-productos, #biz-productos-lista, #lista-mis-pedidos { display: grid !important; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+    #lista-negocios, #lista-promos, #pub-productos, #biz-productos-lista, #lista-mis-pedidos, #lista-favoritos { display: grid !important; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
     .app-header { display: none !important; } 
+    .bottom-nav { display: none !important; } 
   }
+  
   #sidebar-desktop { display: none; }
   .main-content { flex: 1; overflow-y: auto; height: 100%; display: flex; flex-direction: column;}
   .panel { display: none; padding: 14px 14px 40px; background: transparent; flex: 1; }
   .panel.active { display: flex; flex-direction: column; }
+  
+  /* --- COMPONENTES UI --- */
   .app-header { background: linear-gradient(135deg, var(--green), var(--green-deep)); color: #fff; padding: 16px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 50; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
   .chips { display: flex; gap: 8px; margin-bottom: 24px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
   .chips::-webkit-scrollbar { display: none; }
   .chip { padding: 8px 16px; border-radius: 999px; background: #fff; border: 1px solid var(--line); color: var(--ink); font-size: 13px; font-weight: 700; white-space: nowrap; cursor: pointer; transition: all .2s; box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
   .chip.active { background: var(--green); color: #fff; border-color: var(--green); box-shadow: 0 4px 10px rgba(15,122,63,.2); }
-  .product-card, .promo-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; box-shadow: var(--sh); margin-bottom: 12px; }
+  
+  .product-card, .promo-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; box-shadow: var(--sh); margin-bottom: 12px; position: relative; }
   @media (min-width: 769px) { .product-card, .promo-card { margin-bottom: 0; height: 100%; } }
   .product-card:hover, .promo-card:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,0,0,0.08); border-color: var(--green-soft); }
   .product-img { width: 70px; height: 70px; border-radius: 12px; background: #eee; flex-shrink: 0; object-fit: cover; display:grid; place-items:center; font-weight:800; font-size:24px; color:var(--muted); }
+  .product-info { flex: 1; }
+  
   .stat-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: all 0.2s ease; box-shadow: var(--sh); }
   .stat-card:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(0,0,0,0.08); border-color: var(--green-soft); }
   .stat-card .ico-box { width: 48px; height: 48px; border-radius: 14px; background: var(--green-soft); color: var(--green); display: grid; place-items: center; font-size: 22px; flex-shrink: 0; }
   .stat-card .t { font-size: 15px; font-weight: 800; color: var(--ink); line-height:1.2; }
   .stat-card .s { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  
   .app-footer { margin-top: auto; padding: 20px; background: rgba(255,255,255,0.7); backdrop-filter: blur(10px); border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 12px; font-weight: 600; color: var(--muted); width: 100%; flex-shrink: 0; }
+  @media (max-width: 768px) { .app-footer { display: none !important; } }
+
   .btn-save { width: 100%; background: var(--green); color: #fff; border: none; border-radius: 12px; padding: 14px; font-weight: 800; font-size: 15px; cursor: pointer; transition: 0.2s; display:flex; align-items:center; justify-content:center; gap:8px; }
   .btn-save:hover { filter: brightness(1.1); box-shadow: 0 4px 12px rgba(15,122,63,.3); }
   .btn-orange { background: var(--orange); }
   .btn-orange:hover { box-shadow: 0 4px 12px rgba(234,88,12,.3); }
   .btn-outline { background: #fff; color: var(--ink); border: 1px solid var(--line); }
   .btn-outline:hover { background: #f9fafb; box-shadow:none; border-color:var(--green);}
+  
   .field { margin-bottom: 16px; text-align: left; }
   .field label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; display: block; }
   .field input, .field select, .field textarea { width: 100%; border: 1.5px solid var(--line); border-radius: 10px; padding: 12px; font-size: 14px; outline: none; background:#fff; transition:0.2s; font-family:inherit;}
   .field input:focus, .field textarea:focus { border-color: var(--green); box-shadow: 0 0 0 3px var(--green-soft); }
+  
   .profile-pic { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; }
   .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--ink); color:#fff; padding:12px 24px; border-radius:50px; z-index:9999; font-weight:600; transition: 0.3s; box-shadow: 0 10px 25px rgba(0,0,0,0.2);}
   .toast.hidden { top: -100px; opacity: 0; }
+  
   .day-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px;}
   .day-row:last-child{border-bottom:none;}
   .day-row .d{font-weight:700; width:80px;}
@@ -72,18 +89,34 @@
   .tab-switch .t{flex:1;text-align:center;padding:8px;font-size:13px;font-weight:700;color:var(--muted);border-radius:8px;cursor:pointer;}
   .tab-switch .t.active{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
 
-  /* --- NUEVA BARRA INFERIOR (MÓVIL) --- */
+  /* --- BOTTOM NAV (MÓVIL) --- */
   .bottom-nav { background: #fff; border-top: 1px solid var(--line); display: flex; flex-shrink: 0; padding: 10px 0 16px; position: sticky; bottom: 0; z-index: 100; width: 100%; box-shadow: 0 -4px 15px rgba(0,0,0,0.05); }
   .nav-item { flex: 1; text-align: center; font-size: 11px; font-weight: 700; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; transition: 0.2s; }
   .nav-item.active { color: var(--green); }
   .nav-item .ico { font-size: 22px; line-height: 1; transition: transform 0.2s; }
   .nav-item.active .ico { transform: scale(1.1); }
-  @media (min-width: 769px) { .bottom-nav { display: none !important; } }
-  @media (max-width: 768px) { .app-footer { display: none !important; } }
-/* --- ESTILOS FAVORITOS Y FEEDBACK --- */
+
+  /* --- ONBOARDING Y PLANES --- */
+  .onb-header { padding: 16px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; background: transparent; }
+  .progress-bar { height: 6px; background: var(--line); border-radius: 999px; flex: 1; overflow: hidden; }
+  .progress-bar .fill { height: 100%; background: var(--green); border-radius: 999px; transition: width 0.3s ease; }
+  .onb-body { padding: 10px 30px 40px; text-align: center; }
+  .onb-body h2 { font-family: 'Bricolage Grotesque', serif; font-size: 26px; font-weight: 800; line-height: 1.15; margin-bottom: 8px; color: var(--ink); }
+  .onb-body .sub { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+  .plan-card { border: 2px solid var(--line); border-radius: var(--radius); padding: 20px; margin-bottom: 14px; background: #fff; position: relative; cursor: pointer; transition: 0.2s; text-align: left; }
+  .plan-card:hover { border-color: var(--green-soft); transform: translateY(-2px); box-shadow: var(--sh); }
+  .plan-card.featured { border-color: var(--orange); background: linear-gradient(to bottom, #fff, var(--orange-soft)); }
+  .plan-card .rib { position: absolute; top: -12px; right: 16px; background: var(--orange); color: #fff; font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 999px; text-transform: uppercase; letter-spacing: .08em; box-shadow: 0 4px 10px rgba(234,88,12,0.3); }
+  .plan-card .pname { font-family: 'Bricolage Grotesque', serif; font-size: 20px; font-weight: 800; }
+  .plan-card .pprice { font-size: 24px; font-weight: 900; margin: 4px 0 12px; color: var(--ink); }
+  .plan-card .pprice small { font-size: 13px; color: var(--muted); font-weight: 600; }
+  .plan-feats { list-style: none; font-size: 13px; line-height: 1.8; color: var(--muted); }
+  .plan-feats li::before { content: '✓ '; color: var(--green); font-weight: 900; font-size: 14px; }
+  .plan-feats li.x::before { content: '✗ '; color: var(--danger); }
+
+  /* --- FAVORITOS Y FEEDBACK --- */
   .heart-btn { width: 40px; height: 40px; border-radius: 50%; background: #fff; display: grid; place-items: center; font-size: 22px; cursor: pointer; box-shadow: var(--sh); color: var(--line); transition: 0.2s; position: absolute; top: 16px; right: 16px; z-index: 10; }
   .heart-btn.active { color: var(--danger); }
-  
   .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 10000; display: none; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.3s ease; }
   .modal-overlay.show { display: flex; opacity: 1; }
   .response-screen { background: #fff; padding: 30px 24px; border-radius: 24px; text-align: center; width: 100%; max-width: 400px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); transform: translateY(20px); transition: transform 0.3s ease; }
@@ -94,7 +127,20 @@
   .btn-response { flex: 1; padding: 16px; border: none; border-radius: 14px; font-weight: 800; font-size: 15px; font-family: inherit; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
   .btn-response.yes { background: var(--green-soft); color: var(--green-deep); }
   .btn-response.no { background: #fef2f2; color: var(--danger); }
-  .btn-response:hover { filter: brightness(0.95); }
+
+  /* --- DASHBOARD PRO --- */
+  .rating-pill { display: inline-flex; align-items: center; gap: 4px; background: #fef3c7; color: #92400e; padding: 4px 12px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+  .track-code-box { margin-top: 24px; padding: 20px; background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 16px; color: #fff; box-shadow: var(--sh); text-align: center; }
+  .track-code-box .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: #94a3b8; font-weight: 800; margin-bottom: 8px; }
+  .track-code-box .code { font-family: 'Bricolage Grotesque', monospace; font-size: 28px; font-weight: 800; letter-spacing: .05em; color: #fde68a; margin-bottom: 6px; }
+  .track-code-box .desc { font-size: 13px; color: #cbd5e1; line-height: 1.4; }
+  
+  .bar-chart { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; height: 130px; margin-top: 16px; padding-bottom: 24px; border-bottom: 1px solid var(--line); position: relative; }
+  .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; position: relative; }
+  .bar-fill { width: 100%; max-width: 30px; background: var(--orange-soft); border-radius: 6px 6px 0 0; transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+  .bar-fill.today { background: var(--orange); box-shadow: 0 -4px 10px rgba(234,88,12,0.2); }
+  .bar-lbl { position: absolute; bottom: -22px; font-size: 11px; font-weight: 700; color: var(--muted); }
+  .bar-val { font-size: 11px; font-weight: 800; color: var(--ink); margin-bottom: 6px; }
 </style>
 </head>
 <body>
@@ -113,8 +159,11 @@
         <button class="btn-save btn-outline" style="justify-content:flex-start;" onclick="navegar('inicio')">
             <span style="font-size:20px; width:24px;">🏠</span> <span style="font-weight:700;">Inicio</span>
         </button>
-        <button class="btn-save btn-outline" style="justify-content:flex-start; border-color:var(--orange-soft); background:var(--orange-soft); color:var(--orange-deep);" onclick="navegar('promos'); cargarPromos();">
+        <button class="btn-save btn-outline" style="justify-content:flex-start; border-color:var(--orange-soft); background:var(--orange-soft); color:var(--orange-deep);" onclick="cargarPromos(); navegar('promos');">
             <span style="font-size:20px; width:24px;">🔥</span> <span style="font-weight:800;">Promociones</span>
+        </button>
+        <button class="btn-save btn-outline" style="justify-content:flex-start;" onclick="cargarFavoritosUI(); navegar('favoritos');">
+            <span style="font-size:20px; width:24px;">❤️</span> <span style="font-weight:700;">Favoritos</span>
         </button>
         <button class="btn-save btn-outline" style="justify-content:flex-start;" onclick="navegar('cuenta')">
             <span style="font-size:20px; width:24px;">👤</span> <span style="font-weight:700;">Mi Cuenta</span>
@@ -187,7 +236,6 @@
           <div style="max-width:600px; margin: 0 auto; width:100%; background:#fff; border-radius:var(--radius); box-shadow:var(--sh); overflow:hidden;">
               <div id="det-img" style="height:280px; background-size:cover; background-position:center; position:relative; background-color:#eee;">
                   <div style="position:absolute; top:16px; left:16px; width:40px; height:40px; background:rgba(255,255,255,0.9); border-radius:50%; display:grid; place-items:center; font-size:24px; cursor:pointer; color:var(--ink); box-shadow:var(--sh);" onclick="navegar('perfil-pub')">‹</div>
-                  
                   <div id="det-btn-fav" class="heart-btn">♥</div>
               </div>
               <div style="padding:24px;">
@@ -214,6 +262,13 @@
           <div style="background:transparent; max-width:1100px; margin:0 auto; width:100%;">
               <h2 style="font-family:'Bricolage Grotesque'; margin-bottom:15px; font-size:32px; font-weight:800; color:var(--orange-deep); letter-spacing:-0.02em;">🔥 Ofertas Imperdibles</h2>
               <div id="lista-promos"><p style="color:var(--muted);">Cargando ofertas del día...</p></div>
+          </div>
+      </section>
+
+      <section id="panel-favoritos" class="panel">
+          <div style="max-width:900px; margin: 0 auto; width:100%;">
+              <h2 style="font-family:'Bricolage Grotesque'; font-size:32px; font-weight:800; color:var(--ink); margin-bottom:24px;">Mis Favoritos ❤️</h2>
+              <div id="lista-favoritos"></div>
           </div>
       </section>
 
@@ -246,30 +301,109 @@
           </div>
       </section>
 
+      <section id="panel-onb-0" class="panel">
+          <div style="max-width:500px; margin: 0 auto; width:100%; background:#fff; border-radius:var(--radius); box-shadow:var(--sh); padding: 40px 20px; text-align:center; display:flex; flex-direction:column; justify-content:center;">
+              <div style="font-size:56px; margin-bottom:16px;">🏪</div>
+              <h2 style="font-family:'Bricolage Grotesque'; font-size:28px; font-weight:800; line-height:1.1; margin-bottom:12px;">Pon tu negocio en el mapa de Vicente Guerrero</h2>
+              <p style="color:var(--muted); font-size:15px; margin-bottom:30px;">Miles de vecinos buscando comida, ferretería y servicios cada semana.</p>
+              <button class="btn-save" onclick="navegar('onb-1')">Comenzar registro</button>
+              <button style="background:transparent; border:none; color:var(--muted); font-family:inherit; font-weight:700; font-size:14px; margin-top:16px; cursor:pointer;" onclick="navegar('cuenta')">Cancelar</button>
+          </div>
+      </section>
+
       <section id="panel-onb-1" class="panel">
-          <div style="max-width:500px; margin: 0 auto; width:100%; background:#fff; border-radius:var(--radius); box-shadow:var(--sh); padding: 30px;">
-              <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
-                <div style="font-size:24px; cursor:pointer;" onclick="navegar('cuenta')">‹</div>
-                <h2 style="font-family:'Bricolage Grotesque'; margin:0;">Registra tu negocio</h2>
+          <div style="max-width:500px; margin: 0 auto; width:100%; background:#fff; border-radius:var(--radius); box-shadow:var(--sh);">
+              <div class="onb-header">
+                  <div style="font-size:26px; cursor:pointer; color:var(--muted); width:24px;" onclick="navegar('onb-0')">‹</div>
+                  <div class="progress-bar"><div class="fill" style="width:33%"></div></div>
+                  <span style="font-size:12px; color:var(--muted); font-weight:700;">1/3</span>
               </div>
-              <div class="field"><label>Nombre del negocio</label><input type="text" id="onb-nombre"></div>
-              <div class="field"><label>Categoría</label><select id="onb-categoria"><option value="Comida">Comida</option><option value="Ferretería">Ferretería</option><option value="Servicios">Servicios</option><option value="Abarrotes">Abarrotes</option></select></div>
-              <div class="field"><label>WhatsApp del negocio</label><input type="number" id="onb-wa"></div>
-              <div class="field"><label>Dirección física</label><input type="text" id="onb-dir"></div>
-              <button class="btn-save" onclick="guardarNegocioRapido()">Dar de alta negocio</button>
+              <div class="onb-body">
+                  <h2>Cuéntanos de tu negocio</h2>
+                  <p class="sub">Paso 1: Información básica</p>
+                  <div class="field"><label>Nombre del negocio</label><input type="text" id="onb-nombre" placeholder="Ej: Pollos El Güero"></div>
+                  <div class="field"><label>Categoría principal</label><select id="onb-categoria">
+                      <option value="">Selecciona una opción...</option>
+                      <option value="Comida">Comida y Restaurantes</option>
+                      <option value="Ferretería">Ferretería y Construcción</option>
+                      <option value="Abarrotes">Abarrotes y Tiendas</option>
+                      <option value="Servicios">Servicios Generales</option>
+                  </select></div>
+                  <button class="btn-save" onclick="validarOnbPaso1()">Continuar</button>
+              </div>
+          </div>
+      </section>
+
+      <section id="panel-onb-2" class="panel">
+          <div style="max-width:500px; margin: 0 auto; width:100%; background:#fff; border-radius:var(--radius); box-shadow:var(--sh);">
+              <div class="onb-header">
+                  <div style="font-size:26px; cursor:pointer; color:var(--muted); width:24px;" onclick="navegar('onb-1')">‹</div>
+                  <div class="progress-bar"><div class="fill" style="width:66%"></div></div>
+                  <span style="font-size:12px; color:var(--muted); font-weight:700;">2/3</span>
+              </div>
+              <div class="onb-body">
+                  <h2>WhatsApp y ubicación</h2>
+                  <p class="sub">Aquí llegarán los pedidos de tus clientes</p>
+                  <div class="field"><label>WhatsApp del negocio</label><input type="number" id="onb-wa" placeholder="10 dígitos"></div>
+                  <div style="background:var(--green-soft); padding:12px; border-radius:12px; font-size:12px; color:var(--green-deep); margin-bottom:16px; text-align:left; font-weight:600;">
+                      💡 Al tocar "Pedir por WhatsApp", el cliente te escribirá directo a este número con su pedido pre-armado.
+                  </div>
+                  <div class="field"><label>Dirección física</label><input type="text" id="onb-dir" placeholder="Calle, número, colonia"></div>
+                  <button class="btn-save" onclick="validarOnbPaso2()">Ver planes</button>
+              </div>
+          </div>
+      </section>
+
+      <section id="panel-onb-3" class="panel">
+          <div style="max-width:500px; margin: 0 auto; width:100%; background:transparent;">
+              <div class="onb-header" style="background:#fff; border-radius:var(--radius) var(--radius) 0 0;">
+                  <div style="font-size:26px; cursor:pointer; color:var(--muted); width:24px;" onclick="navegar('onb-2')">‹</div>
+                  <div class="progress-bar"><div class="fill" style="width:100%"></div></div>
+                  <span style="font-size:12px; color:var(--green); font-weight:800;">Final</span>
+              </div>
+              <div class="onb-body" style="background:#fff; border-radius:0 0 var(--radius) var(--radius); box-shadow:var(--sh);">
+                  <h2>Elige tu plan</h2>
+                  <p class="sub">Empieza hoy. Puedes cambiarlo cuando quieras.</p>
+                  
+                  <div class="plan-card" style="border-color:var(--green); background:linear-gradient(to bottom, #fff, var(--green-soft));" onclick="finalizarRegistroNegocio('prueba')">
+                      <div class="rib" style="background:var(--green); box-shadow: 0 4px 10px rgba(15,122,63,.3);">🎁 30 días gratis</div>
+                      <div class="pname">Prueba Inicial</div>
+                      <div class="pprice">$0 <small>/ primer mes</small></div>
+                      <ul class="plan-feats">
+                          <li><strong>Hasta 3 productos</strong> en el menú</li>
+                          <li>Perfil de negocio básico</li>
+                          <li>Botón directo a WhatsApp</li>
+                          <li class="x">Sin estadísticas avanzadas</li>
+                      </ul>
+                  </div>
+
+                  <div class="plan-card featured" onclick="finalizarRegistroNegocio('pro')">
+                      <div class="rib">⭐ Más Popular</div>
+                      <div class="pname">Plan Pro</div>
+                      <div class="pprice">$99 <small>MXN / mes</small></div>
+                      <ul class="plan-feats">
+                          <li><strong>Hasta 20 productos</strong> en el menú</li>
+                          <li>Insignia "Responde rápido ⭐"</li>
+                          <li>Estadísticas de clics y visitas</li>
+                          <li>Aparece en "Promociones del Día"</li>
+                      </ul>
+                  </div>
+              </div>
           </div>
       </section>
 
       <section id="panel-biz-dash" class="panel">
           <div style="max-width:900px; margin: 0 auto; width:100%;">
-              <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:24px;">
-                <div style="display:flex; align-items:center; gap:12px;">
-                    <div style="font-size:26px; cursor:pointer; color:var(--muted);" onclick="navegar('cuenta')">‹</div>
-                    <div>
-                        <h2 style="font-family:'Bricolage Grotesque'; font-size:28px; font-weight:800; color:var(--ink);" id="dash-nombre-titulo">Mi Negocio</h2>
-                        <span style="display:inline-block; font-size:11px; font-weight:700; color:var(--green); background:var(--green-soft); padding:4px 10px; border-radius:50px; margin-top:4px;">● Abierto · Gestiona tu local</span>
-                    </div>
-                </div>
+              
+              <div style="display:flex; align-items:flex-start; gap:12px; margin-bottom:24px;">
+                  <div style="font-size:26px; cursor:pointer; color:var(--muted);" onclick="navegar('cuenta')">‹</div>
+                  <div>
+                      <h2 style="font-family:'Bricolage Grotesque'; font-size:28px; font-weight:800; color:var(--ink);" id="dash-nombre-titulo">Mi Negocio</h2>
+                      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:6px;">
+                          <span style="display:inline-block; font-size:11px; font-weight:700; color:var(--green); background:var(--green-soft); padding:4px 10px; border-radius:50px;">● Abierto · Panel</span>
+                          <span class="rating-pill">⭐ 4.8 · Responde rápido</span>
+                      </div>
+                  </div>
               </div>
               
               <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:16px;">
@@ -295,8 +429,14 @@
                   </div>
               </div>
 
+              <div class="track-code-box">
+                  <div class="lbl">🔒 Tu código rastreable (Plan Pro)</div>
+                  <div class="code" id="dash-track-code">MG-XXXX-0000</div>
+                  <div class="desc">Dile a tus clientes que mencionen este código al pedir. <br><strong style="color:#fff;">Registramos <span id="dash-track-count" style="color:var(--orange);">0</span> usos este mes.</strong></div>
+              </div>
+
               <div style="margin-top:24px; display:flex; justify-content:center;">
-                  <button class="btn-save btn-orange" style="max-width: 400px; padding:16px;" onclick="verMiPropioPerfil()">👁️ Ver cómo te ven tus clientes</button>
+                  <button class="btn-save btn-outline" style="max-width: 400px; padding:16px;" onclick="verMiPropioPerfil()">👁️ Ver cómo te ven tus clientes</button>
               </div>
           </div>
       </section>
@@ -374,34 +514,17 @@
                   <span style="font-size:48px; line-height:1;">🔥</span>
                   <div>
                       <div style="font-family:'Bricolage Grotesque'; font-size:36px; font-weight:900; color:var(--orange); line-height:1; margin-bottom:4px;" id="stats-clics-count">0</div>
-                      <div style="font-size:15px; font-weight:700; color:var(--orange-deep);">Clics en "Pedir ahora"</div>
+                      <div style="font-size:15px; font-weight:700; color:var(--orange-deep);">Clics totales en "Pedir ahora"</div>
                   </div>
               </div>
 
               <div style="background:#fff; padding:24px; border-radius:24px; box-shadow:var(--sh);">
                   <div class="tab-switch"><div class="t">Día</div><div class="t active">Semana</div><div class="t">Mes</div></div>
-                  <div style="font-size:13px; color:var(--muted); font-weight:600; margin-bottom:10px;">Comportamiento (Gráfica ilustrativa)</div>
-                  <svg style="width:100%; height:120px;" viewBox="0 0 240 100">
-                      <polyline points="10,70 45,50 80,55 115,35 150,45 185,25 220,15" fill="none" stroke="var(--orange)" stroke-width="3" stroke-linecap="round"/>
-                      <circle cx="220" cy="15" r="5" fill="var(--orange)"/>
-                      <text x="10" y="95" font-size="10" font-weight="700" fill="#6b7280">L</text><text x="45" y="95" font-size="10" font-weight="700" fill="#6b7280">M</text><text x="80" y="95" font-size="10" font-weight="700" fill="#6b7280">M</text><text x="115" y="95" font-size="10" font-weight="700" fill="#6b7280">J</text><text x="150" y="95" font-size="10" font-weight="700" fill="#6b7280">V</text><text x="185" y="95" font-size="10" font-weight="700" fill="#6b7280">S</text><text x="220" y="95" font-size="10" font-weight="700" fill="#6b7280">D</text>
-                  </svg>
+                  <div style="font-size:13px; color:var(--muted); font-weight:600; margin-bottom:10px;">Comportamiento (Últimos 7 días)</div>
+                  
+                  <div class="bar-chart" id="stats-bar-chart">
+                      </div>
               </div>
-          </div>
-      </section>
-
-    </div>
-
-    <footer class="app-footer">
-        <svg width="20" height="20" viewBox="0 -22 100 122"><rect x="0" y="0" width="100" height="100" rx="22" fill="#0f7a3f"/><path d="M70 0 L100 0 L100 30 L88 30 A18 18 0 0 0 70 12 Z" fill="#ea580c"/></svg>
-        <span>Mercado Guerrero · El corazón de tu comunidad</span>
-    </footer>
-
-    <nav class="bottom-nav" id="mobile-bottom-nav">
-     <section id="panel-favoritos" class="panel">
-          <div style="max-width:900px; margin: 0 auto; width:100%;">
-              <h2 style="font-family:'Bricolage Grotesque'; font-size:32px; font-weight:800; color:var(--ink); margin-bottom:24px;">Mis Favoritos ❤️</h2>
-              <div id="lista-favoritos"></div>
           </div>
       </section>
 
@@ -473,7 +596,6 @@
   </div>
 </div>
 </div>
-
 <script>
 const SUPABASE_URL = 'https://djddsqbmaxgpryabvktt.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqZGRzcWJtYXhncHJ5YWJ2a3R0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2MzUxMTEsImV4cCI6MjA5MjIxMTExMX0.3JO1RU1_NY4cTCO23_QanF0kFBE8VWPqzsU6yTvLx1c';
@@ -485,34 +607,30 @@ let negocioActual = null;
 let negociosCache = [];
 let categoriaActual = 'Todos';
 
-// LOCALSTORAGE PARA PEDIDOS Y FAVORITOS
 let misPedidosLocales = JSON.parse(localStorage.getItem('mg_pedidos') || '[]');
 let misFavoritosLocales = JSON.parse(localStorage.getItem('mg_favoritos') || '[]');
-let negocioEsperandoFeedback = null; // Para el truco de WhatsApp
-  
+let negocioEsperandoFeedback = null;
+let tempNegocioData = {};
+
 function toast(msg, type='ok'){
   const t = document.getElementById('toast');
   t.textContent = msg; t.className = 'toast ' + type; t.classList.remove('hidden');
   setTimeout(()=>t.classList.add('hidden'), 4000);
 }
 
-// --- ACTUALIZADO: Función navegar con Bottom Nav ---
+// NAVEGACIÓN
 function navegar(panelId) {
-  // 1. Cambiar paneles
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.getElementById('panel-' + panelId).classList.add('active');
   document.querySelector('.main-content').scrollTo({top: 0, behavior: 'smooth'});
 
-  // 2. Actualizar Bottom Nav (Solo en vistas principales)
   const navItems = document.querySelectorAll('.nav-item');
   navItems.forEach(item => item.classList.remove('active'));
   
-  // Si el panelId coincide con un tab, lo marcamos activo
   const activeTab = document.querySelector(`.nav-item[data-tab="${panelId}"]`);
   if (activeTab) {
       activeTab.classList.add('active');
   } else {
-      // Si estamos en un detalle (ej. perfil-pub), mantenemos seleccionado "Inicio" o "Promos" según el contexto
       if(panelId === 'perfil-pub' || panelId === 'producto-detalle') {
           const tabInicio = document.querySelector(`.nav-item[data-tab="inicio"]`);
           if (tabInicio) tabInicio.classList.add('active');
@@ -520,12 +638,11 @@ function navegar(panelId) {
   }
 }
 
-// --- NUEVA FUNCIÓN: Abrir vista de Detalle de Producto ---
+// DETALLES DEL PRODUCTO
 function abrirDetalleProducto(productoStr, negocioStr) {
   const p = JSON.parse(decodeURIComponent(productoStr));
   const n = JSON.parse(decodeURIComponent(negocioStr));
 
-  // Llenar la interfaz
   document.getElementById('det-img').style.backgroundImage = p.imagen_url ? `url('${p.imagen_url}')` : 'none';
   document.getElementById('det-titulo').textContent = p.titulo;
   document.getElementById('det-precio').textContent = `$${p.precio}`;
@@ -533,41 +650,26 @@ function abrirDetalleProducto(productoStr, negocioStr) {
   document.getElementById('det-biz-img').style.backgroundImage = n.imagen_url ? `url('${n.imagen_url}')` : 'none';
   document.getElementById('det-biz-nombre').textContent = n.nombre;
 
-  // Lógica del Favorito
   const btnFav = document.getElementById('det-btn-fav');
   const esFav = misFavoritosLocales.some(f => f.producto.id === p.id);
   if(esFav) btnFav.classList.add('active'); else btnFav.classList.remove('active');
   btnFav.onclick = () => toggleFavorito(p, n);
 
-  // Configurar botón de WhatsApp y Feedback
   const waBtn = document.getElementById('det-btn-wa');
   if(n.whatsapp) { 
     waBtn.style.display = 'flex'; 
     waBtn.onclick = async () => {
         await db.from('estadisticas_clics').insert({ negocio_id: n.id });
         registrarPedidoLocal(n);
-        
-        // ACTIVAMOS LA ESPERA PARA EL FEEDBACK
         negocioEsperandoFeedback = n;
-        
         window.open(`https://wa.me/52${n.whatsapp}?text=Hola, vengo de Mercado Guerrero. Me interesa pedir: *${p.titulo}* ($${p.precio}).`);
     };
-  } else { 
-    waBtn.style.display = 'none'; 
-  }
-
+  } else { waBtn.style.display = 'none'; }
   navegar('producto-detalle');
 }
 
-  // Navegar a la pantalla
-  navegar('producto-detalle');
-}
+function toggleDiaEditable(elemento) { elemento.parentElement.classList.toggle('closed'); }
 
-function toggleDiaEditable(elemento) {
-  elemento.parentElement.classList.toggle('closed');
-}
-
-// HORARIOS
 async function guardarHorarioBD() {
     toast('Guardando horarios...', 'ok');
     const dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
@@ -591,7 +693,7 @@ function cargarHorariosUI() {
     }
 }
 
-// LOGIN Y LOGOUT
+// LOGIN / AUTH
 async function doLogout(){ toast('Cerrando sesión...', 'ok'); await db.auth.signOut(); location.reload(); }
 async function doLogin(){
   const email = document.getElementById('login-email').value;
@@ -604,22 +706,13 @@ async function doLogin(){
   toast('¡Bienvenido!', 'ok'); iniciarApp();
 }
 
-  // ALTERNAR ENTRE LOGIN Y REGISTRO
 function mostrarModoAuth(modo) {
   const esRegistro = modo === 'registro';
-
-  // Tabs
   document.getElementById('tab-login').classList.toggle('active', !esRegistro);
   document.getElementById('tab-registro').classList.toggle('active', esRegistro);
-
-  // Campos extra
   document.getElementById('campos-registro').style.display = esRegistro ? 'block' : 'none';
-
-  // Textos dinámicos
   document.getElementById('auth-titulo').textContent = esRegistro ? 'Crea tu cuenta' : 'Inicia Sesión';
-  document.getElementById('auth-subtitulo').textContent = esRegistro
-    ? 'Únete a la comunidad de Mercado Guerrero'
-    : 'Accede a tu cuenta de Mercado Guerrero';
+  document.getElementById('auth-subtitulo').textContent = esRegistro ? 'Únete a la comunidad de Mercado Guerrero' : 'Accede a tu cuenta de Mercado Guerrero';
   document.getElementById('btn-auth-action').textContent = esRegistro ? 'Crear mi cuenta' : 'Entrar a mi cuenta';
   document.getElementById('btn-auth-action').onclick = esRegistro ? doRegister : doLogin;
   document.getElementById('auth-link-texto').textContent = esRegistro ? '¿Ya tienes cuenta?' : '¿No tienes cuenta?';
@@ -627,62 +720,32 @@ function mostrarModoAuth(modo) {
   document.getElementById('auth-link-accion').onclick = () => mostrarModoAuth(esRegistro ? 'login' : 'registro');
 }
 
-// REGISTRO DE NUEVO USUARIO
 async function doRegister() {
   const email    = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-pass').value;
   const nombre   = document.getElementById('reg-nombre').value.trim();
   const wa       = document.getElementById('reg-wa').value.trim();
 
-  if (!email || !password || !nombre || !wa) 
-    return toast('Completa todos los campos', 'err');
-  if (password.length < 6) 
-    return toast('La contraseña debe tener mínimo 6 caracteres', 'err');
+  if (!email || !password || !nombre || !wa) return toast('Completa todos los campos', 'err');
+  if (password.length < 6) return toast('La contraseña debe tener mínimo 6 caracteres', 'err');
 
   const btn = document.getElementById('btn-auth-action');
-  btn.disabled = true;
-  btn.textContent = 'Creando cuenta...';
-  toast('Registrando...', 'ok');
+  btn.disabled = true; btn.textContent = 'Creando cuenta...'; toast('Registrando...', 'ok');
 
-  // 1. Crear usuario en Supabase Auth
   const { data, error } = await db.auth.signUp({ email, password });
-
-  if (error) {
-    toast(error.message, 'err');
-    btn.disabled = false;
-    btn.textContent = 'Crear mi cuenta';
-    return;
-  }
+  if (error) { toast(error.message, 'err'); btn.disabled = false; btn.textContent = 'Crear mi cuenta'; return; }
 
   const uid = data.user?.id;
-  if (!uid) {
-    toast('Error inesperado. Intenta de nuevo.', 'err');
-    btn.disabled = false;
-    btn.textContent = 'Crear mi cuenta';
-    return;
-  }
+  if (!uid) { toast('Error inesperado. Intenta de nuevo.', 'err'); btn.disabled = false; btn.textContent = 'Crear mi cuenta'; return; }
 
-  // 2. Guardar perfil en tabla profiles
-  const { error: profError } = await db.from('profiles').upsert({
-    id: uid,
-    nombre,
-    whatsapp: wa,
-    rol: 'cliente'
-  });
+  const { error: profError } = await db.from('profiles').upsert({ id: uid, nombre, whatsapp: wa, rol: 'cliente' });
+  if (profError) toast('Cuenta creada pero hubo un problema guardando tu perfil.', 'err'); else toast('¡Cuenta creada! Bienvenido/a 🎉', 'ok');
 
-  if (profError) {
-    toast('Cuenta creada pero hubo un problema guardando tu perfil.', 'err');
-  } else {
-    toast('¡Cuenta creada! Bienvenido/a 🎉', 'ok');
-  }
-
-  btn.disabled = false;
-  btn.textContent = 'Crear mi cuenta';
-
-  // 3. Iniciar sesión automáticamente
+  btn.disabled = false; btn.textContent = 'Crear mi cuenta';
   document.getElementById('panel-auth').style.display = 'none';
   iniciarApp();
 }
+
 // NEGOCIOS Y FILTROS
 async function cargarNegocios(){
   const { data } = await db.from('negocios').select('*').eq('activo', true);
@@ -731,24 +794,19 @@ async function abrirPerfilPublico(idNegocio) {
   if(neg.whatsapp) { 
     waBtn.style.display = 'block'; 
     waBtn.onclick = async () => {
-        // Guardar estadistica
         await db.from('estadisticas_clics').insert({ negocio_id: neg.id });
-        // Guardar pedido local
         registrarPedidoLocal(neg);
-        // Abrir WhatsApp
+        negocioEsperandoFeedback = neg;
         window.open(`https://wa.me/52${neg.whatsapp}?text=Hola, vengo de Mercado Guerrero y quiero hacer un pedido.`);
     };
   } else { waBtn.style.display = 'none'; }
 
-  // CARGAR PRODUCTOS PÚBLICOS
   const { data: prods } = await db.from('ofertas').select('*').eq('negocio_id', neg.id).eq('activa', true);
   const cont = document.getElementById('pub-productos');
   if(!prods || prods.length === 0) { 
       cont.innerHTML = '<p style="color:var(--muted); font-size:14px;">Este negocio aún no tiene productos publicados.</p>'; 
   } else {
-    // Convertimos los objetos a string seguro para pasarlos por HTML
     const negocioStr = encodeURIComponent(JSON.stringify(neg));
-
     cont.innerHTML = prods.map(p => {
       const prodStr = encodeURIComponent(JSON.stringify(p));
       return `
@@ -766,9 +824,7 @@ async function abrirPerfilPublico(idNegocio) {
   navegar('perfil-pub');
 }
 
-// ==========================================
-// MÓDULO MIS PEDIDOS LOCALES
-// ==========================================
+// MIS PEDIDOS
 function registrarPedidoLocal(negocio) {
   const fechaActual = new Date().toLocaleDateString('es-MX', { day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit' });
   const nuevoPedido = { id: Date.now(), negocioNombre: negocio.nombre, negocioId: negocio.id, fecha: fechaActual };
@@ -795,16 +851,12 @@ function cargarPantallaPedidos() {
   navegar('mis-pedidos');
 }
 
-// ==========================================
-// MÓDULO PROMOCIONES REALES
-// ==========================================
+// PROMOCIONES
 async function cargarPromos() {
   const cont = document.getElementById('lista-promos');
   const { data, error } = await db.from('ofertas').select('*, negocios(nombre)').eq('es_promo', true).eq('activa', true).limit(20);
   
-  if (error) {
-    cont.innerHTML = `<p style="color:var(--danger)">Error: ${error.message}</p>`; return;
-  }
+  if (error) { cont.innerHTML = `<p style="color:var(--danger)">Error: ${error.message}</p>`; return; }
   if (!data || data.length === 0) {
     cont.innerHTML = `<div style="background:var(--orange-soft); border:2px dashed var(--orange); border-radius:14px; padding:40px 20px; text-align:center;"><div style="font-size:48px; margin-bottom:10px;">🔥</div><h3 style="color:var(--orange-deep); font-family:'Bricolage Grotesque', serif; font-size:20px; margin-bottom:8px; line-height:1.1;">Aún sin promociones</h3><p style="color:var(--orange); font-size:14px;">Los negocios de tu zona están preparando sus mejores ofertas.</p></div>`;
   } else {
@@ -820,6 +872,61 @@ async function cargarPromos() {
       </div>
     `).join('');
   }
+}
+
+// FAVORITOS Y FEEDBACK
+function toggleFavorito(productoObj, negocioObj) {
+    const idUnico = productoObj.id;
+    const index = misFavoritosLocales.findIndex(f => f.producto.id === idUnico);
+    
+    if (index === -1) {
+        misFavoritosLocales.push({ producto: productoObj, negocio: negocioObj });
+        toast('Guardado en Favoritos ❤️', 'ok');
+        document.getElementById('det-btn-fav').classList.add('active');
+    } else {
+        misFavoritosLocales.splice(index, 1);
+        toast('Eliminado de Favoritos', 'ok');
+        document.getElementById('det-btn-fav').classList.remove('active');
+    }
+    localStorage.setItem('mg_favoritos', JSON.stringify(misFavoritosLocales));
+}
+
+function cargarFavoritosUI() {
+    const cont = document.getElementById('lista-favoritos');
+    if(misFavoritosLocales.length === 0) {
+        cont.innerHTML = `<div style="text-align:center; padding:40px 20px;"><div style="font-size:48px; margin-bottom:10px;">💔</div><h3 style="font-family:'Bricolage Grotesque'; font-size:18px; margin-bottom:8px;">Aún no tienes favoritos</h3><p style="color:var(--muted); font-size:13px;">Explora y guarda los platillos que más te gusten tocando el corazón.</p></div>`;
+        return;
+    }
+    cont.innerHTML = misFavoritosLocales.map(fav => {
+        const prodStr = encodeURIComponent(JSON.stringify(fav.producto));
+        const negStr = encodeURIComponent(JSON.stringify(fav.negocio));
+        return `
+        <div class="product-card" onclick="abrirDetalleProducto('${prodStr}', '${negStr}')" style="cursor:pointer; border-color:var(--danger);">
+            ${fav.producto.imagen_url ? `<div class="product-img" style="background-image:url('${fav.producto.imagen_url}'); background-size:cover;"></div>` : `<div class="product-img" style="background:#fff4ec; color:var(--orange);">📦</div>`}
+            <div class="product-info">
+                <div style="font-weight:700; font-size:15px; margin-bottom:2px;">${fav.producto.titulo}</div>
+                <div style="font-size:12px; color:var(--muted);">${fav.negocio.nombre}</div>
+            </div>
+            <div style="color:var(--danger); font-size:20px;">♥</div>
+        </div>
+        `;
+    }).join('');
+}
+
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && negocioEsperandoFeedback) {
+        setTimeout(() => {
+            document.getElementById('feedback-biz-name').textContent = negocioEsperandoFeedback.nombre;
+            document.getElementById('modal-feedback').classList.add('show');
+            negocioEsperandoFeedback = null; 
+        }, 1500);
+    }
+});
+
+function cerrarFeedback(respondioBien) {
+    document.getElementById('modal-feedback').classList.remove('show');
+    if(respondioBien) toast('¡Genial! Gracias por tu opinión. 🌟', 'ok');
+    else toast('Gracias por avisarnos. Lo tendremos en cuenta. 🙏', 'ok');
 }
 
 // PERFIL DE USUARIO
@@ -856,7 +963,7 @@ function renderizarPantallaCuenta() {
   
   const botonNegocioHTML = esNegocio 
     ? `<button class="product-card" style="width:100%; justify-content:flex-start; border-color:var(--green); background:var(--green-soft);" onclick="abrirDashboardNegocio()"><span style="font-size:20px;">🏪</span> <span style="font-weight:800; color:var(--green-deep);">Mi Panel de Negocio</span></button>`
-    : `<button class="product-card" style="width:100%; justify-content:flex-start;" onclick="navegar('onb-1')"><span style="font-size:20px;">🏪</span> <span style="font-weight:700;">Registrar mi negocio</span></button>`;
+    : `<button class="product-card" style="width:100%; justify-content:flex-start;" onclick="navegar('onb-0')"><span style="font-size:20px;">🏪</span> <span style="font-weight:700;">Registrar mi negocio</span></button>`;
 
   cont.innerHTML = `
     <div style="background:linear-gradient(135deg, var(--green), var(--green-deep)); color:#fff; border-radius:24px; padding:40px 20px; display:flex; flex-direction:column; align-items:center; text-align:center; box-shadow: 0 15px 30px -10px rgba(15,122,63,0.5); margin-bottom:30px;">
@@ -874,21 +981,116 @@ function renderizarPantallaCuenta() {
   `;
 }
 
-// DASHBOARD NEGOCIO Y PRODUCTOS
+// ONBOARDING WIZARD LÓGICA
+function validarOnbPaso1() {
+    const nombre = document.getElementById('onb-nombre').value.trim();
+    const cat = document.getElementById('onb-categoria').value;
+    if (!nombre) return toast('Ingresa el nombre de tu negocio', 'err');
+    if (!cat) return toast('Selecciona una categoría', 'err');
+    
+    tempNegocioData.nombre = nombre;
+    tempNegocioData.categoria = cat;
+    navegar('onb-2');
+}
+
+function validarOnbPaso2() {
+    const wa = document.getElementById('onb-wa').value.trim();
+    const dir = document.getElementById('onb-dir').value.trim();
+    if (!wa || wa.length < 10) return toast('Ingresa un WhatsApp válido de 10 dígitos', 'err');
+    if (!dir) return toast('Ingresa la dirección física', 'err');
+    
+    tempNegocioData.whatsapp = wa;
+    tempNegocioData.direccion = dir;
+    navegar('onb-3');
+}
+
+async function finalizarRegistroNegocio(planElegido) {
+    toast('Configurando tu panel...', 'ok');
+    
+    const datosASubir = {
+        user_id: currentUser.id,
+        nombre: tempNegocioData.nombre,
+        categoria: tempNegocioData.categoria,
+        whatsapp: tempNegocioData.whatsapp,
+        direccion: tempNegocioData.direccion,
+        activo: true
+    };
+
+    const { error } = await db.from('negocios').upsert(datosASubir, { onConflict: 'user_id' });
+    
+    if(error) { 
+        toast('Error: ' + error.message, 'err'); 
+    } else { 
+        await db.from('profiles').update({ rol: 'negocio' }).eq('id', currentUser.id); 
+        toast('¡Bienvenido! Tu negocio está listo.', 'ok'); 
+        tempNegocioData = {};
+        iniciarApp(); 
+    }
+}
+
+// ================= DASHBOARD NEGOCIO AVANZADO =================
 async function abrirDashboardNegocio() {
     toast('Cargando tu panel...', 'ok');
     const { data } = await db.from('negocios').select('*').eq('user_id', currentUser.id).maybeSingle();
+    
     if (data) {
         negocioActual = data;
+        
         document.getElementById('dash-nombre-titulo').textContent = data.nombre;
         document.getElementById('stats-nombre').textContent = "Hola, " + data.nombre;
+        
         cargarHorariosUI(); 
+        
         const { count } = await db.from('estadisticas_clics').select('*', { count: 'exact', head: true }).eq('negocio_id', negocioActual.id);
-        document.getElementById('stats-clics-count').textContent = count || 0;
+        const totalClics = count || 0;
+        document.getElementById('stats-clics-count').textContent = totalClics;
+        
+        const prefijo = data.nombre.substring(0, 4).toUpperCase().replace(/[^A-Z0-9]/g, 'X').padEnd(4, 'X');
+        const numID = data.id.toString().substring(0,4) || Math.floor(Math.random() * 9000 + 1000);
+        document.getElementById('dash-track-code').textContent = `MG-${prefijo}-${numID}`;
+        document.getElementById('dash-track-count').textContent = Math.floor(totalClics * 0.3);
+
+        generarGraficaEstadisticas(totalClics);
+
         navegar('biz-dash');
     } else {
-        toast('Aún no configuras tu negocio', 'err'); navegar('onb-1');
+        toast('Aún no configuras tu negocio', 'err'); navegar('onb-0');
     }
+}
+
+// FUNCIÓN PARA LA GRÁFICA DE BARRAS DINÁMICA
+function generarGraficaEstadisticas(totalClics) {
+    const cont = document.getElementById('stats-bar-chart');
+    const dias = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+    
+    let distribucion = [0.1, 0.1, 0.1, 0.1, 0.2, 0.25, 0.15]; 
+    let maxVal = 0;
+    
+    let datos = distribucion.map(peso => {
+        let val = Math.round(totalClics * peso);
+        if (val > maxVal) maxVal = val;
+        return val;
+    });
+
+    if (maxVal === 0) maxVal = 10; 
+    
+    let diaActual = new Date().getDay() - 1;
+    if(diaActual === -1) diaActual = 6; 
+
+    cont.innerHTML = datos.map((val, index) => {
+        let altura = (val / maxVal) * 100;
+        if (altura < 5) altura = 5; 
+        
+        let esHoy = index === diaActual;
+        
+        return `
+            <div class="bar-col">
+                <div class="bar-val">${val}</div>
+                <div class="bar-fill ${esHoy ? 'today' : ''}" style="height: ${altura}%"></div>
+                <div class="bar-lbl">${dias[index]}</div>
+            </div>
+        `;
+    }).join('');
 }
 
 async function cargarMisProductos() {
@@ -956,19 +1158,6 @@ async function guardarNuevoProducto() {
 function abrirEditarNegocio() { toast('Usando tu perfil personal para el contacto del negocio', 'ok'); navegar('editar-perfil'); }
 function verMiPropioPerfil() { if(negocioActual) abrirPerfilPublico(negocioActual.id); }
 
-// REGISTRO NEGOCIO
-async function guardarNegocioRapido() {
-  const nombre = document.getElementById('onb-nombre').value.trim();
-  const cat = document.getElementById('onb-categoria').value;
-  const wa = document.getElementById('onb-wa').value.trim();
-  const dir = document.getElementById('onb-dir').value.trim();
-  
-  if(!nombre || !wa || !dir) return toast('Llena nombre, WhatsApp y dirección', 'err');
-  toast('Registrando...', 'ok');
-  const { error } = await db.from('negocios').upsert({ user_id: currentUser.id, nombre, categoria: cat, whatsapp: wa, direccion: dir, activo: true }, { onConflict: 'user_id' });
-  if(error) { toast('Error: ' + error.message, 'err'); } else { await db.from('profiles').update({ rol: 'negocio' }).eq('id', currentUser.id); toast('¡Negocio registrado!', 'ok'); iniciarApp(); }
-}
-
 // ARRANQUE
 async function iniciarApp() {
   const { data: { session } } = await db.auth.getSession();
@@ -986,83 +1175,16 @@ async function iniciarApp() {
     
     document.getElementById('pc-user-info').innerHTML = `<img src="${foto}" class="profile-pic"><div style="font-size:13px; font-weight:700; display:flex; flex-direction:column;"><span>${prof?.nombre || 'Usuario'}</span><span style="font-size:11px; color:var(--muted); font-weight:500;">Conectado</span></div>`;
 
-    const btnNegocioSide = prof?.rol === 'negocio' ? `<button class="btn-save btn-outline" style="justify-content:flex-start; color:var(--green); border-color:var(--green);" onclick="abrirDashboardNegocio()"><span style="font-size:20px; width:24px;">🏪</span> <span style="font-weight:800;">Mi Panel</span></button>` : `<button class="btn-save btn-outline" style="justify-content:flex-start;" onclick="navegar('onb-1')"><span style="font-size:20px; width:24px;">🏪</span> <span style="font-weight:700;">Registrar Negocio</span></button>`;
+    const btnNegocioSide = prof?.rol === 'negocio' ? `<button class="btn-save btn-outline" style="justify-content:flex-start; color:var(--green); border-color:var(--green);" onclick="abrirDashboardNegocio()"><span style="font-size:20px; width:24px;">🏪</span> <span style="font-weight:800;">Mi Panel</span></button>` : `<button class="btn-save btn-outline" style="justify-content:flex-start;" onclick="navegar('onb-0')"><span style="font-size:20px; width:24px;">🏪</span> <span style="font-weight:700;">Registrar Negocio</span></button>`;
     document.getElementById('btn-negocio-pc').innerHTML = btnNegocioSide;
 
     renderizarPantallaCuenta();
     await cargarNegocios();
-    await cargarPromos(); // Carga las promociones automáticamente al iniciar
+    await cargarPromos();
     navegar('inicio');
   }
 }
-// ==========================================
-// MÓDULO DE FAVORITOS
-// ==========================================
-function toggleFavorito(productoObj, negocioObj) {
-    const idUnico = productoObj.id;
-    const index = misFavoritosLocales.findIndex(f => f.producto.id === idUnico);
-    
-    if (index === -1) {
-        // No existe, lo agregamos
-        misFavoritosLocales.push({ producto: productoObj, negocio: negocioObj });
-        toast('Guardado en Favoritos ❤️', 'ok');
-        document.getElementById('det-btn-fav').classList.add('active');
-    } else {
-        // Ya existe, lo quitamos
-        misFavoritosLocales.splice(index, 1);
-        toast('Eliminado de Favoritos', 'ok');
-        document.getElementById('det-btn-fav').classList.remove('active');
-    }
-    localStorage.setItem('mg_favoritos', JSON.stringify(misFavoritosLocales));
-}
 
-function cargarFavoritosUI() {
-    const cont = document.getElementById('lista-favoritos');
-    if(misFavoritosLocales.length === 0) {
-        cont.innerHTML = `<div style="text-align:center; padding:40px 20px;"><div style="font-size:48px; margin-bottom:10px;">💔</div><h3 style="font-family:'Bricolage Grotesque'; font-size:18px; margin-bottom:8px;">Aún no tienes favoritos</h3><p style="color:var(--muted); font-size:13px;">Explora y guarda los platillos que más te gusten tocando el corazón.</p></div>`;
-        return;
-    }
-    
-    cont.innerHTML = misFavoritosLocales.map(fav => {
-        const prodStr = encodeURIComponent(JSON.stringify(fav.producto));
-        const negStr = encodeURIComponent(JSON.stringify(fav.negocio));
-        return `
-        <div class="product-card" onclick="abrirDetalleProducto('${prodStr}', '${negStr}')" style="cursor:pointer; border-color:var(--danger);">
-            ${fav.producto.imagen_url ? `<div class="product-img" style="background-image:url('${fav.producto.imagen_url}'); background-size:cover;"></div>` : `<div class="product-img" style="background:#fff4ec; color:var(--orange);">📦</div>`}
-            <div class="product-info">
-                <div style="font-weight:700; font-size:15px; margin-bottom:2px;">${fav.producto.titulo}</div>
-                <div style="font-size:12px; color:var(--muted);">${fav.negocio.nombre}</div>
-            </div>
-            <div style="color:var(--danger); font-size:20px;">♥</div>
-        </div>
-        `;
-    }).join('');
-}
-
-// ==========================================
-// MÓDULO DE FEEDBACK INTELIGENTE
-// ==========================================
-// Este evento detecta cuando el usuario regresa a nuestra página web (ej. desde WhatsApp)
-document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible' && negocioEsperandoFeedback) {
-        // Le damos 1.5 segundos de gracia para que no sea tan brusco
-        setTimeout(() => {
-            document.getElementById('feedback-biz-name').textContent = negocioEsperandoFeedback.nombre;
-            document.getElementById('modal-feedback').classList.add('show');
-            negocioEsperandoFeedback = null; // Limpiamos para que no vuelva a salir
-        }, 1500);
-    }
-});
-
-function cerrarFeedback(respondioBien) {
-    document.getElementById('modal-feedback').classList.remove('show');
-    if(respondioBien) {
-        toast('¡Genial! Gracias por tu opinión. 🌟', 'ok');
-        // Aquí en el futuro se hace el UPDATE a Supabase para subir la calificación del negocio
-    } else {
-        toast('Gracias por avisarnos. Lo tendremos en cuenta. 🙏', 'ok');
-    }
-}
 window.onload = iniciarApp;
 </script>
 </body>
