@@ -80,6 +80,21 @@
   .nav-item.active .ico { transform: scale(1.1); }
   @media (min-width: 769px) { .bottom-nav { display: none !important; } }
   @media (max-width: 768px) { .app-footer { display: none !important; } }
+/* --- ESTILOS FAVORITOS Y FEEDBACK --- */
+  .heart-btn { width: 40px; height: 40px; border-radius: 50%; background: #fff; display: grid; place-items: center; font-size: 22px; cursor: pointer; box-shadow: var(--sh); color: var(--line); transition: 0.2s; position: absolute; top: 16px; right: 16px; z-index: 10; }
+  .heart-btn.active { color: var(--danger); }
+  
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 10000; display: none; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.3s ease; }
+  .modal-overlay.show { display: flex; opacity: 1; }
+  .response-screen { background: #fff; padding: 30px 24px; border-radius: 24px; text-align: center; width: 100%; max-width: 400px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); transform: translateY(20px); transition: transform 0.3s ease; }
+  .modal-overlay.show .response-screen { transform: translateY(0); }
+  .response-screen h2 { font-family: 'Bricolage Grotesque', serif; font-size: 24px; margin-bottom: 10px; font-weight: 700; color: var(--ink); }
+  .response-screen p { color: var(--muted); font-size: 14px; margin-bottom: 24px; line-height: 1.5; }
+  .response-btns { display: flex; gap: 12px; width: 100%; }
+  .btn-response { flex: 1; padding: 16px; border: none; border-radius: 14px; font-weight: 800; font-size: 15px; font-family: inherit; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+  .btn-response.yes { background: var(--green-soft); color: var(--green-deep); }
+  .btn-response.no { background: #fef2f2; color: var(--danger); }
+  .btn-response:hover { filter: brightness(0.95); }
 </style>
 </head>
 <body>
@@ -172,6 +187,8 @@
           <div style="max-width:600px; margin: 0 auto; width:100%; background:#fff; border-radius:var(--radius); box-shadow:var(--sh); overflow:hidden;">
               <div id="det-img" style="height:280px; background-size:cover; background-position:center; position:relative; background-color:#eee;">
                   <div style="position:absolute; top:16px; left:16px; width:40px; height:40px; background:rgba(255,255,255,0.9); border-radius:50%; display:grid; place-items:center; font-size:24px; cursor:pointer; color:var(--ink); box-shadow:var(--sh);" onclick="navegar('perfil-pub')">‹</div>
+                  
+                  <div id="det-btn-fav" class="heart-btn">♥</div>
               </div>
               <div style="padding:24px;">
                   <h2 id="det-titulo" style="font-family:'Bricolage Grotesque'; font-size:28px; font-weight:800; margin-bottom:8px;">Cargando...</h2>
@@ -381,14 +398,39 @@
     </footer>
 
     <nav class="bottom-nav" id="mobile-bottom-nav">
+     <section id="panel-favoritos" class="panel">
+          <div style="max-width:900px; margin: 0 auto; width:100%;">
+              <h2 style="font-family:'Bricolage Grotesque'; font-size:32px; font-weight:800; color:var(--ink); margin-bottom:24px;">Mis Favoritos ❤️</h2>
+              <div id="lista-favoritos"></div>
+          </div>
+      </section>
+
+      <div id="modal-feedback" class="modal-overlay">
+          <div class="response-screen">
+              <div style="font-size:56px; margin-bottom:14px;">💬</div>
+              <h2>¿Te respondieron?</h2>
+              <p>Acabas de contactar a <strong id="feedback-biz-name" style="color:var(--ink);">Negocio</strong>. ¿Te contestaron rápido por WhatsApp?</p>
+              <div class="response-btns">
+                  <button class="btn-response yes" onclick="cerrarFeedback(true)">👍 Sí</button>
+                  <button class="btn-response no" onclick="cerrarFeedback(false)">👎 No</button>
+              </div>
+          </div>
+      </div>
+
+    </div> <footer class="app-footer">
+        <svg width="20" height="20" viewBox="0 -22 100 122"><rect x="0" y="0" width="100" height="100" rx="22" fill="#0f7a3f"/><path d="M70 0 L100 0 L100 30 L88 30 A18 18 0 0 0 70 12 Z" fill="#ea580c"/></svg>
+        <span>Mercado Guerrero · El corazón de tu comunidad</span>
+    </footer>
+
+    <nav class="bottom-nav" id="mobile-bottom-nav">
       <div class="nav-item active" data-tab="inicio" onclick="navegar('inicio')">
         <span class="ico">🏠</span>Inicio
       </div>
       <div class="nav-item" data-tab="promos" onclick="cargarPromos(); navegar('promos')">
         <span class="ico">🔥</span>Promos
       </div>
-      <div class="nav-item" data-tab="mis-pedidos" onclick="cargarPantallaPedidos()">
-        <span class="ico">📦</span>Pedidos
+      <div class="nav-item" data-tab="favoritos" onclick="cargarFavoritosUI(); navegar('favoritos')">
+        <span class="ico">❤️</span>Favoritos
       </div>
       <div class="nav-item" data-tab="cuenta" onclick="navegar('cuenta')">
         <span class="ico">👤</span>Cuenta
@@ -443,9 +485,11 @@ let negocioActual = null;
 let negociosCache = [];
 let categoriaActual = 'Todos';
 
-// LOCALSTORAGE PARA PEDIDOS
+// LOCALSTORAGE PARA PEDIDOS Y FAVORITOS
 let misPedidosLocales = JSON.parse(localStorage.getItem('mg_pedidos') || '[]');
-
+let misFavoritosLocales = JSON.parse(localStorage.getItem('mg_favoritos') || '[]');
+let negocioEsperandoFeedback = null; // Para el truco de WhatsApp
+  
 function toast(msg, type='ok'){
   const t = document.getElementById('toast');
   t.textContent = msg; t.className = 'toast ' + type; t.classList.remove('hidden');
@@ -478,7 +522,6 @@ function navegar(panelId) {
 
 // --- NUEVA FUNCIÓN: Abrir vista de Detalle de Producto ---
 function abrirDetalleProducto(productoStr, negocioStr) {
-  // Parsear los datos que vienen en formato texto
   const p = JSON.parse(decodeURIComponent(productoStr));
   const n = JSON.parse(decodeURIComponent(negocioStr));
 
@@ -487,22 +530,34 @@ function abrirDetalleProducto(productoStr, negocioStr) {
   document.getElementById('det-titulo').textContent = p.titulo;
   document.getElementById('det-precio').textContent = `$${p.precio}`;
   document.getElementById('det-desc').textContent = p.descripcion || 'Producto disponible.';
-  
   document.getElementById('det-biz-img').style.backgroundImage = n.imagen_url ? `url('${n.imagen_url}')` : 'none';
   document.getElementById('det-biz-nombre').textContent = n.nombre;
 
-  // Configurar botón de WhatsApp
+  // Lógica del Favorito
+  const btnFav = document.getElementById('det-btn-fav');
+  const esFav = misFavoritosLocales.some(f => f.producto.id === p.id);
+  if(esFav) btnFav.classList.add('active'); else btnFav.classList.remove('active');
+  btnFav.onclick = () => toggleFavorito(p, n);
+
+  // Configurar botón de WhatsApp y Feedback
   const waBtn = document.getElementById('det-btn-wa');
   if(n.whatsapp) { 
     waBtn.style.display = 'flex'; 
     waBtn.onclick = async () => {
         await db.from('estadisticas_clics').insert({ negocio_id: n.id });
         registrarPedidoLocal(n);
+        
+        // ACTIVAMOS LA ESPERA PARA EL FEEDBACK
+        negocioEsperandoFeedback = n;
+        
         window.open(`https://wa.me/52${n.whatsapp}?text=Hola, vengo de Mercado Guerrero. Me interesa pedir: *${p.titulo}* ($${p.precio}).`);
     };
   } else { 
     waBtn.style.display = 'none'; 
   }
+
+  navegar('producto-detalle');
+}
 
   // Navegar a la pantalla
   navegar('producto-detalle');
@@ -940,7 +995,74 @@ async function iniciarApp() {
     navegar('inicio');
   }
 }
+// ==========================================
+// MÓDULO DE FAVORITOS
+// ==========================================
+function toggleFavorito(productoObj, negocioObj) {
+    const idUnico = productoObj.id;
+    const index = misFavoritosLocales.findIndex(f => f.producto.id === idUnico);
+    
+    if (index === -1) {
+        // No existe, lo agregamos
+        misFavoritosLocales.push({ producto: productoObj, negocio: negocioObj });
+        toast('Guardado en Favoritos ❤️', 'ok');
+        document.getElementById('det-btn-fav').classList.add('active');
+    } else {
+        // Ya existe, lo quitamos
+        misFavoritosLocales.splice(index, 1);
+        toast('Eliminado de Favoritos', 'ok');
+        document.getElementById('det-btn-fav').classList.remove('active');
+    }
+    localStorage.setItem('mg_favoritos', JSON.stringify(misFavoritosLocales));
+}
 
+function cargarFavoritosUI() {
+    const cont = document.getElementById('lista-favoritos');
+    if(misFavoritosLocales.length === 0) {
+        cont.innerHTML = `<div style="text-align:center; padding:40px 20px;"><div style="font-size:48px; margin-bottom:10px;">💔</div><h3 style="font-family:'Bricolage Grotesque'; font-size:18px; margin-bottom:8px;">Aún no tienes favoritos</h3><p style="color:var(--muted); font-size:13px;">Explora y guarda los platillos que más te gusten tocando el corazón.</p></div>`;
+        return;
+    }
+    
+    cont.innerHTML = misFavoritosLocales.map(fav => {
+        const prodStr = encodeURIComponent(JSON.stringify(fav.producto));
+        const negStr = encodeURIComponent(JSON.stringify(fav.negocio));
+        return `
+        <div class="product-card" onclick="abrirDetalleProducto('${prodStr}', '${negStr}')" style="cursor:pointer; border-color:var(--danger);">
+            ${fav.producto.imagen_url ? `<div class="product-img" style="background-image:url('${fav.producto.imagen_url}'); background-size:cover;"></div>` : `<div class="product-img" style="background:#fff4ec; color:var(--orange);">📦</div>`}
+            <div class="product-info">
+                <div style="font-weight:700; font-size:15px; margin-bottom:2px;">${fav.producto.titulo}</div>
+                <div style="font-size:12px; color:var(--muted);">${fav.negocio.nombre}</div>
+            </div>
+            <div style="color:var(--danger); font-size:20px;">♥</div>
+        </div>
+        `;
+    }).join('');
+}
+
+// ==========================================
+// MÓDULO DE FEEDBACK INTELIGENTE
+// ==========================================
+// Este evento detecta cuando el usuario regresa a nuestra página web (ej. desde WhatsApp)
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && negocioEsperandoFeedback) {
+        // Le damos 1.5 segundos de gracia para que no sea tan brusco
+        setTimeout(() => {
+            document.getElementById('feedback-biz-name').textContent = negocioEsperandoFeedback.nombre;
+            document.getElementById('modal-feedback').classList.add('show');
+            negocioEsperandoFeedback = null; // Limpiamos para que no vuelva a salir
+        }, 1500);
+    }
+});
+
+function cerrarFeedback(respondioBien) {
+    document.getElementById('modal-feedback').classList.remove('show');
+    if(respondioBien) {
+        toast('¡Genial! Gracias por tu opinión. 🌟', 'ok');
+        // Aquí en el futuro se hace el UPDATE a Supabase para subir la calificación del negocio
+    } else {
+        toast('Gracias por avisarnos. Lo tendremos en cuenta. 🙏', 'ok');
+    }
+}
 window.onload = iniciarApp;
 </script>
 </body>
