@@ -455,6 +455,85 @@ async function doLogin(){
   toast('¡Bienvenido!', 'ok'); iniciarApp();
 }
 
+  // ALTERNAR ENTRE LOGIN Y REGISTRO
+function mostrarModoAuth(modo) {
+  const esRegistro = modo === 'registro';
+
+  // Tabs
+  document.getElementById('tab-login').classList.toggle('active', !esRegistro);
+  document.getElementById('tab-registro').classList.toggle('active', esRegistro);
+
+  // Campos extra
+  document.getElementById('campos-registro').style.display = esRegistro ? 'block' : 'none';
+
+  // Textos dinámicos
+  document.getElementById('auth-titulo').textContent = esRegistro ? 'Crea tu cuenta' : 'Inicia Sesión';
+  document.getElementById('auth-subtitulo').textContent = esRegistro
+    ? 'Únete a la comunidad de Mercado Guerrero'
+    : 'Accede a tu cuenta de Mercado Guerrero';
+  document.getElementById('btn-auth-action').textContent = esRegistro ? 'Crear mi cuenta' : 'Entrar a mi cuenta';
+  document.getElementById('btn-auth-action').onclick = esRegistro ? doRegister : doLogin;
+  document.getElementById('auth-link-texto').textContent = esRegistro ? '¿Ya tienes cuenta?' : '¿No tienes cuenta?';
+  document.getElementById('auth-link-accion').textContent = esRegistro ? 'Inicia sesión' : 'Regístrate gratis';
+  document.getElementById('auth-link-accion').onclick = () => mostrarModoAuth(esRegistro ? 'login' : 'registro');
+}
+
+// REGISTRO DE NUEVO USUARIO
+async function doRegister() {
+  const email    = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-pass').value;
+  const nombre   = document.getElementById('reg-nombre').value.trim();
+  const wa       = document.getElementById('reg-wa').value.trim();
+
+  if (!email || !password || !nombre || !wa) 
+    return toast('Completa todos los campos', 'err');
+  if (password.length < 6) 
+    return toast('La contraseña debe tener mínimo 6 caracteres', 'err');
+
+  const btn = document.getElementById('btn-auth-action');
+  btn.disabled = true;
+  btn.textContent = 'Creando cuenta...';
+  toast('Registrando...', 'ok');
+
+  // 1. Crear usuario en Supabase Auth
+  const { data, error } = await db.auth.signUp({ email, password });
+
+  if (error) {
+    toast(error.message, 'err');
+    btn.disabled = false;
+    btn.textContent = 'Crear mi cuenta';
+    return;
+  }
+
+  const uid = data.user?.id;
+  if (!uid) {
+    toast('Error inesperado. Intenta de nuevo.', 'err');
+    btn.disabled = false;
+    btn.textContent = 'Crear mi cuenta';
+    return;
+  }
+
+  // 2. Guardar perfil en tabla profiles
+  const { error: profError } = await db.from('profiles').upsert({
+    id: uid,
+    nombre,
+    whatsapp: wa,
+    rol: 'cliente'
+  });
+
+  if (profError) {
+    toast('Cuenta creada pero hubo un problema guardando tu perfil.', 'err');
+  } else {
+    toast('¡Cuenta creada! Bienvenido/a 🎉', 'ok');
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Crear mi cuenta';
+
+  // 3. Iniciar sesión automáticamente
+  document.getElementById('panel-auth').style.display = 'none';
+  iniciarApp();
+}
 // NEGOCIOS Y FILTROS
 async function cargarNegocios(){
   const { data } = await db.from('negocios').select('*').eq('activo', true);
