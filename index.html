@@ -618,6 +618,29 @@ function toast(msg, type='ok'){
   setTimeout(()=>t.classList.add('hidden'), 4000);
 }
 
+  // ==========================================
+// MÓDULO DE CALIFICACIONES REALES
+// ==========================================
+async function obtenerCalificacion(negocioId) {
+    const { data, error } = await db.from('evaluaciones').select('positiva').eq('negocio_id', negocioId);
+    
+    // Si hay error o no hay votos aún, le damos 5.0 por defecto para que no se vea feo
+    if (error || !data || data.length === 0) {
+        return { estrellas: "5.0", total: 0, responde_rapido: true };
+    }
+
+    const totales = data.length;
+    const positivos = data.filter(voto => voto.positiva === true).length;
+
+    // Cálculo matemático sobre 5 estrellas
+    const promedio = (positivos / totales) * 5;
+    
+    return {
+        estrellas: promedio.toFixed(1), // Redondea a un decimal (Ej: 4.8)
+        total: totales,
+        responde_rapido: promedio >= 4.0 // Si tiene menos de 4 estrellas, pierde el badge
+    };
+}
 // NAVEGACIÓN
 function navegar(panelId) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
@@ -923,10 +946,22 @@ document.addEventListener('visibilitychange', () => {
     }
 });
 
-function cerrarFeedback(respondioBien) {
+async function cerrarFeedback(respondioBien) {
     document.getElementById('modal-feedback').classList.remove('show');
-    if(respondioBien) toast('¡Genial! Gracias por tu opinión. 🌟', 'ok');
-    else toast('Gracias por avisarnos. Lo tendremos en cuenta. 🙏', 'ok');
+    
+    // Guardar el voto en Supabase usando la variable temporal que guardamos al hacer clic
+    if (negocioEsperandoFeedback) {
+        await db.from('evaluaciones').insert({
+            negocio_id: negocioEsperandoFeedback.id,
+            positiva: respondioBien
+        });
+    }
+
+    if(respondioBien) {
+        toast('¡Genial! Gracias por calificar. 🌟', 'ok');
+    } else {
+        toast('Gracias por avisarnos. El negocio bajará de calificación. 🙏', 'ok');
+    }
 }
 
 // PERFIL DE USUARIO
