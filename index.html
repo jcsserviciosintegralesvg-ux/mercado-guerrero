@@ -412,9 +412,9 @@
                       <div style="flex:1"><div class="t">Mis Productos</div><div class="s" id="dash-prod-count">Gestiona tu menú</div></div>
                       <div style="color:var(--muted); font-size:20px;">›</div>
                   </div>
-                  <div class="stat-card" onclick="abrirEditarNegocio()">
+                 <div class="stat-card" onclick="abrirVerdaderoEditarNegocio()">
                       <div class="ico-box" style="background:#f3f4f6; color:var(--ink);">✏️</div>
-                      <div style="flex:1"><div class="t">Editar Negocio</div><div class="s">Cambia nombre y WhatsApp</div></div>
+                      <div style="flex:1"><div class="t">Editar Negocio</div><div class="s">Cambia nombre, foto y WhatsApp</div></div>
                       <div style="color:var(--muted); font-size:20px;">›</div>
                   </div>
                   <div class="stat-card" onclick="navegar('biz-horario')">
@@ -441,18 +441,25 @@
           </div>
       </section>
 
-      <section id="panel-biz-productos" class="panel">
-          <div style="max-width:900px; margin: 0 auto; width:100%;">
-              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;">
-                  <div style="display:flex; align-items:center; gap:10px;">
-                      <div style="font-size:26px; cursor:pointer; color:var(--muted);" onclick="navegar('biz-dash')">‹</div>
-                      <h2 style="font-family:'Bricolage Grotesque'; font-size:26px; font-weight:800; color:var(--ink);">Mis Productos</h2>
-                  </div>
-                  <button class="btn-save" style="width:auto; padding:10px 20px; font-size:14px;" onclick="navegar('biz-add-producto')">+ Nuevo</button>
-              </div>
-              <div id="biz-productos-lista"></div>
-          </div>
-      </section>
+<section id="panel-biz-editar" class="panel">
+    <div style="max-width:500px; margin: 0 auto; width:100%; background:#fff; border-radius:var(--radius); box-shadow:var(--sh); padding: 30px;">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
+          <div style="font-size:24px; cursor:pointer;" onclick="navegar('biz-dash')">‹</div>
+          <h2 style="font-family:'Bricolage Grotesque'; margin:0;">Editar mi Local</h2>
+        </div>
+        <div class="field"><label>Foto de Portada (Banner)</label><input type="file" id="edit-biz-foto" accept="image/*"></div>
+        <div class="field"><label>Nombre del negocio *</label><input type="text" id="edit-biz-nombre"></div>
+        <div class="field"><label>Categoría</label><select id="edit-biz-cat">
+              <option value="Comida">Comida y Restaurantes</option>
+              <option value="Ferretería">Ferretería y Construcción</option>
+              <option value="Abarrotes">Abarrotes y Tiendas</option>
+              <option value="Servicios">Servicios Generales</option>
+          </select></div>
+        <div class="field"><label>WhatsApp de ventas *</label><input type="number" id="edit-biz-wa"></div>
+        <div class="field"><label>Dirección física</label><input type="text" id="edit-biz-dir"></div>
+        <button class="btn-save" id="btn-save-biz" onclick="guardarEdicionNegocio()">Guardar Datos del Local</button>
+    </div>
+</section>
 
       <section id="panel-biz-add-producto" class="panel">
           <div style="max-width:500px; margin: 0 auto; width:100%; background:#fff; border-radius:var(--radius); box-shadow:var(--sh); padding: 30px;">
@@ -1174,15 +1181,18 @@ async function cargarMisProductos() {
     cont.innerHTML = `<div style="text-align:center; padding:40px 20px;"><div style="font-size:48px; margin-bottom:10px;">📦</div><h3 style="font-family:'Bricolage Grotesque'; font-size:18px; margin-bottom:8px;">Sin productos</h3><p style="color:var(--muted); font-size:13px;">No has subido nada a tu menú aún.</p></div>`; return;
   }
   
-  cont.innerHTML = data.map(o => `
-    <div class="product-card">
+cont.innerHTML = data.map(o => `
+    <div class="product-card" style="align-items:flex-start;">
       ${o.imagen_url ? `<div class="product-img" style="background-image:url('${o.imagen_url}'); background-size:cover;"></div>` : `<div class="product-img" style="background:#fff4ec; color:var(--orange);">📦</div>`}
       <div class="product-info">
           <div style="font-weight:700; font-size:15px; margin-bottom:2px;">${o.titulo}</div>
-          <div style="font-size:12px; color:var(--muted);">${o.activa ? 'Disponible' : 'Pausado'}</div>
-          ${o.es_promo ? '<span style="display:inline-block; font-size:10px; background:var(--orange-soft); color:var(--orange-deep); padding:2px 8px; border-radius:50px; font-weight:800; margin-top:4px;">🌟 En Promociones</span>' : ''}
+          <div style="font-size:12px; color:var(--muted); margin-bottom:4px;">${o.activa ? 'Disponible' : 'Pausado'}</div>
+          <div style="font-weight:800; color:var(--orange); font-size:16px;">$${o.precio}</div>
+          ${o.es_promo ? '<span style="display:inline-block; font-size:10px; background:var(--orange-soft); color:var(--orange-deep); padding:2px 8px; border-radius:50px; font-weight:800; margin-top:6px;">🌟 Promoción</span>' : ''}
       </div>
-      <div style="font-weight:800; color:var(--orange); font-size:16px;">$${o.precio}</div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+          <button style="background:#fef2f2; color:var(--danger); border:none; padding:8px 12px; border-radius:8px; font-weight:700; font-size:12px; cursor:pointer;" onclick="eliminarProducto('${o.id}', '${o.imagen_url}')">🗑️ Borrar</button>
+      </div>
     </div>
   `).join('');
 }
@@ -1225,8 +1235,76 @@ async function guardarNuevoProducto() {
   btn.disabled = false; btn.textContent = 'Guardar producto';
 }
 
-function abrirEditarNegocio() { toast('Usando tu perfil personal para el contacto del negocio', 'ok'); navegar('editar-perfil'); }
-function verMiPropioPerfil() { if(negocioActual) abrirPerfilPublico(negocioActual.id); }
+// --- NUEVO: EDITAR EL LOCAL REAL ---
+function abrirVerdaderoEditarNegocio() {
+    document.getElementById('edit-biz-nombre').value = negocioActual.nombre || '';
+    document.getElementById('edit-biz-cat').value = negocioActual.categoria || 'Comida';
+    document.getElementById('edit-biz-wa').value = negocioActual.whatsapp || '';
+    document.getElementById('edit-biz-dir').value = negocioActual.direccion || '';
+    navegar('biz-editar');
+}
+
+async function guardarEdicionNegocio() {
+    const btn = document.getElementById('btn-save-biz');
+    const nombre = document.getElementById('edit-biz-nombre').value.trim();
+    const cat = document.getElementById('edit-biz-cat').value;
+    const wa = document.getElementById('edit-biz-wa').value.trim();
+    const dir = document.getElementById('edit-biz-dir').value.trim();
+    const fotoFile = document.getElementById('edit-biz-foto').files[0];
+
+    if(!nombre || !wa) return toast('El nombre y WhatsApp son obligatorios', 'err');
+    btn.disabled = true; btn.textContent = "Guardando..."; toast("Actualizando local...", "ok");
+
+    let imgUrl = negocioActual.imagen_url;
+    
+    // Logica para subir nueva foto y evitar basura
+    if (fotoFile) {
+        // Borramos la foto vieja si existe para no llenar el storage de basura
+        if (negocioActual.imagen_url) {
+            const oldPath = negocioActual.imagen_url.split('/').pop();
+            await db.storage.from('productos').remove([oldPath]);
+        }
+        const fileName = `hero_${negocioActual.id}_${Date.now()}`;
+        const { error: uploadError } = await db.storage.from('productos').upload(fileName, fotoFile);
+        if (!uploadError) {
+            const { data: urlData } = db.storage.from('productos').getPublicUrl(fileName);
+            imgUrl = urlData.publicUrl;
+        }
+    }
+
+    const { error } = await db.from('negocios').update({ 
+        nombre, categoria: cat, whatsapp: wa, direccion: dir, imagen_url: imgUrl 
+    }).eq('id', negocioActual.id);
+    
+    if(!error) { 
+        toast('¡Local actualizado exitosamente!', 'ok'); 
+        await abrirDashboardNegocio(); // Recargamos para ver los cambios
+    } else { 
+        toast('Error: ' + error.message, 'err'); 
+    }
+    btn.disabled = false; btn.textContent = "Guardar Datos del Local";
+}
+
+// --- NUEVO: ELIMINAR PRODUCTOS ---
+async function eliminarProducto(productoId, imagenUrl) {
+    if(!confirm("¿Estás seguro de que quieres eliminar este producto?")) return;
+    toast("Eliminando...", "ok");
+    
+    // Si tenía imagen, la borramos del Storage para no dejar basura
+    if(imagenUrl && imagenUrl !== 'null') {
+        const path = imagenUrl.split('/').pop();
+        await db.storage.from('productos').remove([path]);
+    }
+
+    const { error } = await db.from('ofertas').delete().eq('id', productoId);
+    if(error) {
+        toast("Error al eliminar", "err");
+    } else {
+        toast("Producto eliminado", "ok");
+        cargarMisProductos(); // Recargamos la lista
+    }
+}
+  function verMiPropioPerfil() { if(negocioActual) abrirPerfilPublico(negocioActual.id); }
 
 // ARRANQUE
 async function iniciarApp() {
