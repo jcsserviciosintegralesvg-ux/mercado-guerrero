@@ -812,6 +812,13 @@ async function abrirPerfilPublico(idNegocio) {
   document.getElementById('pub-nombre-titulo').textContent = neg.nombre;
   document.getElementById('pub-info').innerHTML = `📍 ${neg.direccion || 'Sin dirección registrada'}`;
   document.getElementById('pub-horario-status').textContent = neg.horarios ? "● Horario Establecido" : "● Abierto";
+  // --- NUEVO: Traer calificación al perfil público ---
+  const calif = await obtenerCalificacion(neg.id);
+  const infoExtra = calif.responde_rapido ? ` · ⭐ ${calif.estrellas} (Rápido)` : ` · ⭐ ${calif.estrellas}`;
+  
+  // Se lo sumamos al texto de "Abierto" para que se vea integrado
+  document.getElementById('pub-horario-status').textContent += infoExtra;
+  // ---------------------------------------------------
 
   const waBtn = document.getElementById('pub-wa-btn');
   if(neg.whatsapp) { 
@@ -1071,21 +1078,49 @@ async function abrirDashboardNegocio() {
     if (data) {
         negocioActual = data;
         
+        // 1. Textos Generales
         document.getElementById('dash-nombre-titulo').textContent = data.nombre;
         document.getElementById('stats-nombre').textContent = "Hola, " + data.nombre;
         
+        // 2. Horarios
         cargarHorariosUI(); 
         
+        // 3. Obtener Clics
         const { count } = await db.from('estadisticas_clics').select('*', { count: 'exact', head: true }).eq('negocio_id', negocioActual.id);
         const totalClics = count || 0;
         document.getElementById('stats-clics-count').textContent = totalClics;
         
+        // 4. Generar Código Promocional Único
         const prefijo = data.nombre.substring(0, 4).toUpperCase().replace(/[^A-Z0-9]/g, 'X').padEnd(4, 'X');
         const numID = data.id.toString().substring(0,4) || Math.floor(Math.random() * 9000 + 1000);
         document.getElementById('dash-track-code').textContent = `MG-${prefijo}-${numID}`;
         document.getElementById('dash-track-count').textContent = Math.floor(totalClics * 0.3);
 
+        // 5. Renderizar Gráfica Dinámica en Estadísticas
         generarGraficaEstadisticas(totalClics);
+
+        // ---------------------------------------------------------
+        // AQUÍ ESTÁ EL PASO 4: CALIFICACIÓN REAL DEL NEGOCIO
+        // ---------------------------------------------------------
+        const calif = await obtenerCalificacion(negocioActual.id);
+        const badgeTexto = calif.responde_rapido 
+            ? `⭐ ${calif.estrellas} · Responde rápido` 
+            : `⭐ ${calif.estrellas} · Debe mejorar su tiempo`;
+        
+        // Buscamos específicamente la pastilla dentro del dashboard
+        const pastilla = document.querySelector('#panel-biz-dash .rating-pill');
+        if(pastilla) {
+            pastilla.textContent = badgeTexto;
+            // Si la calificación baja, le cambiamos el color a rojo para alertar al dueño
+            if(!calif.responde_rapido) {
+                pastilla.style.background = '#fef2f2';
+                pastilla.style.color = '#dc2626';
+            } else {
+                pastilla.style.background = '#fef3c7'; // Amarillo original
+                pastilla.style.color = '#92400e';
+            }
+        }
+        // ---------------------------------------------------------
 
         navegar('biz-dash');
     } else {
