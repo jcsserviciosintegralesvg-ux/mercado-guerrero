@@ -141,6 +141,20 @@
   .bar-fill.today { background: var(--orange); box-shadow: 0 -4px 10px rgba(234,88,12,0.2); }
   .bar-lbl { position: absolute; bottom: -22px; font-size: 11px; font-weight: 700; color: var(--muted); }
   .bar-val { font-size: 11px; font-weight: 800; color: var(--ink); margin-bottom: 6px; }
+  /* --- ESTILOS DEL CARRITO DE COMPRAS --- */
+  .cart-float { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); width: calc(100% - 32px); max-width: 400px; background: var(--ink); color: #fff; padding: 14px 20px; border-radius: 16px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 15px 30px rgba(0,0,0,0.3); z-index: 99; cursor: pointer; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); opacity: 0; pointer-events: none; }
+  .cart-float.show { opacity: 1; pointer-events: auto; bottom: 90px; }
+  @media (min-width: 769px) { .cart-float.show { bottom: 30px; } }
+  .cart-float-info { font-weight: 800; font-size: 15px; display:flex; align-items:center; gap:10px; }
+  .cart-float-btn { background: var(--green); padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 800; }
+  
+  .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--line); }
+  .cart-item:last-child { border-bottom: none; }
+  .cart-item-title { font-weight: 800; font-size: 15px; color: var(--ink); margin-bottom: 4px;}
+  .cart-item-price { color: var(--orange); font-weight: 800; font-size: 14px;}
+  .cart-qty-ctrl { display: flex; align-items: center; gap: 12px; background: var(--bg); padding: 4px; border-radius: 10px; font-weight: 800; }
+  .cart-qty-btn { width: 28px; height: 28px; background: #fff; border-radius: 8px; border: 1px solid var(--line); display: grid; place-items: center; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.1s;}
+  .cart-qty-btn:active { transform: scale(0.9); }
 </style>
 </head>
 <body>
@@ -547,6 +561,32 @@
           </div>
       </div>
 
+      <div id="cart-float" class="cart-float" onclick="abrirCarrito()">
+        <div class="cart-float-info"><span>🛒</span> <div><span id="cart-count">0</span> items <span style="opacity:0.5; font-weight:400; margin:0 4px;">|</span> $<span id="cart-total">0</span></div></div>
+        <div class="cart-float-btn">Ver Pedido ›</div>
+    </div>
+
+    <div id="modal-carrito" class="modal-overlay">
+        <div class="response-screen" style="max-height:85vh; display:flex; flex-direction:column; padding:24px 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <h2 style="margin:0;">Tu Pedido 🛒</h2>
+                <div style="font-size:24px; cursor:pointer; color:var(--muted); background:var(--bg); width:36px; height:36px; border-radius:50%; display:grid; place-items:center;" onclick="cerrarCarrito()">✕</div>
+            </div>
+            <div style="font-size:13px; font-weight:700; color:var(--green); margin-bottom:20px; text-align:left; background:var(--green-soft); padding:10px 14px; border-radius:10px;" id="cart-biz-name">Negocio</div>
+            
+            <div id="cart-items-container" style="flex:1; overflow-y:auto; margin-bottom:20px; text-align:left; padding-right:8px;">
+                </div>
+            
+            <button class="btn-save btn-orange" onclick="enviarPedidoPorWa()" style="padding:18px;">
+                <span style="font-size:20px;">💬</span> Pedir por WhatsApp ($<span id="cart-modal-total">0</span>)
+            </button>
+        </div>
+    </div>
+
+    <footer class="app-footer">
+        <svg width="20" height="20" viewBox="0 -22 100 122"><rect x="0" y="0" width="100" height="100" rx="22" fill="#0f7a3f"/><path d="M70 0 L100 0 L100 30 L88 30 A18 18 0 0 0 70 12 Z" fill="#ea580c"/></svg>
+        <span>Mercado Guerrero · El corazón de tu comunidad</span>
+    </footer>
     </div> <footer class="app-footer">
         <svg width="20" height="20" viewBox="0 -22 100 122"><rect x="0" y="0" width="100" height="100" rx="22" fill="#0f7a3f"/><path d="M70 0 L100 0 L100 30 L88 30 A18 18 0 0 0 70 12 Z" fill="#ea580c"/></svg>
         <span>Mercado Guerrero · El corazón de tu comunidad</span>
@@ -613,6 +653,8 @@ let currentProfile = null;
 let negocioActual = null;
 let negociosCache = [];
 let categoriaActual = 'Todos';
+let ofertasCache = []; // Para el buscador global
+let carrito = { negocio: null, items: [] }; // Memoria del carrito
 
 let misPedidosLocales = JSON.parse(localStorage.getItem('mg_pedidos') || '[]');
 let misVotosLocales = JSON.parse(localStorage.getItem('mg_votos') || '[]');
@@ -723,10 +765,12 @@ function abrirDetalleProducto(productoStr, negocioStr) {
   if(esFav) btnFav.classList.add('active'); else btnFav.classList.remove('active');
   btnFav.onclick = () => toggleFavorito(p, n);
 
-  const waBtn = document.getElementById('det-btn-wa');
+const waBtn = document.getElementById('det-btn-wa');
   if(n.whatsapp) { 
     waBtn.style.display = 'flex'; 
-    waBtn.onclick = async () => {
+    waBtn.innerHTML = `<span style="font-size:20px;">🛒</span> Agregar al Pedido`;
+    waBtn.onclick = () => agregarAlCarrito(p, n);
+  } else { waBtn.style.display = 'none'; }
         await db.from('estadisticas_clics').insert({ negocio_id: n.id });
         registrarPedidoLocal(n);
         negocioEsperandoFeedback = n;
@@ -840,11 +884,29 @@ function filtrarPorCategoria(cat, el) {
   if(el) el.classList.add('active');
   aplicarFiltros();
 }
+// --- NUEVO BUSCADOR GLOBAL ---
 function aplicarFiltros(){
     const q = document.getElementById('buscar').value.toLowerCase();
     let filtrados = negociosCache;
-    if(categoriaActual !== 'Todos') filtrados = filtrados.filter(n => (n.categoria || '').includes(categoriaActual));
-    if(q) filtrados = filtrados.filter(n => n.nombre.toLowerCase().includes(q) || (n.categoria||'').toLowerCase().includes(q));
+    
+    // 1. Filtrar por los chips (Comida, Ferretería, etc)
+    if(categoriaActual !== 'Todos') {
+        filtrados = filtrados.filter(n => (n.categoria || '').includes(categoriaActual));
+    }
+    
+    // 2. Buscador profundo (Busca en Nombre de negocio o en Productos)
+    if(q) {
+        // Encontramos negocios que se llamen así
+        const negMatches = filtrados.filter(n => n.nombre.toLowerCase().includes(q) || (n.categoria||'').toLowerCase().includes(q));
+        
+        // Encontramos productos que se llamen así y sacamos el ID del negocio que los vende
+        const prodMatchesIds = ofertasCache
+            .filter(p => p.titulo.toLowerCase().includes(q) || (p.descripcion||'').toLowerCase().includes(q))
+            .map(p => p.negocio_id);
+            
+        // Mezclamos los resultados y quitamos duplicados
+        filtrados = filtrados.filter(n => negMatches.includes(n) || prodMatchesIds.includes(n.id));
+    }
     renderizarNegocios(filtrados);
 }
 
@@ -1382,6 +1444,107 @@ async function eliminarProducto(productoId, imagenUrl) {
 }
   function verMiPropioPerfil() { if(negocioActual) abrirPerfilPublico(negocioActual.id); }
 
+  // ==========================================
+// MÓDULO: CARRITO DE COMPRAS
+// ==========================================
+function agregarAlCarrito(producto, negocio) {
+    // Si quiere pedir de dos negocios distintos a la vez, le advertimos
+    if(carrito.negocio && carrito.negocio.id !== negocio.id) {
+        if(!confirm(`Tienes productos de "${carrito.negocio.nombre}" en tu carrito. ¿Quieres vaciarlo para empezar un pedido con "${negocio.nombre}"?`)) return;
+        carrito.items = [];
+    }
+    
+    carrito.negocio = negocio;
+    
+    // Verificar si el producto ya está en el carrito para solo sumar cantidad
+    const existe = carrito.items.find(i => i.producto.id === producto.id);
+    if(existe) {
+        existe.qty++;
+    } else {
+        carrito.items.push({ producto, qty: 1 });
+    }
+    
+    toast(`Añadido: ${producto.titulo} 🛒`, 'ok');
+    navegar('perfil-pub'); // Regresamos al menú para que siga pidiendo
+    actualizarCarritoUI();
+}
+
+function actualizarCarritoUI() {
+    const floatBtn = document.getElementById('cart-float');
+    if(carrito.items.length === 0) {
+        floatBtn.classList.remove('show');
+        carrito.negocio = null;
+        return;
+    }
+    
+    const totalItems = carrito.items.reduce((sum, item) => sum + item.qty, 0);
+    const totalPagar = carrito.items.reduce((sum, item) => sum + (item.producto.precio * item.qty), 0);
+    
+    document.getElementById('cart-count').textContent = totalItems;
+    document.getElementById('cart-total').textContent = totalPagar;
+    document.getElementById('cart-modal-total').textContent = totalPagar;
+    floatBtn.classList.add('show');
+}
+
+function abrirCarrito() {
+    const cont = document.getElementById('cart-items-container');
+    document.getElementById('cart-biz-name').innerHTML = `📍 Pedido para: <strong style="color:var(--ink);">${carrito.negocio.nombre}</strong>`;
+    
+    cont.innerHTML = carrito.items.map((item, index) => `
+        <div class="cart-item">
+            <div>
+                <div class="cart-item-title">${item.producto.titulo}</div>
+                <div class="cart-item-price">$${item.producto.precio * item.qty} <small style="color:var(--muted); font-weight:600; font-size:12px;">($${item.producto.precio} c/u)</small></div>
+            </div>
+            <div class="cart-qty-ctrl">
+                <div class="cart-qty-btn" onclick="cambiarQty(${index}, -1)">-</div>
+                <span style="width:16px; text-align:center;">${item.qty}</span>
+                <div class="cart-qty-btn" onclick="cambiarQty(${index}, 1)">+</div>
+            </div>
+        </div>
+    `).join('');
+    
+    document.getElementById('modal-carrito').classList.add('show');
+}
+
+function cerrarCarrito() { 
+    document.getElementById('modal-carrito').classList.remove('show'); 
+}
+
+function cambiarQty(index, delta) {
+    carrito.items[index].qty += delta;
+    if(carrito.items[index].qty <= 0) carrito.items.splice(index, 1); // Lo borra si llega a 0
+    actualizarCarritoUI();
+    if(carrito.items.length === 0) cerrarCarrito();
+    else abrirCarrito(); // Recargamos el modal
+}
+
+async function enviarPedidoPorWa() {
+    if(!carrito.negocio || carrito.items.length === 0) return;
+    
+    const n = carrito.negocio;
+    let msj = `Hola, vengo de Mercado Guerrero. Quiero hacer el siguiente pedido:\n\n`;
+    
+    carrito.items.forEach(i => {
+        msj += `▪️ ${i.qty}x ${i.producto.titulo} ($${i.producto.precio * i.qty})\n`;
+    });
+    
+    const totalPagar = carrito.items.reduce((sum, item) => sum + (item.producto.precio * item.qty), 0);
+    msj += `\n*Total estimado: $${totalPagar}*\n\n¿En cuánto tiempo puedo pasar o me lo envían?`;
+    
+    // Impacto de Estadísticas, Historial Local y Modal Feedback
+    await db.from('estadisticas_clics').insert({ negocio_id: n.id });
+    registrarPedidoLocal(n);
+    negocioEsperandoFeedback = n;
+    
+    // Abrir WhatsApp con el texto codificado
+    window.open(`https://wa.me/52${n.whatsapp}?text=${encodeURIComponent(msj)}`);
+    
+    // Limpiamos todo
+    carrito.items = [];
+    actualizarCarritoUI();
+    cerrarCarrito();
+}
 // ARRANQUE
 async function iniciarApp() {
   const { data: { session } } = await db.auth.getSession();
@@ -1404,6 +1567,9 @@ async function iniciarApp() {
 
     renderizarPantallaCuenta();
     await cargarNegocios();
+    // Guardamos todos los productos en memoria para que el buscador global funcione rápido
+    const { data: allProds } = await db.from('ofertas').select('*').eq('activa', true);
+    ofertasCache = allProds || [];
     await cargarPromos();
     navegar('inicio');
   }
