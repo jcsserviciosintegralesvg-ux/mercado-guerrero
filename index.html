@@ -297,7 +297,7 @@
               <div class="field"><label>Edad *</label><input type="number" id="edit-user-edad"></div>
               <div class="field"><label>WhatsApp *</label><input type="number" id="edit-user-wa"></div>
               <div class="field"><label>Dirección</label><input type="text" id="edit-user-dir"></div>
-              <button class="btn-save" id="btn-save-perfil" onclick="guardarPerfilUsuario()">Guardar Cambios</button>
+              <button class="btn-save" id="btn-save-perfil" onclick="guardarPerfilUsuario(await comprimirImagen(...))">Guardar Cambios</button>
           </div>
       </section>
 
@@ -457,7 +457,7 @@
           </select></div>
         <div class="field"><label>WhatsApp de ventas *</label><input type="number" id="edit-biz-wa"></div>
         <div class="field"><label>Dirección física</label><input type="text" id="edit-biz-dir"></div>
-        <button class="btn-save" id="btn-save-biz" onclick="guardarEdicionNegocio()">Guardar Datos del Local</button>
+        <button class="btn-save" id="btn-save-biz" onclick="guardarEdicionNegocio(await comprimirImagen(...))">Guardar Datos del Local</button>
     </div>
 </section>
 
@@ -615,6 +615,7 @@ let negociosCache = [];
 let categoriaActual = 'Todos';
 
 let misPedidosLocales = JSON.parse(localStorage.getItem('mg_pedidos') || '[]');
+let misVotosLocales = JSON.parse(localStorage.getItem('mg_votos') || '[]');
 let misFavoritosLocales = JSON.parse(localStorage.getItem('mg_favoritos') || '[]');
 let negocioEsperandoFeedback = null;
 let tempNegocioData = {};
@@ -625,6 +626,43 @@ function toast(msg, type='ok'){
   setTimeout(()=>t.classList.add('hidden'), 4000);
 }
 
+  // ==========================================
+// MÓDULO DE OPTIMIZACIÓN (COMPRESIÓN DE IMÁGENES)
+// ==========================================
+// Esta función reduce el peso de las fotos a menos del 15% de su tamaño original sin perder calidad visual en móviles.
+async function comprimirImagen(file) {
+    if (!file) return null;
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = event => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 800; // Ancho máximo ideal para web móvil
+                const scaleSize = MAX_WIDTH / img.width;
+                
+                // Solo comprimimos si la imagen es más grande que 800px
+                if(img.width > MAX_WIDTH) {
+                    canvas.width = MAX_WIDTH;
+                    canvas.height = img.height * scaleSize;
+                } else {
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                }
+                
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                
+                // Exportar a JPG con 80% de calidad
+                canvas.toBlob(blob => { 
+                    resolve(new File([blob], file.name.split('.')[0] + '.jpg', { type: 'image/jpeg' })); 
+                }, 'image/jpeg', 0.8);
+            }
+        }
+    });
+}
   // ==========================================
 // MÓDULO DE CALIFICACIONES REALES
 // ==========================================
@@ -963,21 +1001,35 @@ document.addEventListener('visibilitychange', () => {
 async function cerrarFeedback(respondioBien) {
     document.getElementById('modal-feedback').classList.remove('show');
     
-    // Guardar el voto en Supabase usando la variable temporal que guardamos al hacer clic
     if (negocioEsperandoFeedback) {
+        const negId = negocioEsperandoFeedback.id;
+
+        // Validar si este celular ya calificó a este negocio (Escudo Anti-Spam)
+        if (misVotosLocales.includes(negId)) {
+            toast('Ya calificaste a este negocio recientemente. ¡Gracias!', 'ok');
+            negocioEsperandoFeedback = null;
+            return;
+        }
+
+        // Si es un voto nuevo, lo subimos
         await db.from('evaluaciones').insert({
-            negocio_id: negocioEsperandoFeedback.id,
+            negocio_id: negId,
             positiva: respondioBien
         });
-    }
 
-    if(respondioBien) {
-        toast('¡Genial! Gracias por calificar. 🌟', 'ok');
-    } else {
-        toast('Gracias por avisarnos. El negocio bajará de calificación. 🙏', 'ok');
+        // Guardamos en memoria local que ya votó
+        misVotosLocales.push(negId);
+        localStorage.setItem('mg_votos', JSON.stringify(misVotosLocales));
+        
+        if(respondioBien) {
+            toast('¡Genial! Gracias por calificar. 🌟', 'ok');
+        } else {
+            toast('Gracias por avisarnos. El negocio bajará de calificación. 🙏', 'ok');
+        }
+        
+        negocioEsperandoFeedback = null; 
     }
 }
-
 // PERFIL DE USUARIO
 async function guardarPerfilUsuario() {
   const btn = document.getElementById('btn-save-perfil');
@@ -1095,7 +1147,20 @@ async function abrirDashboardNegocio() {
         // 3. Obtener Clics
         const { count } = await db.from('estadisticas_clics').select('*', { count: 'exact', head: true }).eq('negocio_id', negocioActual.id);
         const totalClics = count || 0;
+       // 3. Obtener Clics Totales e Historial de 7 días
+        const hace7Dias = new Date();
+        hace7Dias.setDate(hace7Dias.getDate() - 7);
+
+        // Traemos todas las fechas de los clics (La tabla en tu resumen indica que la columna se llama 'fecha')
+        const { data: clicsData } = await db.from('estadisticas_clics')
+            .select('fecha')
+            .eq('negocio_id', negocioActual.id);
+        
+        const totalClics = clicsData ? clicsData.length : 0;
         document.getElementById('stats-clics-count').textContent = totalClics;
+        
+        // Filtramos los clics que ocurrieron solo en los últimos 7 días
+        const clicsRecientes = clicsData ? clicsData.filter(c => new Date(c.fecha) >= hace7Dias) : [];
         
         // 4. Generar Código Promocional Único
         const prefijo = data.nombre.substring(0, 4).toUpperCase().replace(/[^A-Z0-9]/g, 'X').padEnd(4, 'X');
@@ -1104,7 +1169,7 @@ async function abrirDashboardNegocio() {
         document.getElementById('dash-track-count').textContent = Math.floor(totalClics * 0.3);
 
         // 5. Renderizar Gráfica Dinámica en Estadísticas
-        generarGraficaEstadisticas(totalClics);
+       generarGraficaEstadisticas(clicsRecientes);
 
         // ---------------------------------------------------------
         // AQUÍ ESTÁ EL PASO 4: CALIFICACIÓN REAL DEL NEGOCIO
@@ -1136,40 +1201,51 @@ async function abrirDashboardNegocio() {
 }
 
 // FUNCIÓN PARA LA GRÁFICA DE BARRAS DINÁMICA
-function generarGraficaEstadisticas(totalClics) {
+function generarGraficaEstadisticas(clicsRecientes) {
     const cont = document.getElementById('stats-bar-chart');
-    const dias = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+    const diasStr = ['D', 'L', 'M', 'M', 'J', 'V', 'S']; // Días de la semana en JS
     
-    let distribucion = [0.1, 0.1, 0.1, 0.1, 0.2, 0.25, 0.15]; 
-    let maxVal = 0;
+    let datos = [0, 0, 0, 0, 0, 0, 0]; // Array para guardar conteos (Día 1 al 7)
+    let etiquetas = ['', '', '', '', '', '', ''];
     
-    let datos = distribucion.map(peso => {
-        let val = Math.round(totalClics * peso);
-        if (val > maxVal) maxVal = val;
-        return val;
+    // 1. Armar las etiquetas de los últimos 7 días (El índice 6 es Hoy)
+    const hoy = new Date();
+    for(let i = 6; i >= 0; i--) {
+        let d = new Date();
+        d.setDate(hoy.getDate() - i);
+        etiquetas[6 - i] = diasStr[d.getDay()];
+    }
+
+    // 2. Contar los clics en el día correcto
+    clicsRecientes.forEach(clic => {
+        const fechaClic = new Date(clic.fecha);
+        // Diferencia en días enteros respecto a hoy
+        const diffTime = Math.abs(hoy - fechaClic);
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        
+        if(diffDays <= 6) {
+            datos[6 - diffDays]++; // Incrementa la barra correspondiente
+        }
     });
 
-    if (maxVal === 0) maxVal = 10; 
+    let maxVal = Math.max(...datos);
+    if (maxVal === 0) maxVal = 10; // Tope visual para que no se rompa si no hay clics
     
-    let diaActual = new Date().getDay() - 1;
-    if(diaActual === -1) diaActual = 6; 
-
+    // 3. Dibujar
     cont.innerHTML = datos.map((val, index) => {
         let altura = (val / maxVal) * 100;
         if (altura < 5) altura = 5; 
-        
-        let esHoy = index === diaActual;
+        let esHoy = index === 6; // La última barra siempre es hoy
         
         return `
             <div class="bar-col">
                 <div class="bar-val">${val}</div>
                 <div class="bar-fill ${esHoy ? 'today' : ''}" style="height: ${altura}%"></div>
-                <div class="bar-lbl">${dias[index]}</div>
+                <div class="bar-lbl">${etiquetas[index]}</div>
             </div>
         `;
     }).join('');
 }
-
 async function cargarMisProductos() {
   if(!negocioActual) return;
   const { data } = await db.from('ofertas').select('*').eq('negocio_id', negocioActual.id);
@@ -1202,7 +1278,7 @@ async function guardarNuevoProducto() {
   const nombre = document.getElementById('add-prod-nombre').value.trim();
   const precio = document.getElementById('add-prod-precio').value;
   const desc = document.getElementById('add-prod-desc').value.trim();
-  const fotoFile = document.getElementById('add-prod-foto').files[0];
+  const fotoFile = await comprimirImagen(document.getElementById('add-prod-foto').files[0]);
   const esPromo = document.getElementById('add-prod-promo').checked;
 
   if(!nombre || !precio) return toast('Llena el nombre y precio', 'err');
