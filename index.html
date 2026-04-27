@@ -241,10 +241,15 @@
 
       <section id="panel-perfil-pub" class="panel">
           <div style="max-width:900px; margin: 0 auto; width:100%;">
-              <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
-                  <div style="font-size:26px; cursor:pointer; color:var(--muted);" onclick="navegar('inicio')">‹</div>
-                  <h2 style="font-family:'Bricolage Grotesque'; font-size:28px; font-weight:800; color:var(--ink);" id="pub-nombre-titulo">Cargando...</h2>
+              
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+                  <div style="display:flex; align-items:center; gap:10px;">
+                      <div style="font-size:26px; cursor:pointer; color:var(--muted);" onclick="navegar('inicio')">‹</div>
+                      <h2 style="font-family:'Bricolage Grotesque'; font-size:28px; font-weight:800; color:var(--ink); margin:0;" id="pub-nombre-titulo">Cargando...</h2>
+                  </div>
+                  <div id="pub-btn-fav" class="heart-btn" style="position:static; margin:0; box-shadow:none; border:1px solid var(--line);">♥</div>
               </div>
+              
               <div id="pub-hero" style="background-color:var(--green-soft); height:220px; border-radius:var(--radius); margin-bottom:24px; background-size:cover; background-position:center; box-shadow:var(--sh);"></div>
               
               <div style="background:#fff; padding:24px; border-radius:var(--radius); box-shadow:var(--sh); margin-bottom:30px; display:flex; flex-direction:column; gap:10px;">
@@ -682,7 +687,7 @@ let ofertasCache = [];
 let carrito = { negocio: null, items: [] }; 
 
 let misPedidosLocales = JSON.parse(localStorage.getItem('mg_pedidos') || '[]');
-let misFavoritosLocales = JSON.parse(localStorage.getItem('mg_favoritos') || '[]');
+let misNegociosFavoritos = JSON.parse(localStorage.getItem('mg_fav_negocios') || '[]');
 let misVotosLocales = JSON.parse(localStorage.getItem('mg_votos') || '[]');
 let negocioEsperandoFeedback = null;
 let tempNegocioData = {};
@@ -1002,10 +1007,38 @@ async function abrirPerfilPublico(idNegocio) {
   const infoExtra = calif.responde_rapido ? ` · ⭐ ${calif.estrellas} (Rápido)` : ` · ⭐ ${calif.estrellas}`;
   document.getElementById('pub-horario-status').textContent += infoExtra;
 
+  // LÓGICA DEL BOTÓN FAVORITO DE TIENDA
+  const btnFavNegocio = document.getElementById('pub-btn-fav');
+  const esFavNegocio = misNegociosFavoritos.some(f => f.id === neg.id);
+  if(esFavNegocio) btnFavNegocio.classList.add('active'); else btnFavNegocio.classList.remove('active');
+  
+  btnFavNegocio.onclick = () => {
+      const index = misNegociosFavoritos.findIndex(f => f.id === neg.id);
+      if (index === -1) {
+          misNegociosFavoritos.push(neg);
+          toast('Negocio guardado en Favoritos ❤️', 'ok');
+          btnFavNegocio.classList.add('active');
+      } else {
+          misNegociosFavoritos.splice(index, 1);
+          toast('Negocio eliminado', 'ok');
+          btnFavNegocio.classList.remove('active');
+      }
+      localStorage.setItem('mg_fav_negocios', JSON.stringify(misNegociosFavoritos));
+  };
+
+  // REPARACIÓN DE LA IMAGEN DE PORTADA
+  const heroEl = document.getElementById('pub-hero');
+  if (neg.imagen_url && neg.imagen_url !== 'null' && neg.imagen_url !== '') {
+      heroEl.style.backgroundImage = `url('${neg.imagen_url}')`;
+  } else {
+      heroEl.style.backgroundImage = `none`;
+      heroEl.style.backgroundColor = 'var(--green-soft)';
+  }
+
   const { data: prods } = await db.from('ofertas').select('*').eq('negocio_id', neg.id).eq('activa', true);
   const cont = document.getElementById('pub-productos');
   if(!prods || prods.length === 0) { 
-      cont.innerHTML = '<div class="empty-state"><div class="icon">🍔</div><h3>Menú en preparación</h3><p>Este negocio aún no tiene productos publicados.</p></div>'; 
+      cont.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;"><div class="icon">🍔</div><h3>Menú en preparación</h3><p>Este negocio aún no tiene productos publicados.</p></div>'; 
   } else {
     const negocioStr = encodeURIComponent(JSON.stringify(neg));
     cont.innerHTML = prods.map(p => {
@@ -1091,26 +1124,50 @@ function toggleFavorito(productoObj, negocioObj) {
 
 function cargarFavoritosUI() {
     const cont = document.getElementById('lista-favoritos');
-    if(misFavoritosLocales.length === 0) {
-        cont.innerHTML = `<div class="empty-state"><div class="icon">💔</div><h3>Aún no tienes favoritos</h3><p>Explora y guarda los platillos que más te gusten tocando el corazón.</p></div>`;
+    
+    if(misFavoritosLocales.length === 0 && misNegociosFavoritos.length === 0) {
+        cont.innerHTML = `<div class="empty-state" style="grid-column: 1 / -1;"><div class="icon">💔</div><h3>Aún no tienes favoritos</h3><p>Guarda los negocios y productos que más te gusten tocando el corazón (♥).</p></div>`;
         return;
     }
-    cont.innerHTML = misFavoritosLocales.map(fav => {
-        const prodStr = encodeURIComponent(JSON.stringify(fav.producto));
-        const negStr = encodeURIComponent(JSON.stringify(fav.negocio));
-        return `
-        <div class="product-card" onclick="abrirDetalleProducto('${prodStr}', '${negStr}')" style="cursor:pointer; border-color:var(--danger);">
-            ${fav.producto.imagen_url ? `<div class="product-img" style="background-image:url('${fav.producto.imagen_url}'); background-size:cover;"></div>` : `<div class="product-img" style="background:#fff4ec; color:var(--orange);">📦</div>`}
-            <div class="product-info">
-                <div style="font-weight:700; font-size:15px; margin-bottom:2px;">${fav.producto.titulo}</div>
-                <div style="font-size:12px; color:var(--muted);">${fav.negocio.nombre}</div>
-            </div>
-            <div style="color:var(--danger); font-size:20px;">♥</div>
-        </div>
-        `;
-    }).join('');
-}
 
+    let html = '';
+
+    // Pintar Negocios Favoritos
+    if (misNegociosFavoritos.length > 0) {
+        html += `<h3 style="grid-column: 1 / -1; margin-bottom:-10px;">Tiendas 🏪</h3>`;
+        html += misNegociosFavoritos.map(n => `
+            <div class="product-card" onclick="abrirPerfilPublico('${n.id}')" style="border-color:var(--danger);">
+                <div class="product-img" style="background-image:url('${n.imagen_url || ''}'); background-size:cover;">${!n.imagen_url ? n.nombre[0] : ''}</div>
+                <div class="product-info">
+                  <div style="font-weight:800; font-size:16px;">${n.nombre}</div>
+                  <div style="font-size:13px; color:var(--muted); margin-top:2px;">${n.categoria || 'Comercio'}</div>
+                </div>
+                <div style="color:var(--danger); font-size:20px;">♥</div>
+            </div>
+        `).join('');
+    }
+
+    // Pintar Productos Favoritos
+    if (misFavoritosLocales.length > 0) {
+        html += `<h3 style="grid-column: 1 / -1; margin-bottom:-10px; margin-top:10px;">Productos 🍔</h3>`;
+        html += misFavoritosLocales.map(fav => {
+            const prodStr = encodeURIComponent(JSON.stringify(fav.producto));
+            const negStr = encodeURIComponent(JSON.stringify(fav.negocio));
+            return `
+            <div class="product-card" onclick="abrirDetalleProducto('${prodStr}', '${negStr}')" style="cursor:pointer; border-color:var(--danger);">
+                ${fav.producto.imagen_url ? `<div class="product-img" style="background-image:url('${fav.producto.imagen_url}'); background-size:cover;"></div>` : `<div class="product-img" style="background:#fff4ec; color:var(--orange);">📦</div>`}
+                <div class="product-info">
+                    <div style="font-weight:700; font-size:15px; margin-bottom:2px;">${fav.producto.titulo}</div>
+                    <div style="font-size:12px; color:var(--muted);">${fav.negocio.nombre}</div>
+                </div>
+                <div style="color:var(--danger); font-size:20px;">♥</div>
+            </div>
+            `;
+        }).join('');
+    }
+
+    cont.innerHTML = html;
+}
 document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible' && negocioEsperandoFeedback) {
         setTimeout(() => {
