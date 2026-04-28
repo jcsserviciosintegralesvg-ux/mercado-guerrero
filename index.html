@@ -568,16 +568,8 @@
               <div class="field"><label>Precio (MXN) *</label><input type="number" id="add-prod-precio" step="0.01" placeholder="0.00"></div>
               <div class="field">
                   <label>Sección del menú (opcional)</label>
-                  <input type="text" id="add-prod-categoria" placeholder="Ej: Tacos, Bebidas, Postres" list="cat-sugerencias">
-                  <datalist id="cat-sugerencias">
-                      <option value="Entradas">
-                      <option value="Platos fuertes">
-                      <option value="Tacos">
-                      <option value="Bebidas">
-                      <option value="Postres">
-                      <option value="Combos">
-                      <option value="Promociones">
-                  </datalist>
+                  <input type="text" id="add-prod-categoria" placeholder="Ej: Sección del menú" list="cat-sugerencias">
+                  <datalist id="cat-sugerencias"></datalist>
               </div>
               <div class="field"><label>Descripción corta</label><textarea id="add-prod-desc" rows="3" placeholder="Ingredientes, tamaño, etc."></textarea></div>
               
@@ -1843,6 +1835,7 @@ function abrirAgregarProducto() {
   document.getElementById('add-prod-desc').value = '';
   document.getElementById('add-prod-foto').value = '';
   document.getElementById('add-prod-promo').checked = false;
+  actualizarSugerenciasCategoria();
   navegar('biz-add-producto');
 }
 
@@ -1856,7 +1849,30 @@ function abrirEditarProducto(prod) {
   document.getElementById('add-prod-desc').value = prod.descripcion || '';
   document.getElementById('add-prod-foto').value = '';
   document.getElementById('add-prod-promo').checked = !!prod.es_promo;
+  actualizarSugerenciasCategoria();
   navegar('biz-add-producto');
+}
+
+// Sugerencias de "sección del menú" según el tipo de negocio
+function actualizarSugerenciasCategoria() {
+  const sugerencias = {
+    'Comida':     ['Entradas', 'Platos fuertes', 'Tacos', 'Antojitos', 'Bebidas', 'Postres', 'Combos', 'Promociones'],
+    'Ferretería': ['Herramientas', 'Pinturas', 'Tornillería', 'Plomería', 'Eléctrico', 'Construcción', 'Jardinería', 'Cerrajería'],
+    'Abarrotes':  ['Frutas y verduras', 'Carnes y pollo', 'Lácteos', 'Bebidas', 'Limpieza', 'Cuidado personal', 'Despensa', 'Botana'],
+    'Servicios':  ['Reparaciones', 'Mantenimiento', 'Instalaciones', 'Consultoría', 'Asesoría', 'Limpieza', 'Otros']
+  };
+  const placeholders = {
+    'Comida':     'Ej: Tacos, Bebidas, Postres',
+    'Ferretería': 'Ej: Tornillería, Pintura, Herramientas',
+    'Abarrotes':  'Ej: Lácteos, Frutas, Limpieza',
+    'Servicios':  'Ej: Reparaciones, Instalaciones'
+  };
+  const cat = negocioActual?.categoria || 'Comida';
+  const opciones = sugerencias[cat] || sugerencias['Comida'];
+  const datalist = document.getElementById('cat-sugerencias');
+  if (datalist) datalist.innerHTML = opciones.map(o => `<option value="${o}">`).join('');
+  const inputCat = document.getElementById('add-prod-categoria');
+  if (inputCat) inputCat.placeholder = placeholders[cat] || placeholders['Comida'];
 }
 
 async function guardarNuevoProducto() {
