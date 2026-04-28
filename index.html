@@ -1280,6 +1280,12 @@ function toggleFavorito(productoObj, negocioObj) {
 function cargarFavoritosUI() {
     const cont = document.getElementById('lista-favoritos');
     
+    // FIX: Limpiar favoritos corruptos antes de renderizar
+    misFavoritosLocales = misFavoritosLocales.filter(f => f && f.producto && f.negocio);
+    misNegociosFavoritos = misNegociosFavoritos.filter(n => n && n.id && n.nombre);
+    localStorage.setItem('mg_favoritos', JSON.stringify(misFavoritosLocales));
+    localStorage.setItem('mg_fav_negocios', JSON.stringify(misNegociosFavoritos));
+    
     if(misFavoritosLocales.length === 0 && misNegociosFavoritos.length === 0) {
         cont.innerHTML = `<div class="empty-state" style="grid-column: 1 / -1;"><div class="icon">💔</div><h3>Aún no tienes favoritos</h3><p>Guarda los negocios y productos que más te gusten tocando el corazón (♥).</p></div>`;
         return;
@@ -1292,9 +1298,9 @@ function cargarFavoritosUI() {
         html += `<h3 style="grid-column: 1 / -1; margin-bottom:-10px;">Tiendas 🏪</h3>`;
         html += misNegociosFavoritos.map(n => `
             <div class="product-card" onclick="abrirPerfilPublico('${n.id}')" style="border-color:var(--danger);">
-                <div class="product-img" style="background-image:url('${n.imagen_url || ''}'); background-size:cover;">${!n.imagen_url ? n.nombre[0] : ''}</div>
+                <div class="product-img" style="background-image:url('${n.imagen_url || ''}'); background-size:cover;">${!n.imagen_url ? (n.nombre ? n.nombre[0] : '?') : ''}</div>
                 <div class="product-info">
-                  <div style="font-weight:800; font-size:16px;">${n.nombre}</div>
+                  <div style="font-weight:800; font-size:16px;">${n.nombre || 'Sin nombre'}</div>
                   <div style="font-size:13px; color:var(--muted); margin-top:2px;">${n.categoria || 'Comercio'}</div>
                 </div>
                 <div style="color:var(--danger); font-size:20px;">♥</div>
@@ -1312,8 +1318,8 @@ function cargarFavoritosUI() {
             <div class="product-card" onclick="abrirDetalleProducto('${prodStr}', '${negStr}')" style="cursor:pointer; border-color:var(--danger);">
                 ${fav.producto.imagen_url ? `<div class="product-img" style="background-image:url('${fav.producto.imagen_url}'); background-size:cover;"></div>` : `<div class="product-img" style="background:#fff4ec; color:var(--orange);">📦</div>`}
                 <div class="product-info">
-                    <div style="font-weight:700; font-size:15px; margin-bottom:2px;">${fav.producto.titulo}</div>
-                    <div style="font-size:12px; color:var(--muted);">${fav.negocio.nombre}</div>
+                    <div style="font-weight:700; font-size:15px; margin-bottom:2px;">${fav.producto.titulo || 'Sin título'}</div>
+                    <div style="font-size:12px; color:var(--muted);">${fav.negocio.nombre || 'Sin nombre'}</div>
                 </div>
                 <div style="color:var(--danger); font-size:20px;">♥</div>
             </div>
