@@ -14,7 +14,7 @@
   --green:#0f7a3f;--green-deep:#0a5a2e;--green-soft:#e8f5ec;
   --orange:#ea580c;--orange-soft:#fff4ec;--orange-deep:#c2410c;
   --ink:#101418;--muted:#6b7280;--line:#e5e7eb;
-  --bg:#f9fafb;--card:#ffffff;--danger:#dc2626;
+  --bg:#f9fafb;--card:#fff;--danger:#dc2626;--blue:#2563eb;--blue-soft:#dbeafe;
   --radius:12px;--sh:0 1px 3px rgba(0,0,0,.08),0 4px 12px rgba(0,0,0,.06);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
@@ -47,11 +47,14 @@ html,body{background:var(--bg);color:var(--ink);font-family:'Plus Jakarta Sans',
 .card-head h2{font-family:'Bricolage Grotesque',serif;font-size:16px;font-weight:700}
 .card-head p{font-size:12px;color:var(--muted);margin-top:2px}
 .card-body{padding:20px}
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:20px}
-.kpi{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:20px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px;position:relative;overflow:hidden}
 .kpi-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:700;letter-spacing:.08em;margin-bottom:6px}
-.kpi-val{font-family:'Bricolage Grotesque',serif;font-size:30px;font-weight:800;color:var(--ink);line-height:1}
+.kpi-val{font-family:'Bricolage Grotesque',serif;font-size:28px;font-weight:800;color:var(--ink);line-height:1}
 .kpi-sub{font-size:11px;margin-top:6px;font-weight:600;color:var(--muted)}
+.kpi.accent{border-left:3px solid var(--green)}
+.kpi.accent.orange{border-left-color:var(--orange)}
+.kpi.accent.blue{border-left-color:var(--blue)}
 table{width:100%;border-collapse:collapse;font-size:13px}
 th{text-align:left;padding:10px 16px;background:#f9fafb;color:var(--muted);font-size:11px;text-transform:uppercase;font-weight:700;letter-spacing:.05em;border-bottom:1px solid var(--line)}
 td{padding:13px 16px;border-bottom:1px solid var(--line);vertical-align:middle}
@@ -62,29 +65,39 @@ tr:hover td{background:#fafafa}
 .tag-orange{background:var(--orange-soft);color:var(--orange)}
 .tag-gray{background:#f3f4f6;color:var(--muted)}
 .tag-red{background:#fef2f2;color:var(--danger)}
-.tag-blue{background:#dbeafe;color:#1e40af}
-.btn{padding:8px 14px;border-radius:9px;border:none;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;transition:.15s;display:inline-flex;align-items:center;gap:6px}
+.tag-blue{background:var(--blue-soft);color:#1e40af}
+.tag-yellow{background:#fef3c7;color:#92400e}
+.btn{padding:8px 14px;border-radius:9px;border:none;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;transition:.15s;display:inline-flex;align-items:center;gap:6px;justify-content:center}
+.btn:disabled{opacity:.5;cursor:not-allowed}
 .btn-primary{background:var(--green);color:#fff}
-.btn-primary:hover{background:var(--green-deep)}
+.btn-primary:hover:not(:disabled){background:var(--green-deep)}
 .btn-orange{background:var(--orange);color:#fff}
+.btn-orange:hover:not(:disabled){background:var(--orange-deep)}
 .btn-ghost{background:#f3f4f6;color:var(--ink)}
-.btn-ghost:hover{background:#e5e7eb}
+.btn-ghost:hover:not(:disabled){background:#e5e7eb}
 .btn-danger{background:#fef2f2;color:var(--danger);border:1px solid #fecaca}
+.btn-danger:hover:not(:disabled){background:#fecaca}
 .btn-ink{background:var(--ink);color:#fff}
+.btn-blue{background:var(--blue);color:#fff}
 .btn-sm{padding:5px 10px;font-size:11px;border-radius:7px}
 .field{margin-bottom:14px}
 .field label{display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
 .field input,.field select,.field textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font-size:13px;font-family:inherit;background:#fff}
-.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--green)}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px var(--green-soft)}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 .grid-dash{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .muted{color:var(--muted);font-size:13px}
 .hidden{display:none!important}
-.biz-dot{width:32px;height:32px;border-radius:8px;background:#eee;object-fit:cover;flex-shrink:0}
+.biz-dot{width:36px;height:36px;border-radius:8px;background:#eee;object-fit:cover;flex-shrink:0;display:grid;place-items:center;font-weight:700;color:var(--muted)}
 .biz-cell{display:flex;align-items:center;gap:10px;font-weight:600}
 .empty{padding:40px;text-align:center;color:var(--muted);font-size:13px}
-.toast{position:fixed;top:20px;right:20px;background:var(--ink);color:#fff;padding:12px 18px;border-radius:10px;z-index:9999;font-size:13px;font-weight:600;box-shadow:var(--sh)}
+.empty .ico{font-size:32px;margin-bottom:8px;display:block}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(0,0,0,.1);border-left-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;top:20px;right:20px;background:var(--ink);color:#fff;padding:12px 18px;border-radius:10px;z-index:9999;font-size:13px;font-weight:600;box-shadow:var(--sh);transition:.3s;max-width:90vw}
+.toast.hidden{transform:translateX(120%);opacity:0}
 .toast.ok{background:var(--green)}
 .toast.err{background:var(--danger)}
 .login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg)}
@@ -98,18 +111,39 @@ tr:hover td{background:#fafafa}
 .switch input:checked+span::before{transform:translateX(16px)}
 .act-row{display:flex;align-items:flex-start;gap:12px;padding:12px 20px;border-bottom:1px solid var(--line)}
 .act-row:last-child{border-bottom:none}
-.act-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.act-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:6px}
 .act-time{font-size:11px;color:var(--muted);margin-top:2px}
 .alert-row{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line)}
 .alert-row:last-child{border-bottom:none}
 .alert-row.warning{background:#fffbeb}
 .alert-row.critical{background:#fef2f2}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:9998;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-bg.show{display:flex}
+.modal{background:#fff;border-radius:14px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 25px 50px rgba(0,0,0,.25)}
+.modal-head{padding:20px 24px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.modal-head h3{font-family:'Bricolage Grotesque',serif;font-size:18px;font-weight:700}
+.modal-x{cursor:pointer;color:var(--muted);font-size:24px;line-height:1;background:#f3f4f6;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;border:none;font-family:inherit}
+.modal-body{padding:24px}
+.modal-foot{padding:16px 24px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end}
+.bar-chart{display:flex;align-items:flex-end;justify-content:space-between;gap:6px;height:120px;padding:14px 0 24px;border-bottom:1px solid var(--line);position:relative}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;position:relative}
+.bar-fill{width:100%;max-width:24px;background:var(--green-soft);border-radius:4px 4px 0 0;transition:height .8s}
+.bar-fill.today{background:var(--green)}
+.bar-lbl{position:absolute;bottom:-20px;font-size:10px;font-weight:700;color:var(--muted)}
+.bar-val{font-size:10px;font-weight:800;color:var(--ink);margin-bottom:4px}
+.filter-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.filter-bar input,.filter-bar select{padding:7px 11px;font-size:12px;border:1px solid var(--line);border-radius:8px;font-family:inherit;background:#fff;width:auto;margin:0}
+.plan-card{border:2px solid var(--line);border-radius:14px;padding:18px;background:#fff}
+.plan-card.featured{border-color:var(--orange);background:linear-gradient(180deg,#fff,var(--orange-soft))}
+.plan-card .pname{font-family:'Bricolage Grotesque',serif;font-size:18px;font-weight:800}
+.plan-card .pprice{font-size:24px;font-weight:900;margin:4px 0 12px}
 @media(max-width:768px){
   .sidebar{width:60px}
   .sidebar-logo .name,.sidebar-logo .sub,.nav-item span:not(.ico),.nav-badge,.sidebar-user>div{display:none}
   .nav-item{justify-content:center}
   .content{padding:16px}
-  .grid-2,.grid-dash{grid-template-columns:1fr}
+  .grid-2,.grid-dash,.grid-3{grid-template-columns:1fr}
+  .topbar{padding:0 14px}
 }
 </style>
 </head>
@@ -129,10 +163,10 @@ tr:hover td{background:#fafafa}
       </svg>
     </div>
     <h2>Panel Admin</h2>
-    <p class="muted" style="margin-bottom:20px">Solo cuentas con rol <code>admin</code></p>
+    <p class="muted" style="margin-bottom:20px">Solo cuentas con rol <code style="background:var(--orange-soft);padding:2px 6px;border-radius:4px;color:var(--orange-deep)">admin</code></p>
     <div class="field"><label>Email</label><input type="email" id="l-email" placeholder="admin@ejemplo.com"></div>
     <div class="field"><label>Contraseña</label><input type="password" id="l-pass" onkeydown="if(event.key==='Enter')doLogin()"></div>
-    <button class="btn btn-primary" onclick="doLogin()" style="width:100%;justify-content:center;padding:12px;font-size:14px">Entrar al panel</button>
+    <button class="btn btn-primary" id="btn-login" onclick="doLogin()" style="width:100%;padding:12px;font-size:14px">Entrar al panel</button>
   </div>
 </div>
 
@@ -148,15 +182,17 @@ tr:hover td{background:#fafafa}
       </svg>
       <div><div class="name">Mercado <em>Guerrero</em></div><div class="sub">Admin</div></div>
     </div>
-    <nav class="nav">
-      <button class="nav-item active" onclick="ir('dashboard')"><span class="ico">📊</span><span>Dashboard</span></button>
-      <button class="nav-item" onclick="ir('aprobaciones')"><span class="ico">⏳</span><span>Aprobaciones</span><span class="nav-badge" id="badge-apro">0</span></button>
-      <button class="nav-item" onclick="ir('negocios')"><span class="ico">🏪</span><span>Negocios</span></button>
-      <button class="nav-item" onclick="ir('productos')"><span class="ico">📦</span><span>Productos</span></button>
-      <button class="nav-item" onclick="ir('promos')"><span class="ico">🔥</span><span>Promos del Día</span></button>
-      <button class="nav-item" onclick="ir('suscripciones')"><span class="ico">💳</span><span>Suscripciones</span></button>
-      <button class="nav-item" onclick="ir('clientes')"><span class="ico">👥</span><span>Clientes</span></button>
-      <button class="nav-item" onclick="ir('configuracion')"><span class="ico">⚙️</span><span>Configuración</span></button>
+    <nav class="nav" id="nav-menu">
+      <button class="nav-item active" data-sec="dashboard"><span class="ico">📊</span><span>Dashboard</span></button>
+      <button class="nav-item" data-sec="aprobaciones"><span class="ico">⏳</span><span>Aprobaciones</span><span class="nav-badge hidden" id="badge-apro">0</span></button>
+      <button class="nav-item" data-sec="negocios"><span class="ico">🏪</span><span>Negocios</span></button>
+      <button class="nav-item" data-sec="productos"><span class="ico">📦</span><span>Productos</span></button>
+      <button class="nav-item" data-sec="promos"><span class="ico">🔥</span><span>Promociones</span></button>
+      <button class="nav-item" data-sec="pedidos"><span class="ico">🛒</span><span>Pedidos</span></button>
+      <button class="nav-item" data-sec="suscripciones"><span class="ico">💳</span><span>Suscripciones</span></button>
+      <button class="nav-item" data-sec="clientes"><span class="ico">👥</span><span>Usuarios</span></button>
+      <button class="nav-item" data-sec="auditoria"><span class="ico">📜</span><span>Auditoría</span></button>
+      <button class="nav-item" data-sec="configuracion"><span class="ico">⚙️</span><span>Configuración</span></button>
     </nav>
     <div class="sidebar-user">
       <div class="ava" id="user-ava">A</div>
@@ -184,31 +220,42 @@ tr:hover td{background:#fafafa}
       <!-- DASHBOARD -->
       <div class="section active" id="sec-dashboard">
         <div class="kpis">
-          <div class="kpi"><div class="kpi-lbl">Negocios activos</div><div class="kpi-val" id="kpi-negocios">—</div><div class="kpi-sub" id="kpi-nsub"></div></div>
-          <div class="kpi"><div class="kpi-lbl">Suscripciones activas</div><div class="kpi-val" id="kpi-subs">—</div></div>
-          <div class="kpi"><div class="kpi-lbl">Ofertas publicadas</div><div class="kpi-val" id="kpi-ofertas">—</div></div>
-          <div class="kpi"><div class="kpi-lbl">Usuarios registrados</div><div class="kpi-val" id="kpi-users">—</div></div>
+          <div class="kpi accent"><div class="kpi-lbl">Negocios activos</div><div class="kpi-val" id="kpi-negocios">—</div><div class="kpi-sub" id="kpi-nsub"></div></div>
+          <div class="kpi accent"><div class="kpi-lbl">Suscripciones activas</div><div class="kpi-val" id="kpi-subs">—</div><div class="kpi-sub" id="kpi-subs-sub"></div></div>
+          <div class="kpi accent orange"><div class="kpi-lbl">Pedidos hoy</div><div class="kpi-val" id="kpi-pedidos-hoy">—</div><div class="kpi-sub" id="kpi-pedidos-hoy-sub"></div></div>
+          <div class="kpi accent orange"><div class="kpi-lbl">Facturado mes</div><div class="kpi-val" id="kpi-facturado">—</div><div class="kpi-sub">Pedidos este mes</div></div>
+          <div class="kpi accent blue"><div class="kpi-lbl">Productos publicados</div><div class="kpi-val" id="kpi-ofertas">—</div></div>
+          <div class="kpi accent blue"><div class="kpi-lbl">Usuarios totales</div><div class="kpi-val" id="kpi-users">—</div><div class="kpi-sub" id="kpi-users-sub"></div></div>
         </div>
 
-        <div class="card" style="border:1px dashed var(--orange);background:var(--orange-soft)">
-          <div class="card-head" style="border:none">
-            <div><h2>🌱 Datos de ejemplo</h2><p>Carga 3 negocios demo con productos para probar la app</p></div>
-            <div class="row">
-              <button class="btn btn-primary btn-sm" onclick="cargarDemo()">+ Cargar ejemplos</button>
-              <button class="btn btn-sm btn-danger" onclick="borrarDemo()">Borrar ejemplos</button>
-            </div>
+        <div class="grid-dash">
+          <div class="card">
+            <div class="card-head"><h2>📈 Pedidos últimos 7 días</h2></div>
+            <div style="padding:14px 20px"><div class="bar-chart" id="chart-pedidos"></div></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h2>🏆 Top negocios (por pedidos)</h2></div>
+            <div id="top-negocios"><div class="empty">—</div></div>
           </div>
         </div>
 
         <div class="grid-dash">
           <div class="card">
-            <div class="card-head"><h2>⚠️ Alertas de pago</h2></div>
+            <div class="card-head"><h2>⚠️ Alertas</h2></div>
             <div id="lista-alertas"><div class="empty">Sin alertas</div></div>
           </div>
           <div class="card">
-            <div class="card-head"><h2>📈 Actividad reciente</h2></div>
-            <div id="lista-actividad">
-              <div class="act-row"><span class="act-dot" style="background:var(--green)"></span><div><div style="font-size:13px">Panel cargado correctamente</div><div class="act-time">Ahora</div></div></div>
+            <div class="card-head"><h2>🕐 Actividad reciente</h2></div>
+            <div id="lista-actividad"><div class="empty">Cargando…</div></div>
+          </div>
+        </div>
+
+        <div class="card" style="border:1px dashed var(--orange);background:var(--orange-soft);margin-top:16px">
+          <div class="card-head" style="border:none">
+            <div><h2>🌱 Datos de ejemplo</h2><p>Carga negocios y productos demo para probar la app</p></div>
+            <div class="row">
+              <button class="btn btn-primary btn-sm" onclick="cargarDemo()">+ Cargar ejemplos</button>
+              <button class="btn btn-sm btn-danger" onclick="borrarDemo()">Borrar ejemplos</button>
             </div>
           </div>
         </div>
@@ -217,8 +264,10 @@ tr:hover td{background:#fafafa}
       <!-- APROBACIONES -->
       <div class="section" id="sec-aprobaciones">
         <div class="card">
-          <div class="card-head"><div><h2>⏳ Aprobaciones pendientes</h2><p>Cambios de negocios que esperan tu revisión</p></div></div>
-          <div id="cont-aprobaciones"><div class="empty">Sin aprobaciones pendientes ✓</div></div>
+          <div class="card-head">
+            <div><h2>⏳ Cambios pendientes de revisión</h2><p>Aprueba o rechaza cambios solicitados por negocios</p></div>
+          </div>
+          <div id="cont-aprobaciones"><div class="empty"><span class="ico">✓</span>Sin aprobaciones pendientes</div></div>
         </div>
       </div>
 
@@ -227,12 +276,27 @@ tr:hover td{background:#fafafa}
         <div class="card">
           <div class="card-head">
             <div><h2>🏪 Todos los negocios</h2><p id="negocios-count">—</p></div>
-            <div class="row">
-              <input type="text" id="buscar-neg" placeholder="Buscar..." style="width:180px;margin:0;padding:8px 12px;font-size:12px" oninput="filtrarNegs()">
-              <button class="btn btn-primary btn-sm" onclick="nuevoNegocio()">+ Nuevo</button>
+            <div class="filter-bar">
+              <input type="text" id="buscar-neg" placeholder="🔍 Buscar..." style="width:160px" oninput="filtrarNegs()">
+              <select id="filtro-cat-neg" onchange="filtrarNegs()">
+                <option value="">Todas las categorías</option>
+                <option value="Comida">Comida</option>
+                <option value="Ferretería">Ferretería</option>
+                <option value="Abarrotes">Abarrotes</option>
+                <option value="Servicios">Servicios</option>
+              </select>
+              <select id="filtro-estado-neg" onchange="filtrarNegs()">
+                <option value="">Todos</option>
+                <option value="activo">Activos</option>
+                <option value="pausado">Pausados</option>
+                <option value="con-sub">Con suscripción</option>
+                <option value="sin-sub">Sin suscripción</option>
+              </select>
+              <button class="btn btn-ghost btn-sm" onclick="exportarCSV('negocios')">⬇ CSV</button>
+              <button class="btn btn-primary btn-sm" onclick="abrirModalNegocio()">+ Nuevo</button>
             </div>
           </div>
-          <div style="overflow-x:auto"><table id="tabla-negocios"><tr><td class="empty">Cargando...</td></tr></table></div>
+          <div style="overflow-x:auto"><table id="tabla-negocios"><tr><td class="empty"><div class="spinner"></div> Cargando...</td></tr></table></div>
         </div>
       </div>
 
@@ -240,38 +304,135 @@ tr:hover td{background:#fafafa}
       <div class="section" id="sec-productos">
         <div class="card">
           <div class="card-head">
-            <div><h2>📦 Todas las ofertas</h2><p>Productos y ofertas de todos los negocios</p></div>
-            <button class="btn btn-ghost btn-sm" onclick="cargarOfertas()">🔄 Actualizar</button>
+            <div><h2>📦 Todos los productos</h2><p id="productos-count">—</p></div>
+            <div class="filter-bar">
+              <input type="text" id="buscar-prod" placeholder="🔍 Buscar..." style="width:160px" oninput="filtrarProds()">
+              <select id="filtro-neg-prod" onchange="filtrarProds()"><option value="">Todos los negocios</option></select>
+              <select id="filtro-estado-prod" onchange="filtrarProds()">
+                <option value="">Todos</option>
+                <option value="activa">Activos</option>
+                <option value="pausada">Pausados</option>
+                <option value="promo">Solo promos</option>
+              </select>
+              <button class="btn btn-ghost btn-sm" onclick="exportarCSV('productos')">⬇ CSV</button>
+              <button class="btn btn-ghost btn-sm" onclick="cargarOfertas()">🔄</button>
+            </div>
           </div>
-          <div style="overflow-x:auto"><table id="tabla-ofertas"><tr><td class="empty">Cargando...</td></tr></table></div>
+          <div style="overflow-x:auto"><table id="tabla-ofertas"><tr><td class="empty"><div class="spinner"></div> Cargando...</td></tr></table></div>
         </div>
       </div>
 
       <!-- PROMOS -->
       <div class="section" id="sec-promos">
         <div class="card">
-          <div class="card-head"><h2>🔥 Promos del Día activas</h2></div>
+          <div class="card-head">
+            <div><h2>🔥 Promociones del Día</h2><p>Productos marcados con descuento o como oferta</p></div>
+          </div>
           <div id="cont-promos"><div class="empty">Sin promos activas</div></div>
+        </div>
+      </div>
+
+      <!-- PEDIDOS -->
+      <div class="section" id="sec-pedidos">
+        <div class="card">
+          <div class="card-head">
+            <div><h2>🛒 Todos los pedidos</h2><p id="pedidos-count">—</p></div>
+            <div class="filter-bar">
+              <select id="filtro-neg-pedidos" onchange="filtrarPedidos()"><option value="">Todos los negocios</option></select>
+              <select id="filtro-fecha-pedidos" onchange="filtrarPedidos()">
+                <option value="hoy">Hoy</option>
+                <option value="semana" selected>Última semana</option>
+                <option value="mes">Último mes</option>
+                <option value="todos">Todos</option>
+              </select>
+              <button class="btn btn-ghost btn-sm" onclick="exportarCSV('pedidos')">⬇ CSV</button>
+            </div>
+          </div>
+          <div style="padding:16px 20px;background:#f9fafb;border-bottom:1px solid var(--line);display:flex;gap:30px;flex-wrap:wrap">
+            <div><div class="muted">Total pedidos filtrados</div><div style="font-size:18px;font-weight:800" id="pedidos-stat-num">—</div></div>
+            <div><div class="muted">Total facturado</div><div style="font-size:18px;font-weight:800;color:var(--orange)" id="pedidos-stat-monto">—</div></div>
+            <div><div class="muted">Ticket promedio</div><div style="font-size:18px;font-weight:800" id="pedidos-stat-prom">—</div></div>
+          </div>
+          <div style="overflow-x:auto"><table id="tabla-pedidos"><tr><td class="empty"><div class="spinner"></div> Cargando...</td></tr></table></div>
         </div>
       </div>
 
       <!-- SUSCRIPCIONES -->
       <div class="section" id="sec-suscripciones">
-        <div class="card">
-          <div class="card-head"><h2>💳 Estado de suscripciones</h2></div>
-          <div style="overflow-x:auto"><table id="tabla-subs"><tr><td class="empty">Cargando...</td></tr></table></div>
+        <div class="grid-2" style="margin-bottom:16px">
+          <div class="plan-card">
+            <div class="pname">🌱 Plan Free</div>
+            <div class="pprice">$0 <span style="font-size:13px;color:var(--muted)">/mes</span></div>
+            <div class="muted" style="font-size:12px">Hasta 3 productos · Perfil básico · WhatsApp directo</div>
+          </div>
+          <div class="plan-card featured">
+            <div class="pname">⭐ Plan Pro</div>
+            <div class="pprice">$99 <span style="font-size:13px;color:var(--muted)">MXN /mes</span></div>
+            <div class="muted" style="font-size:12px">Hasta 20 productos · Insignia · Estadísticas · Promos</div>
+          </div>
         </div>
+
         <div class="card">
-          <div class="card-head"><h2>💰 Historial de pagos</h2></div>
+          <div class="card-head">
+            <div><h2>💳 Estado de suscripciones</h2></div>
+            <div class="filter-bar">
+              <select id="filtro-sub" onchange="cargarSuscripciones()">
+                <option value="">Todos</option>
+                <option value="activa">Activas</option>
+                <option value="vencida">Vencidas</option>
+                <option value="por-vencer">Por vencer (7 días)</option>
+              </select>
+            </div>
+          </div>
+          <div style="overflow-x:auto"><table id="tabla-subs"><tr><td class="empty"><div class="spinner"></div> Cargando...</td></tr></table></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div><h2>💰 Historial de pagos</h2></div>
+            <button class="btn btn-primary btn-sm" onclick="abrirModalPago()">+ Registrar pago</button>
+          </div>
           <div style="overflow-x:auto"><table id="tabla-pagos"><tr><td class="empty">Sin pagos registrados</td></tr></table></div>
         </div>
       </div>
 
-      <!-- CLIENTES -->
+      <!-- CLIENTES / USUARIOS -->
       <div class="section" id="sec-clientes">
         <div class="card">
-          <div class="card-head"><div><h2>👥 Usuarios registrados</h2><p id="clientes-count">—</p></div></div>
-          <div style="overflow-x:auto"><table id="tabla-clientes"><tr><td class="empty">Cargando...</td></tr></table></div>
+          <div class="card-head">
+            <div><h2>👥 Usuarios registrados</h2><p id="clientes-count">—</p></div>
+            <div class="filter-bar">
+              <input type="text" id="buscar-cli" placeholder="🔍 Buscar..." style="width:160px" oninput="filtrarClientes()">
+              <select id="filtro-rol" onchange="filtrarClientes()">
+                <option value="">Todos los roles</option>
+                <option value="cliente">Clientes</option>
+                <option value="negocio">Negocios</option>
+                <option value="admin">Admins</option>
+              </select>
+              <button class="btn btn-ghost btn-sm" onclick="exportarCSV('clientes')">⬇ CSV</button>
+            </div>
+          </div>
+          <div style="overflow-x:auto"><table id="tabla-clientes"><tr><td class="empty"><div class="spinner"></div> Cargando...</td></tr></table></div>
+        </div>
+      </div>
+
+      <!-- AUDITORIA -->
+      <div class="section" id="sec-auditoria">
+        <div class="card">
+          <div class="card-head">
+            <div><h2>📜 Registro de acciones admin</h2><p>Todo lo que se ha hecho desde paneles administrativos</p></div>
+            <div class="filter-bar">
+              <select id="filtro-accion" onchange="cargarAuditoria()">
+                <option value="">Todas las acciones</option>
+                <option value="crear">Crear</option>
+                <option value="actualizar">Actualizar</option>
+                <option value="eliminar">Eliminar</option>
+                <option value="login">Login</option>
+              </select>
+              <button class="btn btn-ghost btn-sm" onclick="cargarAuditoria()">🔄</button>
+            </div>
+          </div>
+          <div style="overflow-x:auto"><table id="tabla-auditoria"><tr><td class="empty"><div class="spinner"></div> Cargando...</td></tr></table></div>
         </div>
       </div>
 
@@ -281,27 +442,34 @@ tr:hover td{background:#fafafa}
           <div class="card-head"><h2>⚙️ Configuración general</h2></div>
           <div class="card-body">
             <div class="grid-2">
-              <div class="field"><label>Nombre de la app</label><input value="Mercado Guerrero"></div>
-              <div class="field"><label>Ciudad</label><input value="Vicente Guerrero, Dgo."></div>
-              <div class="field"><label>WhatsApp soporte</label><input value="+52 674 000 0000"></div>
-              <div class="field"><label>Email soporte</label><input value="soporte@mercadoguerrero.com"></div>
+              <div class="field"><label>Nombre de la app</label><input id="cfg-app_nombre"></div>
+              <div class="field"><label>Ciudad</label><input id="cfg-ciudad"></div>
+              <div class="field"><label>WhatsApp soporte</label><input id="cfg-whatsapp_soporte"></div>
+              <div class="field"><label>Email soporte</label><input id="cfg-email_soporte"></div>
             </div>
-            <h3 style="font-size:14px;font-weight:700;margin:20px 0 14px">Permisos de negocios</h3>
+            
+            <h3 style="font-size:14px;font-weight:700;margin:20px 0 14px">📢 Mensaje global (banner para usuarios)</h3>
+            <div class="field">
+              <textarea id="cfg-mensaje_global" rows="2" placeholder="Ej: Mantenimiento programado el sábado de 2-4am"></textarea>
+              <div class="muted" style="font-size:11px;margin-top:4px">Si lo dejas vacío, no se muestra ningún banner.</div>
+            </div>
+
+            <h3 style="font-size:14px;font-weight:700;margin:20px 0 14px">🔐 Permisos automáticos para negocios</h3>
             <div style="display:flex;flex-direction:column;gap:10px">
               <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border:1px solid var(--line);border-radius:10px">
-                <div><div style="font-weight:600;font-size:13px">Publicar productos sin aprobación</div><div class="muted">Los negocios publican directo</div></div>
-                <label class="switch"><input type="checkbox"><span></span></label>
+                <div><div style="font-weight:600;font-size:13px">Auto-aprobar productos</div><div class="muted">Los negocios publican sin revisión</div></div>
+                <label class="switch"><input type="checkbox" id="cfg-auto_aprobar_productos"><span></span></label>
               </div>
               <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border:1px solid var(--line);border-radius:10px">
-                <div><div style="font-weight:600;font-size:13px">Cambiar precios sin aprobación</div><div class="muted">Edición directa de precios</div></div>
-                <label class="switch"><input type="checkbox" checked><span></span></label>
+                <div><div style="font-weight:600;font-size:13px">Auto-aprobar precios</div><div class="muted">Cambios sin revisión</div></div>
+                <label class="switch"><input type="checkbox" id="cfg-auto_aprobar_precios"><span></span></label>
               </div>
               <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border:1px solid var(--line);border-radius:10px">
-                <div><div style="font-weight:600;font-size:13px">Crear promos sin aprobación</div><div class="muted">Promos activas al instante</div></div>
-                <label class="switch"><input type="checkbox"><span></span></label>
+                <div><div style="font-weight:600;font-size:13px">Auto-aprobar promos</div><div class="muted">Promos activas al instante</div></div>
+                <label class="switch"><input type="checkbox" id="cfg-auto_aprobar_promos"><span></span></label>
               </div>
             </div>
-            <button class="btn btn-primary" style="margin-top:20px" onclick="toast('Configuración guardada ✓','ok')">Guardar cambios</button>
+            <button class="btn btn-primary" id="btn-save-cfg" style="margin-top:20px" onclick="guardarConfig()">Guardar cambios</button>
           </div>
         </div>
       </div>
@@ -310,268 +478,1150 @@ tr:hover td{background:#fafafa}
   </div>
 </div>
 
+<!-- ====== MODALES ====== -->
+
+<!-- Modal de confirmación -->
+<div id="modal-confirm" class="modal-bg">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-body" style="text-align:center;padding-top:30px">
+      <div id="confirm-ico" style="font-size:40px;margin-bottom:10px">⚠️</div>
+      <h3 id="confirm-title" style="font-family:'Bricolage Grotesque',serif;font-size:18px;font-weight:700;margin-bottom:8px">¿Confirmar?</h3>
+      <p id="confirm-msg" class="muted">¿Seguro de continuar?</p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" id="confirm-no">Cancelar</button>
+      <button class="btn btn-primary" id="confirm-yes">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Negocio (crear/editar) -->
+<div id="modal-negocio" class="modal-bg">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="mn-titulo">Nuevo Negocio</h3>
+      <button class="modal-x" onclick="cerrarModal('modal-negocio')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="grid-2">
+        <div class="field"><label>Nombre *</label><input id="mn-nombre"></div>
+        <div class="field"><label>Categoría *</label>
+          <select id="mn-categoria">
+            <option value="Comida">Comida</option>
+            <option value="Ferretería">Ferretería</option>
+            <option value="Abarrotes">Abarrotes</option>
+            <option value="Servicios">Servicios</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="field"><label>WhatsApp (10 dígitos) *</label><input id="mn-whatsapp"></div>
+        <div class="field"><label>Teléfono fijo (opcional)</label><input id="mn-telefono"></div>
+      </div>
+      <div class="field"><label>Dirección</label><input id="mn-direccion"></div>
+      <div class="field"><label>Descripción</label><textarea id="mn-descripcion" rows="2"></textarea></div>
+      <div class="grid-2">
+        <div class="field"><label>Plan</label>
+          <select id="mn-plan_id">
+            <option value="free">Free</option>
+            <option value="pro">Pro</option>
+          </select>
+        </div>
+        <div class="field"><label>Estado</label>
+          <select id="mn-activo">
+            <option value="true">Activo</option>
+            <option value="false">Pausado</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="cerrarModal('modal-negocio')">Cancelar</button>
+      <button class="btn btn-primary" id="mn-guardar" onclick="guardarNegocio()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal pago manual -->
+<div id="modal-pago" class="modal-bg">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-head">
+      <h3>Registrar pago manual</h3>
+      <button class="modal-x" onclick="cerrarModal('modal-pago')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field"><label>Negocio *</label><select id="mp-negocio"></select></div>
+      <div class="grid-2">
+        <div class="field"><label>Monto *</label><input type="number" id="mp-monto" step="0.01" placeholder="99.00"></div>
+        <div class="field"><label>Plan</label>
+          <select id="mp-plan">
+            <option value="pro">Pro</option>
+            <option value="free">Free</option>
+          </select>
+        </div>
+      </div>
+      <div class="field"><label>Método</label>
+        <select id="mp-metodo">
+          <option value="manual">Efectivo / Manual</option>
+          <option value="transferencia">Transferencia</option>
+          <option value="oxxo">OXXO</option>
+        </select>
+      </div>
+      <div class="field"><label>Notas</label><textarea id="mp-notas" rows="2"></textarea></div>
+      <div class="muted" style="font-size:12px;background:var(--green-soft);color:var(--green-deep);padding:10px;border-radius:8px">
+        💡 Esto activa la suscripción del negocio por 30 días automáticamente.
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="cerrarModal('modal-pago')">Cancelar</button>
+      <button class="btn btn-primary" id="mp-guardar" onclick="guardarPago()">Registrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal ver detalle pedido -->
+<div id="modal-pedido" class="modal-bg">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Detalle del pedido</h3>
+      <button class="modal-x" onclick="cerrarModal('modal-pedido')">×</button>
+    </div>
+    <div class="modal-body" id="mped-body">—</div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="cerrarModal('modal-pedido')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
 <script>
+// ============================================================================
+// CONFIGURACIÓN
+// ============================================================================
 const SUPABASE_URL = 'https://djddsqbmaxgpryabvktt.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqZGRzcWJtYXhncHJ5YWJ2a3R0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2MzUxMTEsImV4cCI6MjA5MjIxMTExMX0.3JO1RU1_NY4cTCO23_QanF0kFBE8VWPqzsU6yTvLx1c';
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-let negociosCache = [];
 
-function toast(msg, type='ok'){
+// Estado global
+let adminUser = null, adminProfile = null;
+let negociosCache = [], productosCache = [], pedidosCache = [], clientesCache = [];
+let editandoNegocioId = null;
+
+// ============================================================================
+// UTILIDADES
+// ============================================================================
+function toast(msg, type='ok') {
   const t = document.getElementById('toast');
-  t.textContent = msg; t.className = 'toast '+type;
-  t.classList.remove('hidden');
-  setTimeout(()=>t.classList.add('hidden'), 3000);
+  t.textContent = msg; t.className = 'toast ' + type;
+  setTimeout(() => t.classList.remove('hidden'), 10);
+  clearTimeout(t._tm);
+  t._tm = setTimeout(() => t.classList.add('hidden'), 3500);
 }
 
-function ir(sec){
-  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  event.currentTarget.classList.add('active');
-  document.getElementById('sec-'+sec).classList.add('active');
-  const titles = {dashboard:'Dashboard',aprobaciones:'Aprobaciones',negocios:'Negocios',productos:'Productos / Ofertas',promos:'Promos del Día',suscripciones:'Suscripciones',clientes:'Clientes',configuracion:'Configuración'};
-  document.getElementById('page-title').textContent = titles[sec]||sec;
-  if(sec==='negocios') cargarNegocios();
-  if(sec==='productos') cargarOfertas();
-  if(sec==='suscripciones') cargarSuscripciones();
-  if(sec==='clientes') cargarClientes();
-  if(sec==='promos') cargarPromos();
+function fmt$(n) {
+  return '$' + (parseFloat(n) || 0).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-async function doLogin(){
+function fmtFecha(s, conHora = true) {
+  if (!s) return '—';
+  const d = new Date(s);
+  return d.toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' }) + 
+    (conHora ? ' ' + d.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }) : '');
+}
+
+function escapeHtml(s) {
+  if (s == null) return '';
+  return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function customConfirm({ title='¿Confirmar?', message='', okText='Confirmar', cancelText='Cancelar', danger=false, icon='⚠️' } = {}) {
+  return new Promise(resolve => {
+    document.getElementById('confirm-ico').textContent = icon;
+    document.getElementById('confirm-title').textContent = title;
+    document.getElementById('confirm-msg').textContent = message;
+    const yes = document.getElementById('confirm-yes');
+    const no = document.getElementById('confirm-no');
+    yes.textContent = okText;
+    no.textContent = cancelText;
+    yes.className = 'btn ' + (danger ? 'btn-danger' : 'btn-primary');
+    const cleanup = () => {
+      document.getElementById('modal-confirm').classList.remove('show');
+      yes.onclick = null; no.onclick = null;
+    };
+    yes.onclick = () => { cleanup(); resolve(true); };
+    no.onclick = () => { cleanup(); resolve(false); };
+    document.getElementById('modal-confirm').classList.add('show');
+  });
+}
+
+function abrirModal(id) { document.getElementById(id).classList.add('show'); }
+function cerrarModal(id) { document.getElementById(id).classList.remove('show'); }
+
+// Logger de auditoría — registra cada acción admin
+async function logAccion(accion, entidad, entidad_id, detalles = {}) {
+  if (!adminUser) return;
+  try {
+    await db.from('admin_logs').insert({
+      admin_id: adminUser.id,
+      admin_nombre: adminProfile?.nombre || adminUser.email,
+      accion, entidad, entidad_id: String(entidad_id || ''),
+      detalles
+    });
+  } catch (e) { console.warn('No se pudo registrar log:', e); }
+}
+
+// Wrapper para llamadas a BD con manejo de errores
+async function tryDB(fn, mensajeError = 'Error de BD') {
+  try {
+    const result = await fn();
+    if (result?.error) {
+      console.error(mensajeError, result.error);
+      toast(mensajeError + ': ' + result.error.message, 'err');
+      return null;
+    }
+    return result;
+  } catch (e) {
+    console.error(mensajeError, e);
+    toast(mensajeError, 'err');
+    return null;
+  }
+}
+
+// ============================================================================
+// NAVEGACIÓN
+// ============================================================================
+const TITULOS = {
+  dashboard:'Dashboard', aprobaciones:'Aprobaciones', negocios:'Negocios',
+  productos:'Productos', promos:'Promociones', pedidos:'Pedidos',
+  suscripciones:'Suscripciones', clientes:'Usuarios', auditoria:'Auditoría',
+  configuracion:'Configuración'
+};
+
+function ir(sec) {
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  const btn = document.querySelector(`.nav-item[data-sec="${sec}"]`);
+  if (btn) btn.classList.add('active');
+  document.getElementById('sec-' + sec).classList.add('active');
+  document.getElementById('page-title').textContent = TITULOS[sec] || sec;
+  
+  const cargas = {
+    dashboard: cargarDashboard,
+    aprobaciones: cargarAprobaciones,
+    negocios: cargarNegocios,
+    productos: cargarOfertas,
+    promos: cargarPromos,
+    pedidos: cargarPedidos,
+    suscripciones: cargarSuscripciones,
+    clientes: cargarClientes,
+    auditoria: cargarAuditoria,
+    configuracion: cargarConfig
+  };
+  if (cargas[sec]) cargas[sec]();
+}
+
+document.getElementById('nav-menu').addEventListener('click', e => {
+  const btn = e.target.closest('.nav-item');
+  if (btn) ir(btn.dataset.sec);
+});
+
+// ============================================================================
+// AUTH
+// ============================================================================
+async function doLogin() {
   const email = document.getElementById('l-email').value.trim();
   const pass = document.getElementById('l-pass').value;
-  const {error} = await db.auth.signInWithPassword({email, password:pass});
-  if(error) return toast(error.message,'err');
+  if (!email || !pass) return toast('Llena email y contraseña', 'err');
+  
+  const btn = document.getElementById('btn-login');
+  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Verificando...';
+  
+  const { error } = await db.auth.signInWithPassword({ email, password: pass });
+  if (error) { btn.disabled = false; btn.textContent = 'Entrar al panel'; return toast(error.message, 'err'); }
+  
   await verificarAdmin();
+  btn.disabled = false; btn.textContent = 'Entrar al panel';
 }
 
-async function doLogout(){ await db.auth.signOut(); location.reload(); }
+async function doLogout() {
+  const ok = await customConfirm({ title:'Cerrar sesión', message:'¿Seguro?', okText:'Salir', danger:true, icon:'🚪' });
+  if (!ok) return;
+  await logAccion('logout', 'sesion', adminUser?.id);
+  await db.auth.signOut();
+  location.reload();
+}
 
-async function verificarAdmin(){
-  const {data:{session}} = await db.auth.getSession();
-  if(!session) return;
-  const {data:prof} = await db.from('profiles').select('*').eq('id',session.user.id).single();
-  if(prof?.rol !== 'admin'){
-    toast('Sin permisos de admin','err');
-    await db.auth.signOut(); return;
+async function verificarAdmin() {
+  const { data: { session } } = await db.auth.getSession();
+  if (!session) return;
+  
+  const { data: prof, error } = await db.from('profiles').select('*').eq('id', session.user.id).single();
+  if (error || prof?.rol !== 'admin') {
+    toast('Esta cuenta no tiene permisos de admin', 'err');
+    await db.auth.signOut();
+    return;
   }
+  
+  adminUser = session.user;
+  adminProfile = prof;
+  
   document.getElementById('login-wrap').classList.add('hidden');
   document.getElementById('app').classList.remove('hidden');
+  
   const nombre = prof.nombre || session.user.email;
   document.getElementById('user-name').textContent = nombre;
-  document.getElementById('user-ava').textContent = nombre[0].toUpperCase();
+  document.getElementById('user-ava').textContent = (nombre[0] || 'A').toUpperCase();
+  
+  await logAccion('login', 'sesion', session.user.id);
   cargarDashboard();
 }
 
-async function cargarDashboard(){
-  const [{count:nC},{count:oC},{count:uC},{data:negs}] = await Promise.all([
-    db.from('negocios').select('*',{count:'exact',head:true}),
-    db.from('ofertas').select('*',{count:'exact',head:true}),
-    db.from('profiles').select('*',{count:'exact',head:true}),
-    db.from('negocios').select('*')
+// ============================================================================
+// DASHBOARD
+// ============================================================================
+async function cargarDashboard() {
+  // Totales
+  const [ngs, ofs, prfs, peds] = await Promise.all([
+    db.from('negocios').select('*'),
+    db.from('ofertas').select('*', { count: 'exact', head: true }),
+    db.from('profiles').select('rol', { count: 'exact' }),
+    db.from('pedidos').select('total, fecha, negocio_id')
   ]);
-  negociosCache = negs||[];
-  document.getElementById('kpi-negocios').textContent = nC||0;
-  document.getElementById('kpi-subs').textContent = (negs||[]).filter(n=>n.suscripcion_activa).length;
-  document.getElementById('kpi-ofertas').textContent = oC||0;
-  document.getElementById('kpi-users').textContent = uC||0;
-  const trial = (negs||[]).filter(n=>!n.suscripcion_activa);
-  document.getElementById('kpi-nsub').textContent = trial.length ? `${trial.length} sin suscripción` : '';
-  const al = document.getElementById('lista-alertas');
-  if(trial.length){
-    al.innerHTML = trial.map(n=>`
-      <div class="alert-row warning">
-        <span style="font-size:18px">⚠️</span>
-        <div style="flex:1"><div style="font-weight:600;font-size:13px">${n.nombre}</div><div class="muted">Sin suscripción activa</div></div>
-        <button class="btn btn-sm btn-primary" onclick="activarSub('${n.id}')">Activar 30d</button>
-      </div>`).join('');
-  } else {
-    al.innerHTML = '<div class="empty">Sin alertas ✓</div>';
+  
+  const negocios = ngs.data || [];
+  negociosCache = negocios;
+  const totalNegs = negocios.length;
+  const negsActivos = negocios.filter(n => n.activo !== false).length;
+  const conSub = negocios.filter(n => n.suscripcion_activa).length;
+  
+  document.getElementById('kpi-negocios').textContent = negsActivos;
+  document.getElementById('kpi-nsub').textContent = totalNegs > negsActivos ? `${totalNegs - negsActivos} pausados` : 'Todos activos';
+  
+  document.getElementById('kpi-subs').textContent = conSub;
+  document.getElementById('kpi-subs-sub').textContent = `${totalNegs - conSub} sin suscribir`;
+  
+  document.getElementById('kpi-ofertas').textContent = ofs.count || 0;
+  
+  const totalUsers = prfs.count || 0;
+  const negocioCount = (prfs.data || []).filter(p => p.rol === 'negocio').length;
+  document.getElementById('kpi-users').textContent = totalUsers;
+  document.getElementById('kpi-users-sub').textContent = `${negocioCount} con negocio`;
+  
+  // Pedidos
+  const pedidos = peds.data || [];
+  const hoyInicio = new Date(); hoyInicio.setHours(0, 0, 0, 0);
+  const mesInicio = new Date(); mesInicio.setDate(1); mesInicio.setHours(0, 0, 0, 0);
+  
+  const pedHoy = pedidos.filter(p => new Date(p.fecha) >= hoyInicio);
+  const pedMes = pedidos.filter(p => new Date(p.fecha) >= mesInicio);
+  const facturadoMes = pedMes.reduce((s, p) => s + (parseFloat(p.total) || 0), 0);
+  const facturadoHoy = pedHoy.reduce((s, p) => s + (parseFloat(p.total) || 0), 0);
+  
+  document.getElementById('kpi-pedidos-hoy').textContent = pedHoy.length;
+  document.getElementById('kpi-pedidos-hoy-sub').textContent = facturadoHoy > 0 ? fmt$(facturadoHoy) : 'Sin facturar';
+  document.getElementById('kpi-facturado').textContent = fmt$(facturadoMes);
+  
+  // Gráfica 7 días
+  const ahora = new Date();
+  const datos7 = [0, 0, 0, 0, 0, 0, 0];
+  pedidos.forEach(p => {
+    const fp = new Date(p.fecha);
+    const diff = Math.floor((ahora - fp) / (1000 * 60 * 60 * 24));
+    if (diff >= 0 && diff <= 6) datos7[6 - diff]++;
+  });
+  
+  const dias = ['D','L','M','M','J','V','S'];
+  const etiquetas = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(); d.setDate(ahora.getDate() - i);
+    etiquetas.push(dias[d.getDay()]);
+  }
+  const max = Math.max(...datos7, 1);
+  document.getElementById('chart-pedidos').innerHTML = datos7.map((v, i) => `
+    <div class="bar-col">
+      <div class="bar-val">${v}</div>
+      <div class="bar-fill ${i === 6 ? 'today' : ''}" style="height:${Math.max(5, (v/max)*100)}%"></div>
+      <div class="bar-lbl">${etiquetas[i]}</div>
+    </div>
+  `).join('');
+  
+  // Top 5 negocios
+  const conteo = {};
+  pedidos.forEach(p => { if (p.negocio_id) conteo[p.negocio_id] = (conteo[p.negocio_id] || 0) + 1; });
+  const top = Object.entries(conteo)
+    .sort((a, b) => b[1] - a[1]).slice(0, 5)
+    .map(([id, n]) => ({ neg: negocios.find(x => x.id === id), n }))
+    .filter(x => x.neg);
+  
+  const topEl = document.getElementById('top-negocios');
+  if (!top.length) topEl.innerHTML = '<div class="empty">Sin pedidos aún</div>';
+  else topEl.innerHTML = top.map((t, i) => `
+    <div class="act-row">
+      <div style="font-weight:800;color:var(--orange);width:24px">${i+1}.</div>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:13px">${escapeHtml(t.neg.nombre)}</div>
+        <div class="act-time">${escapeHtml(t.neg.categoria || 'Comercio')}</div>
+      </div>
+      <div style="font-weight:800;color:var(--green)">${t.n} pedidos</div>
+    </div>
+  `).join('');
+  
+  // Alertas: suscripciones por vencer, sin productos, etc.
+  const alertas = [];
+  const en7d = new Date(); en7d.setDate(en7d.getDate() + 7);
+  negocios.forEach(n => {
+    if (n.suscripcion_activa && n.suscripcion_vence) {
+      const v = new Date(n.suscripcion_vence);
+      if (v < en7d && v > new Date()) {
+        alertas.push({ tipo: 'warning', neg: n, msg: `Suscripción vence el ${fmtFecha(v, false)}` });
+      } else if (v < new Date()) {
+        alertas.push({ tipo: 'critical', neg: n, msg: `Suscripción vencida` });
+      }
+    }
+    if (!n.imagen_url) alertas.push({ tipo: 'warning', neg: n, msg: 'Sin foto de portada' });
+  });
+  
+  const alEl = document.getElementById('lista-alertas');
+  if (!alertas.length) alEl.innerHTML = '<div class="empty"><span class="ico">✓</span>Sin alertas pendientes</div>';
+  else alEl.innerHTML = alertas.slice(0, 6).map(a => `
+    <div class="alert-row ${a.tipo}">
+      <span style="font-size:18px">${a.tipo === 'critical' ? '🚨' : '⚠️'}</span>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:13px">${escapeHtml(a.neg.nombre)}</div>
+        <div class="muted">${escapeHtml(a.msg)}</div>
+      </div>
+      <button class="btn btn-sm btn-primary" onclick="activarSub('${a.neg.id}')">+30d</button>
+    </div>
+  `).join('');
+  
+  // Actividad reciente — últimos logs
+  const { data: logs } = await db.from('admin_logs').select('*').order('creado', { ascending: false }).limit(8);
+  const actEl = document.getElementById('lista-actividad');
+  if (!logs?.length) actEl.innerHTML = '<div class="empty">Sin actividad reciente</div>';
+  else actEl.innerHTML = logs.map(l => {
+    const colores = { crear:'var(--green)', actualizar:'var(--blue)', eliminar:'var(--danger)', login:'var(--muted)', logout:'var(--muted)' };
+    return `
+      <div class="act-row">
+        <span class="act-dot" style="background:${colores[l.accion] || 'var(--muted)'}"></span>
+        <div style="flex:1">
+          <div style="font-size:13px"><strong>${escapeHtml(l.admin_nombre || 'Admin')}</strong> · ${escapeHtml(l.accion)} ${escapeHtml(l.entidad || '')}</div>
+          <div class="act-time">${fmtFecha(l.creado)}</div>
+        </div>
+      </div>`;
+  }).join('');
+  
+  // Badge de aprobaciones
+  const { count: aproCount } = await db.from('aprobaciones').select('*', { count:'exact', head:true }).eq('estado', 'pendiente');
+  const badge = document.getElementById('badge-apro');
+  if (aproCount > 0) { badge.textContent = aproCount; badge.classList.remove('hidden'); }
+  else badge.classList.add('hidden');
+}
+
+// ============================================================================
+// APROBACIONES
+// ============================================================================
+async function cargarAprobaciones() {
+  const { data, error } = await db.from('aprobaciones').select('*, negocios(nombre)').eq('estado', 'pendiente').order('creado', { ascending: false });
+  const cont = document.getElementById('cont-aprobaciones');
+  if (error) return cont.innerHTML = `<div class="empty">Error: ${error.message}</div>`;
+  if (!data?.length) return cont.innerHTML = '<div class="empty"><span class="ico">✓</span>Sin aprobaciones pendientes</div>';
+  
+  cont.innerHTML = '<div style="padding:14px">' + data.map(a => `
+    <div style="border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;gap:12px">
+        <div>
+          <div style="font-weight:700">${escapeHtml(a.negocios?.nombre || 'Negocio')}</div>
+          <div class="muted" style="font-size:12px">${escapeHtml(a.tipo)} · ${fmtFecha(a.creado)}</div>
+        </div>
+        <div class="row">
+          <button class="btn btn-sm btn-primary" onclick="decidirApro(${a.id}, 'aprobado')">✓ Aprobar</button>
+          <button class="btn btn-sm btn-danger" onclick="decidirApro(${a.id}, 'rechazado')">✕ Rechazar</button>
+        </div>
+      </div>
+      <pre style="background:#f9fafb;padding:10px;border-radius:6px;font-size:11px;overflow-x:auto;font-family:monospace">${escapeHtml(JSON.stringify(a.cambios, null, 2))}</pre>
+    </div>
+  `).join('') + '</div>';
+}
+
+async function decidirApro(id, decision) {
+  let motivo = '';
+  if (decision === 'rechazado') {
+    motivo = prompt('Motivo del rechazo (opcional):') || '';
+  }
+  const r = await tryDB(() => db.from('aprobaciones').update({
+    estado: decision, decidido: new Date().toISOString(), decidido_por: adminUser.id, motivo_rechazo: motivo
+  }).eq('id', id), 'No se pudo procesar');
+  if (r) {
+    await logAccion(decision === 'aprobado' ? 'aprobar' : 'rechazar', 'aprobacion', id);
+    toast(decision === 'aprobado' ? 'Aprobado ✓' : 'Rechazado', 'ok');
+    cargarAprobaciones();
+    cargarDashboard();
   }
 }
 
-async function cargarNegocios(){
-  const {data,error} = await db.from('negocios').select('*').order('created_at',{ascending:false});
-  if(error) return toast(error.message,'err');
-  negociosCache = data||[];
-  renderNegs(negociosCache);
+// ============================================================================
+// NEGOCIOS
+// ============================================================================
+async function cargarNegocios() {
+  const { data, error } = await db.from('negocios').select('*').order('created_at', { ascending: false });
+  if (error) return toast(error.message, 'err');
+  negociosCache = data || [];
   document.getElementById('negocios-count').textContent = `${negociosCache.length} negocios`;
+  filtrarNegs();
 }
 
-function filtrarNegs(){
-  const q = document.getElementById('buscar-neg').value.toLowerCase();
-  renderNegs(negociosCache.filter(n=>n.nombre?.toLowerCase().includes(q)||n.categoria?.toLowerCase().includes(q)));
+function filtrarNegs() {
+  const q = document.getElementById('buscar-neg').value.toLowerCase().trim();
+  const cat = document.getElementById('filtro-cat-neg').value;
+  const est = document.getElementById('filtro-estado-neg').value;
+  
+  let lista = negociosCache;
+  if (q) lista = lista.filter(n => 
+    (n.nombre || '').toLowerCase().includes(q) || 
+    (n.categoria || '').toLowerCase().includes(q) ||
+    (n.whatsapp || '').includes(q));
+  if (cat) lista = lista.filter(n => n.categoria === cat);
+  if (est === 'activo') lista = lista.filter(n => n.activo !== false);
+  if (est === 'pausado') lista = lista.filter(n => n.activo === false);
+  if (est === 'con-sub') lista = lista.filter(n => n.suscripcion_activa);
+  if (est === 'sin-sub') lista = lista.filter(n => !n.suscripcion_activa);
+  
+  renderNegs(lista);
 }
 
-function renderNegs(list){
+function renderNegs(list) {
   const t = document.getElementById('tabla-negocios');
-  if(!list.length){t.innerHTML='<tr><td colspan="7" class="empty">Sin negocios</td></tr>';return;}
-  t.innerHTML=`<thead><tr><th>Negocio</th><th>Categoría</th><th>Teléfono</th><th>Plan</th><th>Suscripción</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>`+
-  list.map(n=>`<tr>
-    <td><div class="biz-cell">${n.imagen_url?`<img src="${n.imagen_url}" class="biz-dot">`:'<div class="biz-dot"></div>'}
-    <div><strong>${n.nombre}</strong>${n.is_demo?' <span class="tag tag-orange" style="font-size:9px">DEMO</span>':''}<br><span class="muted" style="font-size:11px">${n.direccion||''}</span></div></div></td>
-    <td>${n.categoria||'—'}</td>
-    <td class="muted">${n.telefono||'—'}</td>
-    <td><span class="tag tag-gray">${n.plan_id||'free'}</span></td>
-    <td>${n.suscripcion_activa?'<span class="tag tag-green">● Activa</span>':'<span class="tag tag-gray">● Trial</span>'}</td>
-    <td>${n.activo?'<span class="tag tag-green">Activo</span>':'<span class="tag tag-gray">Pausado</span>'}</td>
-    <td><div class="row">
-      <button class="btn btn-sm btn-ghost" onclick="toggleNeg('${n.id}',${!n.activo})">${n.activo?'Pausar':'Activar'}</button>
-      <button class="btn btn-sm btn-primary" onclick="activarSub('${n.id}')">+30d</button>
-      <button class="btn btn-sm btn-danger" onclick="eliminarNeg('${n.id}')">🗑</button>
-    </div></td>
-  </tr>`).join('')+'</tbody>';
+  if (!list.length) return t.innerHTML = '<tr><td colspan="7" class="empty">Sin resultados</td></tr>';
+  
+  t.innerHTML = `<thead><tr><th>Negocio</th><th>Categoría</th><th>WhatsApp</th><th>Plan</th><th>Suscripción</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>` +
+    list.map(n => `
+    <tr>
+      <td><div class="biz-cell">
+        ${n.imagen_url ? `<img src="${n.imagen_url}" class="biz-dot">` : `<div class="biz-dot">${escapeHtml((n.nombre||'?')[0])}</div>`}
+        <div>
+          <strong>${escapeHtml(n.nombre)}</strong>${n.is_demo ? ' <span class="tag tag-orange" style="font-size:9px">DEMO</span>' : ''}
+          <br><span class="muted" style="font-size:11px">${escapeHtml(n.direccion || '—')}</span>
+        </div>
+      </div></td>
+      <td><span class="tag tag-gray">${escapeHtml(n.categoria || '—')}</span></td>
+      <td class="muted">${escapeHtml(n.whatsapp || '—')}</td>
+      <td><span class="tag ${n.plan_id === 'pro' ? 'tag-orange' : 'tag-gray'}">${escapeHtml(n.plan_id || 'free')}</span></td>
+      <td>${n.suscripcion_activa 
+        ? `<span class="tag tag-green">● Activa</span>${n.suscripcion_vence ? `<br><span class="muted" style="font-size:10px">Vence ${fmtFecha(n.suscripcion_vence,false)}</span>` : ''}`
+        : '<span class="tag tag-gray">● Trial</span>'}</td>
+      <td>${n.activo !== false ? '<span class="tag tag-green">Activo</span>' : '<span class="tag tag-red">Pausado</span>'}</td>
+      <td><div class="row">
+        <button class="btn btn-sm btn-ghost" onclick="abrirModalNegocio('${n.id}')">✏️</button>
+        <button class="btn btn-sm btn-ghost" onclick="toggleNeg('${n.id}', ${n.activo === false})">${n.activo === false ? '▶️' : '⏸️'}</button>
+        <button class="btn btn-sm btn-primary" onclick="activarSub('${n.id}')">+30d</button>
+        <button class="btn btn-sm btn-danger" onclick="eliminarNeg('${n.id}')">🗑</button>
+      </div></td>
+    </tr>`).join('') + '</tbody>';
 }
 
-async function toggleNeg(id,estado){
-  await db.from('negocios').update({activo:estado}).eq('id',id);
-  toast(estado?'Activado':'Pausado','ok'); cargarNegocios();
+function abrirModalNegocio(id) {
+  editandoNegocioId = id || null;
+  const n = id ? negociosCache.find(x => x.id === id) : {};
+  document.getElementById('mn-titulo').textContent = id ? 'Editar Negocio' : 'Nuevo Negocio';
+  document.getElementById('mn-nombre').value = n?.nombre || '';
+  document.getElementById('mn-categoria').value = n?.categoria || 'Comida';
+  document.getElementById('mn-whatsapp').value = n?.whatsapp || '';
+  document.getElementById('mn-telefono').value = n?.telefono || '';
+  document.getElementById('mn-direccion').value = n?.direccion || '';
+  document.getElementById('mn-descripcion').value = n?.descripcion || '';
+  document.getElementById('mn-plan_id').value = n?.plan_id || 'free';
+  document.getElementById('mn-activo').value = n?.activo === false ? 'false' : 'true';
+  abrirModal('modal-negocio');
 }
 
-async function activarSub(id){
-  const v=new Date(); v.setMonth(v.getMonth()+1);
-  await db.from('negocios').update({suscripcion_activa:true,suscripcion_vence:v.toISOString()}).eq('id',id);
-  toast('Suscripción activa 30 días ✓','ok'); cargarNegocios(); cargarDashboard();
+async function guardarNegocio() {
+  const datos = {
+    nombre: document.getElementById('mn-nombre').value.trim(),
+    categoria: document.getElementById('mn-categoria').value,
+    whatsapp: document.getElementById('mn-whatsapp').value.trim(),
+    telefono: document.getElementById('mn-telefono').value.trim(),
+    direccion: document.getElementById('mn-direccion').value.trim(),
+    descripcion: document.getElementById('mn-descripcion').value.trim(),
+    plan_id: document.getElementById('mn-plan_id').value,
+    activo: document.getElementById('mn-activo').value === 'true'
+  };
+  
+  if (!datos.nombre) return toast('El nombre es obligatorio', 'err');
+  if (!datos.whatsapp || datos.whatsapp.length < 10) return toast('WhatsApp inválido (10 dígitos)', 'err');
+  
+  const btn = document.getElementById('mn-guardar');
+  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Guardando...';
+  
+  let r;
+  if (editandoNegocioId) {
+    r = await tryDB(() => db.from('negocios').update(datos).eq('id', editandoNegocioId), 'Error al actualizar');
+    if (r) await logAccion('actualizar', 'negocio', editandoNegocioId, datos);
+  } else {
+    r = await tryDB(() => db.from('negocios').insert({ ...datos, user_id: adminUser.id, suscripcion_activa: false }), 'Error al crear');
+    if (r) await logAccion('crear', 'negocio', '', datos);
+  }
+  
+  btn.disabled = false; btn.textContent = 'Guardar';
+  if (r) {
+    toast(editandoNegocioId ? 'Negocio actualizado ✓' : 'Negocio creado ✓', 'ok');
+    cerrarModal('modal-negocio');
+    cargarNegocios();
+  }
 }
 
-async function eliminarNeg(id){
-  if(!confirm('¿Eliminar este negocio y sus ofertas?')) return;
-  await db.from('ofertas').delete().eq('negocio_id',id);
-  await db.from('negocios').delete().eq('id',id);
-  toast('Eliminado','ok'); cargarNegocios(); cargarDashboard();
+async function toggleNeg(id, nuevoEstado) {
+  const r = await tryDB(() => db.from('negocios').update({ activo: nuevoEstado }).eq('id', id), 'Error');
+  if (r) {
+    await logAccion('actualizar', 'negocio', id, { activo: nuevoEstado });
+    toast(nuevoEstado ? 'Activado ✓' : 'Pausado', 'ok');
+    cargarNegocios();
+  }
 }
 
-async function nuevoNegocio(){
-  const nombre = prompt('Nombre del negocio:'); if(!nombre) return;
-  const cat = prompt('Categoría:');
-  const tel = prompt('Teléfono / WhatsApp:');
-  const {error} = await db.from('negocios').insert({nombre,categoria:cat,telefono:tel,whatsapp:tel,activo:true,suscripcion_activa:false});
-  if(error) return toast(error.message,'err');
-  toast('Negocio creado ✓','ok'); cargarNegocios();
+async function activarSub(id) {
+  const v = new Date(); v.setMonth(v.getMonth() + 1);
+  const r = await tryDB(() => db.from('negocios').update({
+    suscripcion_activa: true, suscripcion_vence: v.toISOString(), plan_id: 'pro'
+  }).eq('id', id), 'Error');
+  if (r) {
+    await logAccion('actualizar', 'suscripcion', id, { activada: true, vence: v.toISOString() });
+    toast('Suscripción activa 30 días ✓', 'ok');
+    cargarNegocios(); cargarDashboard();
+  }
 }
 
-async function cargarOfertas(){
-  const {data,error} = await db.from('ofertas').select('*, negocios(nombre)').order('created_at',{ascending:false});
-  if(error) return toast(error.message,'err');
+async function eliminarNeg(id) {
+  const neg = negociosCache.find(n => n.id === id);
+  const ok = await customConfirm({
+    title: 'Eliminar negocio',
+    message: `¿Eliminar "${neg?.nombre}" y todos sus productos? Esta acción no se puede deshacer.`,
+    okText: 'Eliminar', danger: true, icon: '🗑️'
+  });
+  if (!ok) return;
+  
+  await db.from('ofertas').delete().eq('negocio_id', id);
+  const r = await tryDB(() => db.from('negocios').delete().eq('id', id), 'Error');
+  if (r) {
+    await logAccion('eliminar', 'negocio', id, { nombre: neg?.nombre });
+    toast('Eliminado', 'ok');
+    cargarNegocios(); cargarDashboard();
+  }
+}
+
+// ============================================================================
+// PRODUCTOS / OFERTAS
+// ============================================================================
+async function cargarOfertas() {
+  const { data, error } = await db.from('ofertas').select('*, negocios(nombre)').order('created_at', { ascending: false });
+  if (error) return toast(error.message, 'err');
+  productosCache = data || [];
+  document.getElementById('productos-count').textContent = `${productosCache.length} productos`;
+  
+  // Llenar select de filtro por negocio
+  const sel = document.getElementById('filtro-neg-prod');
+  const negs = [...new Set(productosCache.map(p => p.negocios?.nombre).filter(Boolean))].sort();
+  sel.innerHTML = '<option value="">Todos los negocios</option>' + negs.map(n => `<option>${escapeHtml(n)}</option>`).join('');
+  
+  filtrarProds();
+}
+
+function filtrarProds() {
+  const q = document.getElementById('buscar-prod').value.toLowerCase().trim();
+  const neg = document.getElementById('filtro-neg-prod').value;
+  const est = document.getElementById('filtro-estado-prod').value;
+  
+  let lista = productosCache;
+  if (q) lista = lista.filter(p => (p.titulo || '').toLowerCase().includes(q));
+  if (neg) lista = lista.filter(p => p.negocios?.nombre === neg);
+  if (est === 'activa') lista = lista.filter(p => p.activa);
+  if (est === 'pausada') lista = lista.filter(p => !p.activa);
+  if (est === 'promo') lista = lista.filter(p => p.es_promo || p.precio_antes);
+  
+  renderProds(lista);
+}
+
+function renderProds(list) {
   const t = document.getElementById('tabla-ofertas');
-  if(!data?.length){t.innerHTML='<tr><td colspan="6" class="empty">Sin ofertas</td></tr>';return;}
-  t.innerHTML=`<thead><tr><th>Título</th><th>Negocio</th><th>Precio</th><th>Antes</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>`+
-  data.map(o=>`<tr>
-    <td><strong>${o.titulo||'Sin título'}</strong></td>
-    <td class="muted">${o.negocios?.nombre||'—'}</td>
-    <td style="color:var(--orange);font-weight:700">$${o.precio||0}</td>
-    <td class="muted">${o.precio_antes?`<s>$${o.precio_antes}</s>`:'—'}</td>
-    <td>${o.activa?'<span class="tag tag-green">Activa</span>':'<span class="tag tag-gray">Pausada</span>'}</td>
-    <td><div class="row">
-      <button class="btn btn-sm btn-ghost" onclick="toggleOferta('${o.id}',${!o.activa})">${o.activa?'Pausar':'Activar'}</button>
-      <button class="btn btn-sm btn-danger" onclick="eliminarOferta('${o.id}')">🗑</button>
-    </div></td>
-  </tr>`).join('')+'</tbody>';
+  if (!list.length) return t.innerHTML = '<tr><td colspan="7" class="empty">Sin resultados</td></tr>';
+  
+  t.innerHTML = `<thead><tr><th>Producto</th><th>Negocio</th><th>Categoría</th><th>Precio</th><th>Antes</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>` +
+    list.map(o => `
+    <tr>
+      <td><div class="biz-cell">
+        ${o.imagen_url ? `<img src="${o.imagen_url}" class="biz-dot">` : `<div class="biz-dot">📦</div>`}
+        <div><strong>${escapeHtml(o.titulo || 'Sin título')}</strong>
+        ${o.es_promo ? '<span class="tag tag-orange" style="font-size:9px;margin-left:4px">PROMO</span>' : ''}
+        <br><span class="muted" style="font-size:11px">${escapeHtml((o.descripcion || '').substring(0, 50))}</span></div>
+      </div></td>
+      <td class="muted">${escapeHtml(o.negocios?.nombre || '—')}</td>
+      <td>${o.categoria_producto ? `<span class="tag tag-blue">${escapeHtml(o.categoria_producto)}</span>` : '<span class="muted">—</span>'}</td>
+      <td style="color:var(--orange);font-weight:700">${fmt$(o.precio)}</td>
+      <td class="muted">${o.precio_antes ? `<s>${fmt$(o.precio_antes)}</s>` : '—'}</td>
+      <td>${o.activa ? '<span class="tag tag-green">Activa</span>' : '<span class="tag tag-gray">Pausada</span>'}</td>
+      <td><div class="row">
+        <button class="btn btn-sm btn-ghost" onclick="toggleOferta('${o.id}', ${!o.activa})">${o.activa ? '⏸️' : '▶️'}</button>
+        <button class="btn btn-sm btn-ghost" onclick="togglePromo('${o.id}', ${!o.es_promo})">${o.es_promo ? '🔥✓' : '🔥'}</button>
+        <button class="btn btn-sm btn-danger" onclick="eliminarOferta('${o.id}')">🗑</button>
+      </div></td>
+    </tr>`).join('') + '</tbody>';
 }
 
-async function toggleOferta(id,estado){
-  await db.from('ofertas').update({activa:estado}).eq('id',id);
-  toast('Actualizado','ok'); cargarOfertas();
-}
-async function eliminarOferta(id){
-  if(!confirm('¿Eliminar esta oferta?')) return;
-  await db.from('ofertas').delete().eq('id',id);
-  toast('Eliminada','ok'); cargarOfertas();
+async function toggleOferta(id, estado) {
+  const r = await tryDB(() => db.from('ofertas').update({ activa: estado }).eq('id', id), 'Error');
+  if (r) { await logAccion('actualizar', 'oferta', id, { activa: estado }); toast('Actualizado', 'ok'); cargarOfertas(); }
 }
 
-async function cargarPromos(){
-  const {data} = await db.from('ofertas').select('*, negocios(nombre)').eq('activa',true).not('precio_antes','is',null);
+async function togglePromo(id, estado) {
+  const r = await tryDB(() => db.from('ofertas').update({ es_promo: estado }).eq('id', id), 'Error');
+  if (r) { await logAccion('actualizar', 'oferta', id, { es_promo: estado }); toast(estado ? 'Marcado como promo' : 'Promo quitada', 'ok'); cargarOfertas(); }
+}
+
+async function eliminarOferta(id) {
+  const ok = await customConfirm({ title:'Eliminar producto', message:'Esta acción no se puede deshacer.', okText:'Eliminar', danger:true, icon:'🗑️' });
+  if (!ok) return;
+  const r = await tryDB(() => db.from('ofertas').delete().eq('id', id), 'Error');
+  if (r) { await logAccion('eliminar', 'oferta', id); toast('Eliminado', 'ok'); cargarOfertas(); }
+}
+
+// ============================================================================
+// PROMOS (vista cards)
+// ============================================================================
+async function cargarPromos() {
+  const { data } = await db.from('ofertas').select('*, negocios(nombre)').eq('activa', true).or('es_promo.eq.true,precio_antes.not.is.null');
   const cont = document.getElementById('cont-promos');
-  if(!data?.length){cont.innerHTML='<div class="empty">Sin promos activas</div>';return;}
-  cont.innerHTML='<div style="padding:16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px">'+
-  data.map(o=>`<div style="border:2px solid var(--orange);border-radius:12px;overflow:hidden">
-    <div style="background:var(--orange);color:#fff;font-size:11px;font-weight:700;padding:5px 12px">${o.negocios?.nombre||'Negocio'}</div>
-    <div style="padding:14px">
-      ${o.imagen_url?`<img src="${o.imagen_url}" style="width:100%;height:90px;object-fit:cover;border-radius:8px;margin-bottom:10px">`:''}
-      <div style="font-weight:700;margin-bottom:6px">${o.titulo}</div>
-      <div class="row">
-        <span style="color:var(--orange);font-size:18px;font-weight:800">$${o.precio}</span>
-        <span class="muted"><s>$${o.precio_antes}</s></span>
-        <span class="tag tag-orange">${Math.round((1-o.precio/o.precio_antes)*100)}% OFF</span>
-      </div>
-      <button class="btn btn-sm btn-danger" style="margin-top:10px;width:100%;justify-content:center" onclick="toggleOferta('${o.id}',false);cargarPromos()">Pausar promo</button>
+  if (!data?.length) return cont.innerHTML = '<div class="empty">Sin promos activas</div>';
+  
+  cont.innerHTML = '<div style="padding:16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px">' +
+    data.map(o => {
+      const desc = o.precio_antes ? Math.round((1 - parseFloat(o.precio) / parseFloat(o.precio_antes)) * 100) : 0;
+      return `<div style="border:2px solid var(--orange);border-radius:12px;overflow:hidden">
+        <div style="background:var(--orange);color:#fff;font-size:11px;font-weight:700;padding:5px 12px">${escapeHtml(o.negocios?.nombre || 'Negocio')}</div>
+        <div style="padding:14px">
+          ${o.imagen_url ? `<img src="${o.imagen_url}" style="width:100%;height:90px;object-fit:cover;border-radius:8px;margin-bottom:10px">` : ''}
+          <div style="font-weight:700;margin-bottom:6px">${escapeHtml(o.titulo)}</div>
+          <div class="row">
+            <span style="color:var(--orange);font-size:18px;font-weight:800">${fmt$(o.precio)}</span>
+            ${o.precio_antes ? `<span class="muted"><s>${fmt$(o.precio_antes)}</s></span><span class="tag tag-orange">${desc}% OFF</span>` : ''}
+          </div>
+          <button class="btn btn-sm btn-danger" style="margin-top:10px;width:100%" onclick="togglePromo('${o.id}',false);cargarPromos()">Quitar promo</button>
+        </div>
+      </div>`;
+    }).join('') + '</div>';
+}
+
+// ============================================================================
+// PEDIDOS
+// ============================================================================
+async function cargarPedidos() {
+  const { data, error } = await db.from('pedidos').select('*, negocios(nombre)').order('fecha', { ascending: false });
+  if (error) return toast(error.message, 'err');
+  pedidosCache = data || [];
+  
+  const sel = document.getElementById('filtro-neg-pedidos');
+  const negs = [...new Set(pedidosCache.map(p => p.negocios?.nombre).filter(Boolean))].sort();
+  sel.innerHTML = '<option value="">Todos los negocios</option>' + negs.map(n => `<option>${escapeHtml(n)}</option>`).join('');
+  
+  filtrarPedidos();
+}
+
+function filtrarPedidos() {
+  const neg = document.getElementById('filtro-neg-pedidos').value;
+  const fecha = document.getElementById('filtro-fecha-pedidos').value;
+  
+  let lista = pedidosCache;
+  if (neg) lista = lista.filter(p => p.negocios?.nombre === neg);
+  
+  const ahora = new Date();
+  if (fecha === 'hoy') {
+    const inicio = new Date(); inicio.setHours(0, 0, 0, 0);
+    lista = lista.filter(p => new Date(p.fecha) >= inicio);
+  } else if (fecha === 'semana') {
+    const inicio = new Date(); inicio.setDate(inicio.getDate() - 7);
+    lista = lista.filter(p => new Date(p.fecha) >= inicio);
+  } else if (fecha === 'mes') {
+    const inicio = new Date(); inicio.setDate(inicio.getDate() - 30);
+    lista = lista.filter(p => new Date(p.fecha) >= inicio);
+  }
+  
+  // Estadísticas
+  const total = lista.reduce((s, p) => s + (parseFloat(p.total) || 0), 0);
+  document.getElementById('pedidos-stat-num').textContent = lista.length;
+  document.getElementById('pedidos-stat-monto').textContent = fmt$(total);
+  document.getElementById('pedidos-stat-prom').textContent = lista.length ? fmt$(total / lista.length) : fmt$(0);
+  
+  renderPedidos(lista);
+}
+
+function renderPedidos(list) {
+  const t = document.getElementById('tabla-pedidos');
+  if (!list.length) return t.innerHTML = '<tr><td colspan="6" class="empty">Sin pedidos en este rango</td></tr>';
+  
+  t.innerHTML = `<thead><tr><th>Cliente</th><th>Negocio</th><th>Items</th><th>Total</th><th>Fecha</th><th>Acciones</th></tr></thead><tbody>` +
+    list.map(p => {
+      const items = Array.isArray(p.items) ? p.items : [];
+      const numItems = items.reduce((s, i) => s + (parseInt(i.cantidad) || 0), 0);
+      return `
+      <tr>
+        <td><strong>${escapeHtml(p.cliente_nombre || 'Cliente')}</strong>${p.cliente_direccion ? `<br><span class="muted" style="font-size:11px">📍 ${escapeHtml(p.cliente_direccion)}</span>` : ''}</td>
+        <td class="muted">${escapeHtml(p.negocios?.nombre || '—')}</td>
+        <td>${numItems} item${numItems === 1 ? '' : 's'}</td>
+        <td style="color:var(--orange);font-weight:700">${fmt$(p.total)}</td>
+        <td class="muted" style="font-size:11px">${fmtFecha(p.fecha)}</td>
+        <td><button class="btn btn-sm btn-ghost" onclick="verPedido(${p.id})">Ver</button></td>
+      </tr>`;
+    }).join('') + '</tbody>';
+}
+
+function verPedido(id) {
+  const p = pedidosCache.find(x => x.id === id);
+  if (!p) return;
+  const items = Array.isArray(p.items) ? p.items : [];
+  document.getElementById('mped-body').innerHTML = `
+    <div style="margin-bottom:14px">
+      <div class="muted" style="font-size:11px;text-transform:uppercase;font-weight:700">Cliente</div>
+      <div style="font-weight:700">${escapeHtml(p.cliente_nombre || 'Sin nombre')}</div>
+      ${p.cliente_whatsapp ? `<div class="muted">📱 ${escapeHtml(p.cliente_whatsapp)}</div>` : ''}
+      ${p.cliente_direccion ? `<div class="muted">📍 ${escapeHtml(p.cliente_direccion)}</div>` : ''}
     </div>
-  </div>`).join('')+'</div>';
+    <div style="margin-bottom:14px">
+      <div class="muted" style="font-size:11px;text-transform:uppercase;font-weight:700">Negocio</div>
+      <div>${escapeHtml(p.negocios?.nombre || '—')}</div>
+    </div>
+    <div style="margin-bottom:14px">
+      <div class="muted" style="font-size:11px;text-transform:uppercase;font-weight:700">Productos</div>
+      ${items.map(it => `
+        <div style="padding:8px 0;border-bottom:1px solid var(--line)">
+          <div style="display:flex;justify-content:space-between">
+            <span><strong>${it.cantidad}x</strong> ${escapeHtml(it.titulo)}</span>
+            <span style="font-weight:700;color:var(--orange)">${fmt$(it.subtotal)}</span>
+          </div>
+          ${it.nota ? `<div style="font-size:11px;color:var(--orange-deep);font-style:italic;margin-top:4px">📝 ${escapeHtml(it.nota)}</div>` : ''}
+        </div>`).join('')}
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:18px;font-weight:900;color:var(--orange)">
+      <span>Total</span><span>${fmt$(p.total)}</span>
+    </div>
+    <div class="muted" style="margin-top:10px;font-size:11px">${fmtFecha(p.fecha)}</div>
+  `;
+  abrirModal('modal-pedido');
 }
 
-async function cargarSuscripciones(){
-  const [{data:negs},{data:pagos}] = await Promise.all([
+// ============================================================================
+// SUSCRIPCIONES Y PAGOS
+// ============================================================================
+async function cargarSuscripciones() {
+  const filtro = document.getElementById('filtro-sub')?.value || '';
+  
+  const [{ data: negs }, { data: pagos }] = await Promise.all([
     db.from('negocios').select('*').order('nombre'),
-    db.from('pagos').select('*, negocios(nombre)').order('creado',{ascending:false})
+    db.from('pagos').select('*, negocios(nombre)').order('creado', { ascending: false }).limit(100)
   ]);
+  
+  let lista = negs || [];
+  const ahora = new Date();
+  const en7 = new Date(); en7.setDate(en7.getDate() + 7);
+  
+  if (filtro === 'activa') lista = lista.filter(n => n.suscripcion_activa);
+  if (filtro === 'vencida') lista = lista.filter(n => n.suscripcion_vence && new Date(n.suscripcion_vence) < ahora);
+  if (filtro === 'por-vencer') lista = lista.filter(n => n.suscripcion_vence && new Date(n.suscripcion_vence) > ahora && new Date(n.suscripcion_vence) < en7);
+  
   const ts = document.getElementById('tabla-subs');
-  ts.innerHTML=`<thead><tr><th>Negocio</th><th>Plan</th><th>Estado</th><th>Vence</th><th>Acciones</th></tr></thead><tbody>`+
-  (negs||[]).map(n=>`<tr>
-    <td><strong>${n.nombre}</strong></td>
-    <td><span class="tag tag-gray">${n.plan_id||'free'}</span></td>
-    <td>${n.suscripcion_activa?'<span class="tag tag-green">● Activa</span>':'<span class="tag tag-red">● Inactiva</span>'}</td>
-    <td class="muted">${n.suscripcion_vence?new Date(n.suscripcion_vence).toLocaleDateString('es-MX'):'—'}</td>
-    <td><button class="btn btn-sm btn-primary" onclick="activarSub('${n.id}')">+30 días</button></td>
-  </tr>`).join('')+'</tbody>';
+  ts.innerHTML = `<thead><tr><th>Negocio</th><th>Plan</th><th>Estado</th><th>Vence</th><th>Acciones</th></tr></thead><tbody>` +
+    (lista.length ? lista.map(n => `
+    <tr>
+      <td><strong>${escapeHtml(n.nombre)}</strong></td>
+      <td><span class="tag ${n.plan_id === 'pro' ? 'tag-orange' : 'tag-gray'}">${escapeHtml(n.plan_id || 'free')}</span></td>
+      <td>${n.suscripcion_activa ? '<span class="tag tag-green">● Activa</span>' : '<span class="tag tag-red">● Inactiva</span>'}</td>
+      <td class="muted">${n.suscripcion_vence ? fmtFecha(n.suscripcion_vence, false) : '—'}</td>
+      <td>
+        <button class="btn btn-sm btn-primary" onclick="activarSub('${n.id}')">+30 días</button>
+        ${n.suscripcion_activa ? `<button class="btn btn-sm btn-danger" onclick="pausarSub('${n.id}')">Pausar</button>` : ''}
+      </td>
+    </tr>`).join('') : '<tr><td colspan="5" class="empty">Sin resultados</td></tr>') + '</tbody>';
+  
+  // Llenar el select del modal de pago
+  const selPago = document.getElementById('mp-negocio');
+  selPago.innerHTML = (negs || []).map(n => `<option value="${n.id}">${escapeHtml(n.nombre)}</option>`).join('');
+  
+  // Tabla pagos
   const tp = document.getElementById('tabla-pagos');
-  if(!pagos?.length){tp.innerHTML='<tr><td colspan="5" class="empty">Sin pagos aún</td></tr>';return;}
-  tp.innerHTML=`<thead><tr><th>Negocio</th><th>Plan</th><th>Monto</th><th>Estado</th><th>Fecha</th></tr></thead><tbody>`+
-  pagos.map(p=>`<tr>
-    <td>${p.negocios?.nombre||'—'}</td>
-    <td><span class="tag tag-gray">${p.plan_id}</span></td>
-    <td style="font-weight:700">$${p.monto}</td>
-    <td>${p.mp_status}</td>
-    <td class="muted">${new Date(p.creado).toLocaleDateString('es-MX')}</td>
-  </tr>`).join('')+'</tbody>';
+  if (!pagos?.length) {
+    tp.innerHTML = '<tr><td colspan="6" class="empty">Sin pagos registrados</td></tr>';
+  } else {
+    tp.innerHTML = `<thead><tr><th>Negocio</th><th>Plan</th><th>Monto</th><th>Método</th><th>Estado</th><th>Fecha</th></tr></thead><tbody>` +
+      pagos.map(p => `
+      <tr>
+        <td>${escapeHtml(p.negocios?.nombre || '—')}</td>
+        <td><span class="tag tag-gray">${escapeHtml(p.plan_id)}</span></td>
+        <td style="font-weight:700">${fmt$(p.monto)}</td>
+        <td class="muted">${escapeHtml(p.metodo || '—')}</td>
+        <td><span class="tag ${p.mp_status === 'aprobado' ? 'tag-green' : 'tag-yellow'}">${escapeHtml(p.mp_status)}</span></td>
+        <td class="muted">${fmtFecha(p.creado, false)}</td>
+      </tr>`).join('') + '</tbody>';
+  }
 }
 
-async function cargarClientes(){
-  const {data,count} = await db.from('profiles').select('*',{count:'exact'}).order('created_at',{ascending:false});
-  document.getElementById('clientes-count').textContent = `${count||0} usuarios`;
+async function pausarSub(id) {
+  const ok = await customConfirm({ title:'Pausar suscripción', message:'El negocio quedará en plan free hasta nuevo pago.', okText:'Pausar', danger:true, icon:'⏸️' });
+  if (!ok) return;
+  const r = await tryDB(() => db.from('negocios').update({ suscripcion_activa:false, plan_id:'free' }).eq('id', id), 'Error');
+  if (r) { await logAccion('actualizar', 'suscripcion', id, { pausada:true }); toast('Pausada', 'ok'); cargarSuscripciones(); }
+}
+
+function abrirModalPago() {
+  document.getElementById('mp-monto').value = '99';
+  document.getElementById('mp-notas').value = '';
+  abrirModal('modal-pago');
+}
+
+async function guardarPago() {
+  const datos = {
+    negocio_id: document.getElementById('mp-negocio').value,
+    monto: parseFloat(document.getElementById('mp-monto').value),
+    plan_id: document.getElementById('mp-plan').value,
+    metodo: document.getElementById('mp-metodo').value,
+    notas: document.getElementById('mp-notas').value.trim(),
+    mp_status: 'aprobado'
+  };
+  if (!datos.negocio_id || !datos.monto) return toast('Datos incompletos', 'err');
+  
+  const btn = document.getElementById('mp-guardar');
+  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div>';
+  
+  const r = await tryDB(() => db.from('pagos').insert(datos), 'Error');
+  if (r) {
+    // Activar suscripción 30 días
+    const v = new Date(); v.setMonth(v.getMonth() + 1);
+    await db.from('negocios').update({
+      suscripcion_activa: true, suscripcion_vence: v.toISOString(), plan_id: datos.plan_id
+    }).eq('id', datos.negocio_id);
+    
+    await logAccion('crear', 'pago', '', datos);
+    toast('Pago registrado y suscripción activada ✓', 'ok');
+    cerrarModal('modal-pago');
+    cargarSuscripciones();
+  }
+  btn.disabled = false; btn.textContent = 'Registrar';
+}
+
+// ============================================================================
+// CLIENTES / USUARIOS
+// ============================================================================
+async function cargarClientes() {
+  const { data, count, error } = await db.from('profiles').select('*', { count: 'exact' }).order('created_at', { ascending: false });
+  if (error) return toast(error.message, 'err');
+  clientesCache = data || [];
+  document.getElementById('clientes-count').textContent = `${count || 0} usuarios`;
+  filtrarClientes();
+}
+
+function filtrarClientes() {
+  const q = document.getElementById('buscar-cli').value.toLowerCase().trim();
+  const rol = document.getElementById('filtro-rol').value;
+  let lista = clientesCache;
+  if (q) lista = lista.filter(c => (c.nombre || '').toLowerCase().includes(q) || (c.whatsapp || '').includes(q));
+  if (rol) lista = lista.filter(c => c.rol === rol);
+  
   const t = document.getElementById('tabla-clientes');
-  if(!data?.length){t.innerHTML='<tr><td colspan="4" class="empty">Sin clientes</td></tr>';return;}
-  t.innerHTML=`<thead><tr><th>Nombre</th><th>Rol</th><th>Registro</th><th>Acción</th></tr></thead><tbody>`+
-  data.map(c=>`<tr>
-    <td><strong>${c.nombre||'Sin nombre'}</strong></td>
-    <td><span class="tag ${c.rol==='admin'?'tag-orange':c.rol==='negocio'?'tag-green':'tag-gray'}">${c.rol||'cliente'}</span></td>
-    <td class="muted">${c.created_at?new Date(c.created_at).toLocaleDateString('es-MX'):'—'}</td>
-    <td><button class="btn btn-sm btn-ghost" onclick="toast('En desarrollo','ok')">Ver</button></td>
-  </tr>`).join('')+'</tbody>';
+  if (!lista.length) return t.innerHTML = '<tr><td colspan="5" class="empty">Sin resultados</td></tr>';
+  
+  t.innerHTML = `<thead><tr><th>Nombre</th><th>WhatsApp</th><th>Rol</th><th>Registro</th><th>Acciones</th></tr></thead><tbody>` +
+    lista.map(c => `
+    <tr>
+      <td><strong>${escapeHtml(c.nombre || 'Sin nombre')}</strong></td>
+      <td class="muted">${escapeHtml(c.whatsapp || '—')}</td>
+      <td><span class="tag ${c.rol === 'admin' ? 'tag-orange' : c.rol === 'negocio' ? 'tag-green' : 'tag-gray'}">${escapeHtml(c.rol || 'cliente')}</span></td>
+      <td class="muted">${c.created_at ? fmtFecha(c.created_at, false) : '—'}</td>
+      <td><div class="row">
+        ${c.rol !== 'admin' ? `<button class="btn btn-sm btn-orange" onclick="cambiarRol('${c.id}','admin')">Hacer admin</button>` : ''}
+        ${c.rol === 'admin' && c.id !== adminUser.id ? `<button class="btn btn-sm btn-ghost" onclick="cambiarRol('${c.id}','cliente')">Quitar admin</button>` : ''}
+      </div></td>
+    </tr>`).join('') + '</tbody>';
 }
 
-// DEMO DATA
+async function cambiarRol(id, nuevoRol) {
+  const ok = await customConfirm({
+    title: 'Cambiar rol',
+    message: `¿Cambiar el rol a "${nuevoRol}"?`,
+    okText: 'Cambiar', danger: nuevoRol === 'admin', icon: '🔑'
+  });
+  if (!ok) return;
+  const r = await tryDB(() => db.from('profiles').update({ rol: nuevoRol }).eq('id', id), 'Error');
+  if (r) { await logAccion('actualizar', 'rol_usuario', id, { nuevo_rol: nuevoRol }); toast('Rol actualizado ✓', 'ok'); cargarClientes(); }
+}
+
+// ============================================================================
+// AUDITORÍA
+// ============================================================================
+async function cargarAuditoria() {
+  const accion = document.getElementById('filtro-accion').value;
+  let q = db.from('admin_logs').select('*').order('creado', { ascending: false }).limit(200);
+  if (accion) q = q.eq('accion', accion);
+  
+  const { data, error } = await q;
+  const t = document.getElementById('tabla-auditoria');
+  if (error) return t.innerHTML = `<tr><td colspan="5" class="empty">Error: ${error.message}</td></tr>`;
+  if (!data?.length) return t.innerHTML = '<tr><td colspan="5" class="empty">Sin registros</td></tr>';
+  
+  t.innerHTML = `<thead><tr><th>Fecha</th><th>Admin</th><th>Acción</th><th>Entidad</th><th>Detalles</th></tr></thead><tbody>` +
+    data.map(l => `
+    <tr>
+      <td class="muted" style="font-size:11px">${fmtFecha(l.creado)}</td>
+      <td><strong>${escapeHtml(l.admin_nombre || '—')}</strong></td>
+      <td><span class="tag tag-blue">${escapeHtml(l.accion)}</span></td>
+      <td>${escapeHtml(l.entidad || '—')}</td>
+      <td><pre style="font-size:10px;max-width:300px;white-space:pre-wrap;font-family:monospace">${escapeHtml(JSON.stringify(l.detalles || {}, null, 1))}</pre></td>
+    </tr>`).join('') + '</tbody>';
+}
+
+// ============================================================================
+// CONFIGURACIÓN GLOBAL
+// ============================================================================
+async function cargarConfig() {
+  const { data, error } = await db.from('configuracion_global').select('*');
+  if (error) return toast(error.message, 'err');
+  
+  (data || []).forEach(c => {
+    const el = document.getElementById('cfg-' + c.clave);
+    if (!el) return;
+    if (el.type === 'checkbox') el.checked = c.valor === 'true';
+    else el.value = c.valor || '';
+  });
+}
+
+async function guardarConfig() {
+  const claves = ['app_nombre','ciudad','whatsapp_soporte','email_soporte','mensaje_global','auto_aprobar_productos','auto_aprobar_precios','auto_aprobar_promos'];
+  
+  const btn = document.getElementById('btn-save-cfg');
+  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Guardando...';
+  
+  const updates = claves.map(clave => {
+    const el = document.getElementById('cfg-' + clave);
+    if (!el) return null;
+    const valor = el.type === 'checkbox' ? String(el.checked) : el.value;
+    return { clave, valor, actualizado: new Date().toISOString(), actualizado_por: adminUser.id };
+  }).filter(Boolean);
+  
+  for (const u of updates) {
+    await db.from('configuracion_global').upsert(u, { onConflict: 'clave' });
+  }
+  
+  await logAccion('actualizar', 'configuracion', '', { claves: claves.length });
+  btn.disabled = false; btn.textContent = 'Guardar cambios';
+  toast('Configuración guardada ✓', 'ok');
+}
+
+// ============================================================================
+// EXPORTAR CSV
+// ============================================================================
+function exportarCSV(tipo) {
+  let datos = [], headers = [], filename = '';
+  
+  if (tipo === 'negocios') {
+    datos = negociosCache;
+    headers = ['nombre','categoria','whatsapp','direccion','plan_id','suscripcion_activa','activo'];
+    filename = 'negocios.csv';
+  } else if (tipo === 'productos') {
+    datos = productosCache;
+    headers = ['titulo','precio','precio_antes','categoria_producto','activa','es_promo'];
+    filename = 'productos.csv';
+  } else if (tipo === 'pedidos') {
+    datos = pedidosCache;
+    headers = ['cliente_nombre','cliente_whatsapp','cliente_direccion','total','fecha'];
+    filename = 'pedidos.csv';
+  } else if (tipo === 'clientes') {
+    datos = clientesCache;
+    headers = ['nombre','whatsapp','rol','created_at'];
+    filename = 'usuarios.csv';
+  }
+  
+  if (!datos.length) return toast('Nada que exportar', 'err');
+  
+  const csv = [headers.join(',')].concat(
+    datos.map(d => headers.map(h => `"${(d[h] || '').toString().replace(/"/g, '""')}"`).join(','))
+  ).join('\n');
+  
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  link.click();
+  toast('CSV descargado ✓', 'ok');
+}
+
+// ============================================================================
+// DEMO DATA (corregida — solo campos que existen)
+// ============================================================================
 const DEMO = [
-  {nombre:'Pollos El Güero',categoria:'Comida',telefono:'6181234567',whatsapp:'5216181234567',direccion:'Calle Juárez #45',horario:'12:00-20:00',descripcion:'Pollo asado a la leña ⭐ 4.8',imagen_url:'https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=600',ofertas:[{titulo:'Pollo Entero Asado',precio:150,precio_antes:180,imagen_url:'https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=400'},{titulo:'Medio Pollo',precio:95,imagen_url:'https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=400'}]},
-  {nombre:'Tacos Lupita',categoria:'Comida',telefono:'6182345678',whatsapp:'5216182345678',direccion:'Av. Hidalgo #120',horario:'18:00-23:00',descripcion:'Tacos y antojitos mexicanos ⭐ 4.6',imagen_url:'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=600',ofertas:[{titulo:'Orden de Tacos',precio:60,imagen_url:'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=400'},{titulo:'Tacopletas 3x2',precio:120,precio_antes:180,imagen_url:'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=400'}]},
-  {nombre:'Ferretería San José',categoria:'Ferretería',telefono:'6183456789',whatsapp:'5216183456789',direccion:'Blvd. Revolución #300',horario:'08:00-19:00',descripcion:'Todo para construcción y hogar ⭐ 4.7',imagen_url:'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=600',ofertas:[{titulo:'Cable Eléctrico #12',precio:15,imagen_url:'https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?w=400'},{titulo:'Cable 100m',precio:1200,precio_antes:1500,imagen_url:'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=400'}]}
+  {nombre:'Pollos El Güero',categoria:'Comida',whatsapp:'6181234567',direccion:'Calle Juárez #45',descripcion:'Pollo asado a la leña',imagen_url:'https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=600',ofertas:[{titulo:'Pollo Entero Asado',precio:150,precio_antes:180,es_promo:true,categoria_producto:'Platos fuertes',imagen_url:'https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=400'},{titulo:'Medio Pollo',precio:95,categoria_producto:'Platos fuertes',imagen_url:'https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=400'}]},
+  {nombre:'Tacos Lupita',categoria:'Comida',whatsapp:'6182345678',direccion:'Av. Hidalgo #120',descripcion:'Tacos y antojitos mexicanos',imagen_url:'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=600',ofertas:[{titulo:'Orden de Tacos al Pastor',precio:60,categoria_producto:'Tacos',imagen_url:'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=400'},{titulo:'Combo 3x2',precio:120,precio_antes:180,es_promo:true,categoria_producto:'Combos',imagen_url:'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=400'}]},
+  {nombre:'Ferretería San José',categoria:'Ferretería',whatsapp:'6183456789',direccion:'Blvd. Revolución #300',descripcion:'Todo para construcción y hogar',imagen_url:'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=600',ofertas:[{titulo:'Cable Eléctrico #12 (m)',precio:15,categoria_producto:'Eléctrico',imagen_url:'https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?w=400'},{titulo:'Rollo de cable 100m',precio:1200,precio_antes:1500,es_promo:true,categoria_producto:'Eléctrico',imagen_url:'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=400'}]}
 ];
 
-async function cargarDemo(){
-  const {data:{session}} = await db.auth.getSession();
-  if(!session) return toast('Sesión expirada','err');
-  for(const n of DEMO){
-    const {ofertas,...nd} = n;
-    const {data:neg,error} = await db.from('negocios').insert({...nd,user_id:session.user.id,is_demo:true,activo:true,suscripcion_activa:true}).select().single();
-    if(error){toast('Error: '+error.message,'err');return;}
-    await db.from('ofertas').insert(ofertas.map(o=>({...o,negocio_id:neg.id,activa:true})));
+async function cargarDemo() {
+  if (!adminUser) return toast('Sesión expirada', 'err');
+  toast('Cargando demos...', 'ok');
+  
+  for (const n of DEMO) {
+    const { ofertas, ...nd } = n;
+    const { data: neg, error } = await db.from('negocios').insert({
+      ...nd, user_id: adminUser.id, is_demo: true, activo: true, suscripcion_activa: true, plan_id: 'pro'
+    }).select().single();
+    if (error) { toast('Error: ' + error.message, 'err'); return; }
+    
+    await db.from('ofertas').insert(ofertas.map(o => ({ ...o, negocio_id: neg.id, activa: true })));
   }
-  toast('3 negocios demo cargados ✓','ok'); cargarDashboard();
+  
+  await logAccion('crear', 'demo', '', { cantidad: DEMO.length });
+  toast(`${DEMO.length} negocios demo cargados ✓`, 'ok');
+  cargarDashboard();
 }
 
-async function borrarDemo(){
-  if(!confirm('¿Borrar todos los negocios demo?')) return;
-  const {data:demos} = await db.from('negocios').select('id').eq('is_demo',true);
-  if(demos?.length){
-    for(const d of demos) await db.from('ofertas').delete().eq('negocio_id',d.id);
-    await db.from('negocios').delete().eq('is_demo',true);
+async function borrarDemo() {
+  const ok = await customConfirm({ title:'Borrar demos', message:'¿Eliminar todos los negocios marcados como demo?', okText:'Borrar', danger:true, icon:'🗑️' });
+  if (!ok) return;
+  
+  const { data: demos } = await db.from('negocios').select('id').eq('is_demo', true);
+  if (demos?.length) {
+    for (const d of demos) await db.from('ofertas').delete().eq('negocio_id', d.id);
+    await db.from('negocios').delete().eq('is_demo', true);
+    await logAccion('eliminar', 'demo', '', { cantidad: demos.length });
   }
-  toast('Demos eliminados','ok'); cargarDashboard();
+  toast('Demos eliminados', 'ok');
+  cargarDashboard();
 }
 
-(async()=>{
-  const {data:{session}} = await db.auth.getSession();
-  if(session) await verificarAdmin();
+// ============================================================================
+// REALTIME — escucha cambios en negocios y pedidos para actualizar el panel
+// ============================================================================
+function suscribirRealtime() {
+  db.channel('admin-realtime')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'negocios' }, () => {
+      toast('🆕 Nuevo negocio registrado', 'ok');
+      if (document.getElementById('sec-dashboard').classList.contains('active')) cargarDashboard();
+      if (document.getElementById('sec-negocios').classList.contains('active')) cargarNegocios();
+    })
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'pedidos' }, () => {
+      toast('🛒 Nuevo pedido recibido', 'ok');
+      if (document.getElementById('sec-dashboard').classList.contains('active')) cargarDashboard();
+      if (document.getElementById('sec-pedidos').classList.contains('active')) cargarPedidos();
+    })
+    .subscribe();
+}
+
+// ============================================================================
+// ARRANQUE
+// ============================================================================
+(async () => {
+  const { data: { session } } = await db.auth.getSession();
+  if (session) {
+    await verificarAdmin();
+    if (adminUser) suscribirRealtime();
+  }
 })();
+
+db.auth.onAuthStateChange((event) => {
+  if (event === 'SIGNED_OUT') location.reload();
+});
 </script>
 </body>
 </html>
