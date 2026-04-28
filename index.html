@@ -3,7 +3,8 @@
 <head>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<!-- FIX #3: Viewport accesible (sin bloqueo de zoom) -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mercado Guerrero · App</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -165,6 +166,13 @@
   .empty-state p { font-size: 13px; color: var(--muted); }
   .spinner { border: 3px solid rgba(0,0,0,0.1); width: 24px; height: 24px; border-radius: 50%; border-left-color: var(--green); animation: spin 1s linear infinite; display: inline-block; margin-bottom: 10px;}
   @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+  /* --- FIX #7: Modal de confirmación personalizado --- */
+  .confirm-btn { flex: 1; padding: 14px; border: none; border-radius: 12px; font-weight: 800; font-size: 14px; font-family: inherit; cursor: pointer; transition: 0.2s; }
+  .confirm-btn.primary { background: var(--green); color: #fff; }
+  .confirm-btn.primary.danger { background: var(--danger); }
+  .confirm-btn.secondary { background: #f3f4f6; color: var(--ink); }
+  .confirm-btn:hover { filter: brightness(1.05); }
 </style>
 </head>
 <body>
@@ -221,7 +229,8 @@
               <div class="search-box" style="background:#fff; border: 1px solid var(--line); padding:16px; border-radius:14px; margin-bottom:16px; box-shadow: var(--sh); display:flex; align-items:center; gap:10px;">
                   <span style="font-size:20px;">🔍</span>
                   <form autocomplete="off" onsubmit="event.preventDefault();" style="width:100%;">
-                      <input type="search" name="search-query" id="buscar" autocomplete="new-password" placeholder="Busca tacos, ferreterías, pizza..." oninput="aplicarFiltros()" style="background:transparent; border:none; width:100%; outline:none; font-size:16px;">
+                      <!-- FIX bonus: autocomplete="off" en lugar del hack "new-password" -->
+                      <input type="search" name="search-query" id="buscar" autocomplete="off" placeholder="Busca tacos, ferreterías, pizza..." oninput="aplicarFiltros()" style="background:transparent; border:none; width:100%; outline:none; font-size:16px;">
                   </form>
               </div>
 
@@ -593,6 +602,19 @@
           </div>
       </div>
 
+      <!-- FIX #7: Modal de confirmación personalizado -->
+      <div id="modal-confirm" class="modal-overlay">
+          <div class="response-screen">
+              <div id="confirm-icon" style="font-size:48px; margin-bottom:12px;">⚠️</div>
+              <h2 id="confirm-title">¿Confirmar?</h2>
+              <p id="confirm-message">¿Estás seguro de continuar?</p>
+              <div class="response-btns">
+                  <button class="confirm-btn secondary" id="confirm-btn-no">Cancelar</button>
+                  <button class="confirm-btn primary" id="confirm-btn-yes">Confirmar</button>
+              </div>
+          </div>
+      </div>
+
       <div id="cart-float" class="cart-float" onclick="abrirCarrito()">
         <div class="cart-float-info"><span>🛒</span> <div><span id="cart-count">0</span> items <span style="opacity:0.5; font-weight:400; margin:0 4px;">|</span> $<span id="cart-total">0</span></div></div>
         <div class="cart-float-btn">Ver Pedido ›</div>
@@ -615,7 +637,10 @@
           </div>
       </div>
 
-    </div> <footer class="app-footer">
+    </div>
+    
+    <!-- FIX #1: Eliminado el ``` suelto que se renderizaba como texto -->
+    <footer class="app-footer">
         <svg width="20" height="20" viewBox="0 -22 100 122"><rect x="0" y="0" width="100" height="100" rx="22" fill="#0f7a3f"/><path d="M70 0 L100 0 L100 30 L88 30 A18 18 0 0 0 70 12 Z" fill="#ea580c"/></svg>
         <span>Mercado Guerrero · El corazón de tu comunidad</span>
     </footer>
@@ -635,7 +660,9 @@
       </div>
     </nav>
 
-  </main> <div id="panel-auth" style="position:fixed; inset:0; z-index:10000; background:var(--bg); display:none; align-items:center; justify-content:center; overflow-y:auto; padding:20px 0;">
+  </main>
+
+  <div id="panel-auth" style="position:fixed; inset:0; z-index:10000; background:var(--bg); display:none; align-items:center; justify-content:center; overflow-y:auto; padding:20px 0;">
       <div style="max-width:400px; width:100%; padding:40px 30px; background:#fff; border-radius:var(--radius); box-shadow:0 20px 40px rgba(0,0,0,0.1); text-align:center;">
         
         <div style="display:flex; justify-content:center; margin-bottom:20px;">
@@ -668,7 +695,8 @@
 
       </div>
   </div>
-</div> ```
+</div>
+
 <script>
 // ==========================================
 // CONFIGURACIÓN SUPABASE Y VARIABLES GLOBALES
@@ -689,6 +717,8 @@ let carrito = { negocio: null, items: [] };
 let misPedidosLocales = JSON.parse(localStorage.getItem('mg_pedidos') || '[]');
 let misNegociosFavoritos = JSON.parse(localStorage.getItem('mg_fav_negocios') || '[]');
 let misVotosLocales = JSON.parse(localStorage.getItem('mg_votos') || '[]');
+// FIX #2: Variable de favoritos de productos declarada e inicializada desde localStorage
+let misFavoritosLocales = JSON.parse(localStorage.getItem('mg_favoritos') || '[]');
 let negocioEsperandoFeedback = null;
 let tempNegocioData = {};
 
@@ -697,6 +727,43 @@ function toast(msg, type='ok'){
   const t = document.getElementById('toast');
   t.textContent = msg; t.className = 'toast ' + type; t.classList.remove('hidden');
   setTimeout(()=>t.classList.add('hidden'), 4000);
+}
+
+// FIX #7: Modal de confirmación personalizado (reemplaza al confirm() del navegador)
+function customConfirm({ title = '¿Confirmar?', message = '', okText = 'Confirmar', cancelText = 'Cancelar', danger = false, icon = '⚠️' } = {}) {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('modal-confirm');
+        document.getElementById('confirm-icon').textContent = icon;
+        document.getElementById('confirm-title').textContent = title;
+        document.getElementById('confirm-message').textContent = message;
+        const yesBtn = document.getElementById('confirm-btn-yes');
+        const noBtn = document.getElementById('confirm-btn-no');
+        yesBtn.textContent = okText;
+        noBtn.textContent = cancelText;
+        yesBtn.className = 'confirm-btn primary' + (danger ? ' danger' : '');
+
+        const cleanup = () => {
+            modal.classList.remove('show');
+            yesBtn.onclick = null;
+            noBtn.onclick = null;
+        };
+        yesBtn.onclick = () => { cleanup(); resolve(true); };
+        noBtn.onclick = () => { cleanup(); resolve(false); };
+        modal.classList.add('show');
+    });
+}
+
+// FIX #9: Generar código rastreable estable y legible (sin depender de columnas extras en BD)
+function generarCodigoRastreable(nombre, id) {
+    const prefijo = (nombre || 'XXXX').substring(0, 4).toUpperCase().replace(/[^A-Z0-9]/g, 'X').padEnd(4, 'X');
+    let hash = 0;
+    const idStr = String(id || '');
+    for (let i = 0; i < idStr.length; i++) {
+        hash = ((hash << 5) - hash) + idStr.charCodeAt(i);
+        hash = hash & hash;
+    }
+    const numID = String(Math.abs(hash) % 10000).padStart(4, '0');
+    return `MG-${prefijo}-${numID}`;
 }
 
 async function comprimirImagen(file) {
@@ -728,9 +795,14 @@ async function comprimirImagen(file) {
     });
 }
 
+// FIX #6: Manejo de errores en queries
 async function obtenerCalificacion(negocioId) {
     const { data, error } = await db.from('evaluaciones').select('positiva').eq('negocio_id', negocioId);
-    if (error || !data || data.length === 0) return { estrellas: "5.0", total: 0, responde_rapido: true };
+    if (error) {
+        console.error('Error obteniendo calificación:', error);
+        return { estrellas: "5.0", total: 0, responde_rapido: true };
+    }
+    if (!data || data.length === 0) return { estrellas: "5.0", total: 0, responde_rapido: true };
     const totales = data.length;
     const positivos = data.filter(voto => voto.positiva === true).length;
     const promedio = (positivos / totales) * 5;
@@ -739,7 +811,9 @@ async function obtenerCalificacion(negocioId) {
 
 function navegar(panelId) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('panel-' + panelId).classList.add('active');
+  const panel = document.getElementById('panel-' + panelId);
+  if (!panel) return;
+  panel.classList.add('active');
   document.querySelector('.main-content').scrollTo({top: 0, behavior: 'smooth'});
 
   const navItems = document.querySelectorAll('.nav-item');
@@ -756,9 +830,18 @@ function navegar(panelId) {
   }
 }
 
-function agregarAlCarrito(producto, negocio) {
+// FIX #7: Reemplazo del confirm() nativo por modal personalizado
+async function agregarAlCarrito(producto, negocio) {
     if(carrito.negocio && carrito.negocio.id !== negocio.id) {
-        if(!confirm(`Tienes productos de "${carrito.negocio.nombre}" en tu carrito. ¿Vaciar para pedir con "${negocio.nombre}"?`)) return;
+        const ok = await customConfirm({
+            title: 'Cambiar de negocio',
+            message: `Tienes productos de "${carrito.negocio.nombre}" en tu carrito. ¿Vaciarlo para pedir con "${negocio.nombre}"?`,
+            okText: 'Sí, vaciar',
+            cancelText: 'No, mantener',
+            danger: true,
+            icon: '🛒'
+        });
+        if (!ok) return;
         carrito.items = [];
     }
     carrito.negocio = negocio;
@@ -818,7 +901,8 @@ function cambiarQty(index, delta) {
     else abrirCarrito(); 
 }
 
-async function enviarPedidoPorWa() {
+// FIX #5: Abrir WhatsApp PRIMERO (dentro del gesto del usuario), registrar stats DESPUÉS
+function enviarPedidoPorWa() {
     if(!carrito.negocio || carrito.items.length === 0) return;
     const n = carrito.negocio;
     let msj = `Hola, vengo de Mercado Guerrero. Quiero hacer el siguiente pedido:\n\n`;
@@ -828,20 +912,33 @@ async function enviarPedidoPorWa() {
     const totalPagar = carrito.items.reduce((sum, item) => sum + (item.producto.precio * item.qty), 0);
     msj += `\n*Total estimado: $${totalPagar}*\n\n¿En cuánto tiempo puedo pasar o me lo envían?`;
     
-    await db.from('estadisticas_clics').insert({ negocio_id: n.id });
+    // 1) ABRIR WHATSAPP PRIMERO — el navegador permite la apertura porque viene del gesto del usuario
+    const waUrl = `https://wa.me/52${n.whatsapp}?text=${encodeURIComponent(msj)}`;
+    window.open(waUrl, '_blank');
+
+    // 2) Registrar pedido local + stats + feedback (esto puede ir después con seguridad)
     registrarPedidoLocal(n);
     negocioEsperandoFeedback = n;
-    
-    window.open(`https://wa.me/52${n.whatsapp}?text=${encodeURIComponent(msj)}`);
+    db.from('estadisticas_clics').insert({ negocio_id: n.id }).then(({ error }) => {
+        if (error) console.error('Error registrando clic:', error);
+    });
     
     carrito.items = [];
     actualizarCarritoUI();
     cerrarCarrito();
 }
 
+// FIX #8: try/catch alrededor de JSON.parse y decodeURIComponent
 function abrirDetalleProducto(productoStr, negocioStr) {
-  const p = JSON.parse(decodeURIComponent(productoStr));
-  const n = JSON.parse(decodeURIComponent(negocioStr));
+  let p, n;
+  try {
+      p = JSON.parse(decodeURIComponent(productoStr));
+      n = JSON.parse(decodeURIComponent(negocioStr));
+  } catch (err) {
+      console.error('Error parseando datos del producto:', err);
+      toast('No se pudo abrir el producto', 'err');
+      return;
+  }
 
   document.getElementById('det-img').style.backgroundImage = p.imagen_url ? `url('${p.imagen_url}')` : 'none';
   document.getElementById('det-titulo').textContent = p.titulo;
@@ -866,16 +963,40 @@ function abrirDetalleProducto(productoStr, negocioStr) {
 
 function toggleDiaEditable(elemento) { elemento.parentElement.classList.toggle('closed'); }
 
+// FIX #10: Validación de horarios coherentes (apertura < cierre)
 async function guardarHorarioBD() {
-    toast('Guardando horarios...', 'ok');
     const dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
     let horariosNuevos = {};
+    let errorValidacion = null;
+
     dias.forEach(dia => {
         const row = document.querySelector(`.day-row[data-dia="${dia}"]`);
-        horariosNuevos[dia] = { cerrado: row.classList.contains('closed'), abre: row.querySelector('.time-open').value, cierra: row.querySelector('.time-close').value };
+        const cerrado = row.classList.contains('closed');
+        const abre = row.querySelector('.time-open').value;
+        const cierra = row.querySelector('.time-close').value;
+        
+        // Validar coherencia solo si el día está abierto
+        if (!cerrado && abre && cierra && abre >= cierra) {
+            errorValidacion = `${dia.charAt(0).toUpperCase() + dia.slice(1)}: la hora de apertura (${abre}) debe ser anterior a la de cierre (${cierra}).`;
+        }
+        
+        horariosNuevos[dia] = { cerrado, abre, cierra };
     });
+
+    if (errorValidacion) {
+        toast(errorValidacion, 'err');
+        return;
+    }
+
+    toast('Guardando horarios...', 'ok');
     const { error } = await db.from('negocios').update({ horarios: horariosNuevos }).eq('id', negocioActual.id);
-    if(!error) { toast('¡Horario guardado!', 'ok'); negocioActual.horarios = horariosNuevos; navegar('biz-dash'); }
+    if(error) {
+        toast('Error guardando horario: ' + error.message, 'err');
+        return;
+    }
+    toast('¡Horario guardado!', 'ok');
+    negocioActual.horarios = horariosNuevos;
+    navegar('biz-dash');
 }
 
 function cargarHorariosUI() {
@@ -890,7 +1011,21 @@ function cargarHorariosUI() {
     }
 }
 
-async function doLogout(){ toast('Cerrando sesión...', 'ok'); await db.auth.signOut(); location.reload(); }
+async function doLogout(){ 
+    const ok = await customConfirm({
+        title: 'Cerrar sesión',
+        message: '¿Seguro que quieres salir de tu cuenta?',
+        okText: 'Sí, salir',
+        cancelText: 'Cancelar',
+        danger: true,
+        icon: '🚪'
+    });
+    if (!ok) return;
+    toast('Cerrando sesión...', 'ok');
+    await db.auth.signOut(); 
+    location.reload(); 
+}
+
 async function doLogin(){
   const email = document.getElementById('login-email').value;
   const password = document.getElementById('login-pass').value;
@@ -942,8 +1077,16 @@ async function doRegister() {
   iniciarApp();
 }
 
+// FIX #6: Manejo de errores explícito
 async function cargarNegocios(){
-  const { data } = await db.from('negocios').select('*').eq('activo', true);
+  const { data, error } = await db.from('negocios').select('*').eq('activo', true);
+  if (error) {
+      console.error('Error cargando negocios:', error);
+      toast('No pudimos cargar los negocios. Revisa tu conexión.', 'err');
+      document.getElementById('lista-negocios').innerHTML = `<div class="empty-state"><div class="icon">📡</div><h3>Sin conexión</h3><p>No pudimos cargar los negocios. Intenta de nuevo.</p></div>`;
+      negociosCache = [];
+      return;
+  }
   negociosCache = data || [];
   aplicarFiltros();
 }
@@ -1036,7 +1179,12 @@ async function abrirPerfilPublico(idNegocio) {
       heroEl.style.backgroundColor = 'var(--green-soft)';
   }
 
-  const { data: prods } = await db.from('ofertas').select('*').eq('negocio_id', neg.id).eq('activa', true);
+  // FIX #6: Manejo de error al cargar productos del negocio
+  const { data: prods, error: prodsErr } = await db.from('ofertas').select('*').eq('negocio_id', neg.id).eq('activa', true);
+  if (prodsErr) {
+      console.error('Error cargando productos:', prodsErr);
+      toast('No pudimos cargar el menú', 'err');
+  }
   const cont = document.getElementById('pub-productos');
   if(!prods || prods.length === 0) { 
       cont.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;"><div class="icon">🍔</div><h3>Menú en preparación</h3><p>Este negocio aún no tiene productos publicados.</p></div>'; 
@@ -1085,11 +1233,17 @@ function cargarPantallaPedidos() {
   navegar('mis-pedidos');
 }
 
+// FIX #6: Manejo de errores en carga de promociones
 async function cargarPromos() {
   const cont = document.getElementById('lista-promos');
   const { data, error } = await db.from('ofertas').select('*, negocios(nombre)').eq('es_promo', true).eq('activa', true).limit(20);
   
-  if (error) { cont.innerHTML = `<p style="color:var(--danger)">Error: ${error.message}</p>`; return; }
+  if (error) { 
+      console.error('Error cargando promos:', error);
+      cont.innerHTML = `<div class="empty-state"><div class="icon">📡</div><h3>Sin conexión</h3><p>No pudimos cargar las promociones.</p></div>`;
+      toast('Error al cargar promociones', 'err');
+      return; 
+  }
   if (!data || data.length === 0) {
     cont.innerHTML = `<div class="empty-state" style="background:var(--orange-soft); border:2px dashed var(--orange); border-radius:14px;"><div class="icon">🔥</div><h3 style="color:var(--orange-deep);">Aún sin promociones</h3><p style="color:var(--orange);">Los negocios de tu zona están preparando sus mejores ofertas.</p></div>`;
   } else {
@@ -1169,6 +1323,7 @@ function cargarFavoritosUI() {
 
     cont.innerHTML = html;
 }
+
 document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible' && negocioEsperandoFeedback) {
         setTimeout(() => {
@@ -1190,10 +1345,16 @@ async function cerrarFeedback(respondioBien) {
             return;
         }
 
-        await db.from('evaluaciones').insert({
+        const { error } = await db.from('evaluaciones').insert({
             negocio_id: negId,
             positiva: respondioBien
         });
+        if (error) {
+            console.error('Error guardando voto:', error);
+            toast('No pudimos guardar tu voto', 'err');
+            negocioEsperandoFeedback = null;
+            return;
+        }
 
         misVotosLocales.push(negId);
         localStorage.setItem('mg_votos', JSON.stringify(misVotosLocales));
@@ -1312,8 +1473,14 @@ async function finalizarRegistroNegocio(planElegido) {
 
 async function abrirDashboardNegocio() {
     toast('Cargando tu panel...', 'ok');
-    const { data } = await db.from('negocios').select('*').eq('user_id', currentUser.id).maybeSingle();
+    const { data, error } = await db.from('negocios').select('*').eq('user_id', currentUser.id).maybeSingle();
     
+    if (error) {
+        console.error('Error cargando dashboard:', error);
+        toast('No pudimos cargar tu panel', 'err');
+        return;
+    }
+
     if (data) {
         negocioActual = data;
         document.getElementById('dash-nombre-titulo').textContent = data.nombre;
@@ -1323,14 +1490,14 @@ async function abrirDashboardNegocio() {
         
         const hace7Dias = new Date();
         hace7Dias.setDate(hace7Dias.getDate() - 7);
-        const { data: clicsData } = await db.from('estadisticas_clics').select('fecha').eq('negocio_id', negocioActual.id);
+        const { data: clicsData, error: clicsErr } = await db.from('estadisticas_clics').select('fecha').eq('negocio_id', negocioActual.id);
+        if (clicsErr) console.error('Error cargando clics:', clicsErr);
         const totalClics = clicsData ? clicsData.length : 0;
         document.getElementById('stats-clics-count').textContent = totalClics;
         const clicsRecientes = clicsData ? clicsData.filter(c => new Date(c.fecha) >= hace7Dias) : [];
         
-        const prefijo = data.nombre.substring(0, 4).toUpperCase().replace(/[^A-Z0-9]/g, 'X').padEnd(4, 'X');
-        const numID = data.id.toString().substring(0,4) || Math.floor(Math.random() * 9000 + 1000);
-        document.getElementById('dash-track-code').textContent = `MG-${prefijo}-${numID}`;
+        // FIX #9: Código rastreable estable y bien formado
+        document.getElementById('dash-track-code').textContent = generarCodigoRastreable(data.nombre, data.id);
         document.getElementById('dash-track-count').textContent = Math.floor(totalClics * 0.3);
 
         generarGraficaEstadisticas(clicsRecientes);
@@ -1439,11 +1606,20 @@ async function guardarEdicionNegocio() {
     btn.disabled = false; btn.textContent = "Guardar Datos del Local";
 }
 
+// FIX #6: Manejo de errores
 async function cargarMisProductos() {
   if(!negocioActual) return;
-  const { data } = await db.from('ofertas').select('*').eq('negocio_id', negocioActual.id);
+  const { data, error } = await db.from('ofertas').select('*').eq('negocio_id', negocioActual.id);
   const cont = document.getElementById('biz-productos-lista');
   const labelDash = document.getElementById('dash-prod-count');
+
+  if (error) {
+      console.error('Error cargando productos:', error);
+      toast('No pudimos cargar tus productos', 'err');
+      cont.innerHTML = `<div class="empty-state"><div class="icon">📡</div><h3>Error de conexión</h3><p>Intenta de nuevo en un momento.</p></div>`;
+      return;
+  }
+
   if(labelDash) labelDash.textContent = `${data ? data.length : 0} publicados`;
 
   if(!data || data.length === 0) {
@@ -1466,8 +1642,18 @@ async function cargarMisProductos() {
   `).join('');
 }
 
+// FIX #7: Reemplazo del confirm() nativo
 async function eliminarProducto(productoId, imagenUrl) {
-    if(!confirm("¿Estás seguro de que quieres eliminar este producto?")) return;
+    const ok = await customConfirm({
+        title: 'Eliminar producto',
+        message: '¿Seguro que quieres eliminar este producto? Esta acción no se puede deshacer.',
+        okText: 'Sí, eliminar',
+        cancelText: 'Cancelar',
+        danger: true,
+        icon: '🗑️'
+    });
+    if (!ok) return;
+    
     toast("Eliminando...", "ok");
     
     if(imagenUrl && imagenUrl !== 'null') {
@@ -1476,7 +1662,7 @@ async function eliminarProducto(productoId, imagenUrl) {
     }
 
     const { error } = await db.from('ofertas').delete().eq('id', productoId);
-    if(error) toast("Error al eliminar", "err");
+    if(error) toast("Error al eliminar: " + error.message, "err");
     else { toast("Producto eliminado", "ok"); cargarMisProductos(); }
 }
 
@@ -1530,7 +1716,11 @@ async function iniciarApp() {
     document.getElementById('panel-auth').style.display = 'flex'; 
   } else {
     document.getElementById('panel-auth').style.display = 'none'; 
-    const { data: prof } = await db.from('profiles').select('*').eq('id', currentUser.id).single();
+    const { data: prof, error: profErr } = await db.from('profiles').select('*').eq('id', currentUser.id).single();
+    if (profErr && profErr.code !== 'PGRST116') {
+        console.error('Error cargando perfil:', profErr);
+        toast('No pudimos cargar tu perfil', 'err');
+    }
     currentProfile = prof;
     
     const foto = prof?.avatar_url || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
@@ -1543,12 +1733,28 @@ async function iniciarApp() {
 
     renderizarPantallaCuenta();
     await cargarNegocios();
-    const { data: allProds } = await db.from('ofertas').select('*').eq('activa', true);
+    const { data: allProds, error: allProdsErr } = await db.from('ofertas').select('*').eq('activa', true);
+    if (allProdsErr) console.error('Error cargando ofertas globales:', allProdsErr);
     ofertasCache = allProds || [];
     await cargarPromos();
     navegar('inicio');
   }
 }
+
+// FIX #4: Listener de cambios de sesión (logout/expiración/login en otra pestaña)
+db.auth.onAuthStateChange((event, session) => {
+    console.log('Auth state changed:', event);
+    if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED' && !session) {
+        // Sesión cerrada o token expirado sin renovación
+        currentUser = null;
+        currentProfile = null;
+        document.getElementById('panel-auth').style.display = 'flex';
+        toast('Tu sesión expiró. Inicia de nuevo.', 'err');
+    } else if (event === 'SIGNED_IN' && session && !currentUser) {
+        // Login en otra pestaña — sincronizar
+        iniciarApp();
+    }
+});
 
 window.onload = iniciarApp;
 </script>
