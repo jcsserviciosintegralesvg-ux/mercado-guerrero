@@ -1133,7 +1133,7 @@ async function eliminarNeg(id) {
   }
 }
 // ============================================================================
-// PRODUCTOS / OFERTAS
+// PRODUCTOS / OFERTAS (Reparado: Buscador exacto y Botones estables)
 // ============================================================================
 async function cargarOfertas() {
   const { data, error } = await db.from('ofertas').select('*, negocios(nombre)').order('created_at', { ascending: false });
@@ -1141,10 +1141,16 @@ async function cargarOfertas() {
   productosCache = data || [];
   document.getElementById('productos-count').textContent = `${productosCache.length} productos`;
   
-  // Llenar select de filtro por negocio
+  // 🛡️ REPARACIÓN: Filtrar por ID del negocio (para no confundir nombres repetidos)
   const sel = document.getElementById('filtro-neg-prod');
-  const negs = [...new Set(productosCache.map(p => p.negocios?.nombre).filter(Boolean))].sort();
-  sel.innerHTML = '<option value="">Todos los negocios</option>' + negs.map(n => `<option>${escapeHtml(n)}</option>`).join('');
+  const negsMap = new Map();
+  productosCache.forEach(p => {
+    if (p.negocio_id && p.negocios?.nombre) negsMap.set(p.negocio_id, p.negocios.nombre);
+  });
+  const negs = Array.from(negsMap.entries()).sort((a, b) => a[1].localeCompare(b[1]));
+  
+  sel.innerHTML = '<option value="">Todos los negocios</option>' + 
+    negs.map(([id, n]) => `<option value="${escapeHtml(id)}">${escapeHtml(n)}</option>`).join('');
   
   filtrarProds();
 }
@@ -1156,7 +1162,8 @@ function filtrarProds() {
   
   let lista = productosCache;
   if (q) lista = lista.filter(p => (p.titulo || '').toLowerCase().includes(q));
-  if (neg) lista = lista.filter(p => p.negocios?.nombre === neg);
+  // 🛡️ REPARACIÓN: Buscar por ID en vez de nombre
+  if (neg) lista = lista.filter(p => p.negocio_id === neg);
   if (est === 'activa') lista = lista.filter(p => p.activa);
   if (est === 'pausada') lista = lista.filter(p => !p.activa);
   if (est === 'promo') lista = lista.filter(p => p.es_promo || p.precio_antes);
@@ -1164,15 +1171,16 @@ function filtrarProds() {
   renderProds(lista);
 }
 
+// 🛡️ REPARACIÓN: Generación de tabla segura (Anti-Hackeos)
 function renderProds(list) {
   const t = document.getElementById('tabla-ofertas');
   if (!list.length) return t.innerHTML = '<tr><td colspan="7" class="empty">Sin resultados</td></tr>';
   
   t.innerHTML = `<thead><tr><th>Producto</th><th>Negocio</th><th>Categoría</th><th>Precio</th><th>Antes</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>` +
     list.map(o => `
-    <tr>
+    <tr data-id="${escapeHtml(o.id)}">
       <td><div class="biz-cell">
-        ${o.imagen_url ? `<img src="${o.imagen_url}" class="biz-dot">` : `<div class="biz-dot">📦</div>`}
+        ${o.imagen_url ? `<img src="${escapeHtml(o.imagen_url)}" class="biz-dot">` : `<div class="biz-dot">📦</div>`}
         <div><strong>${escapeHtml(o.titulo || 'Sin título')}</strong>
         ${o.es_promo ? '<span class="tag tag-orange" style="font-size:9px;margin-left:4px">PROMO</span>' : ''}
         <br><span class="muted" style="font-size:11px">${escapeHtml((o.descripcion || '').substring(0, 50))}</span></div>
@@ -1183,12 +1191,24 @@ function renderProds(list) {
       <td class="muted">${o.precio_antes ? `<s>${fmt$(o.precio_antes)}</s>` : '—'}</td>
       <td>${o.activa ? '<span class="tag tag-green">Activa</span>' : '<span class="tag tag-gray">Pausada</span>'}</td>
       <td><div class="row">
-        <button class="btn btn-sm btn-ghost" onclick="toggleOferta('${o.id}', ${!o.activa})">${o.activa ? '⏸️' : '▶️'}</button>
-        <button class="btn btn-sm btn-ghost" onclick="togglePromo('${o.id}', ${!o.es_promo})">${o.es_promo ? '🔥✓' : '🔥'}</button>
-        <button class="btn btn-sm btn-danger" onclick="eliminarOferta('${o.id}')">🗑</button>
+        <button class="btn btn-sm btn-ghost" data-action="toggle-oferta" data-estado="${!o.activa}">${o.activa ? '⏸️' : '▶️'}</button>
+        <button class="btn btn-sm btn-ghost" data-action="toggle-promo" data-estado="${!o.es_promo}">${o.es_promo ? '🔥✓' : '🔥'}</button>
+        <button class="btn btn-sm btn-danger" data-action="eliminar">🗑</button>
       </div></td>
     </tr>`).join('') + '</tbody>';
 }
+
+// 🛡️ REPARACIÓN: Un solo "escuchador" de clics para los botones (Evita parpadeos y errores)
+document.getElementById('tabla-ofertas').addEventListener('click', async e => {
+  const btn = e.target.closest('button[data-action]');
+  if (!btn) return;
+  const id = btn.closest('tr').dataset.id;
+  const accion = btn.dataset.action;
+  
+  if (accion === 'toggle-oferta') await toggleOferta(id, btn.dataset.estado === 'true');
+  else if (accion === 'toggle-promo') await togglePromo(id, btn.dataset.estado === 'true');
+  else if (accion === 'eliminar') await eliminarOferta(id);
+});
 
 async function toggleOferta(id, estado) {
   const r = await tryDB(() => db.from('ofertas').update({ activa: estado }).eq('id', id), 'Error');
@@ -1206,7 +1226,6 @@ async function eliminarOferta(id) {
   const r = await tryDB(() => db.from('ofertas').delete().eq('id', id), 'Error');
   if (r) { await logAccion('eliminar', 'oferta', id); toast('Eliminado', 'ok'); cargarOfertas(); }
 }
-
 // ============================================================================
 // PROMOS (vista cards)
 // ============================================================================
@@ -1221,29 +1240,44 @@ async function cargarPromos() {
       return `<div style="border:2px solid var(--orange);border-radius:12px;overflow:hidden">
         <div style="background:var(--orange);color:#fff;font-size:11px;font-weight:700;padding:5px 12px">${escapeHtml(o.negocios?.nombre || 'Negocio')}</div>
         <div style="padding:14px">
-          ${o.imagen_url ? `<img src="${o.imagen_url}" style="width:100%;height:90px;object-fit:cover;border-radius:8px;margin-bottom:10px">` : ''}
+          ${o.imagen_url ? `<img src="${escapeHtml(o.imagen_url)}" style="width:100%;height:90px;object-fit:cover;border-radius:8px;margin-bottom:10px">` : ''}
           <div style="font-weight:700;margin-bottom:6px">${escapeHtml(o.titulo)}</div>
           <div class="row">
             <span style="color:var(--orange);font-size:18px;font-weight:800">${fmt$(o.precio)}</span>
             ${o.precio_antes ? `<span class="muted"><s>${fmt$(o.precio_antes)}</s></span><span class="tag tag-orange">${desc}% OFF</span>` : ''}
           </div>
-          <button class="btn btn-sm btn-danger" style="margin-top:10px;width:100%" onclick="togglePromo('${o.id}',false);cargarPromos()">Quitar promo</button>
+          <button class="btn btn-sm btn-danger" style="margin-top:10px;width:100%" data-action="quitar-promo" data-id="${escapeHtml(o.id)}">Quitar promo</button>
         </div>
       </div>`;
     }).join('') + '</div>';
 }
 
+// 🛡️ REPARACIÓN: Escuchador seguro para promos
+document.getElementById('cont-promos').addEventListener('click', async e => {
+  const btn = e.target.closest('button[data-action="quitar-promo"]');
+  if (!btn) return;
+  await togglePromo(btn.dataset.id, false);
+  cargarPromos();
+});
+
 // ============================================================================
-// PEDIDOS
+// PEDIDOS (Reparado: Filtros exactos, fechas seguras y Estados de Pedido)
 // ============================================================================
-async function cargarPedidos() {
-  const { data, error } = await db.from('pedidos').select('*, negocios(nombre)').order('fecha', { ascending: false });
+async function cargarPedidos(reset = true) {
+  const { data, error } = await db.from('pedidos').select('*, negocios(nombre, id)').order('fecha', { ascending: false });
   if (error) return toast(error.message, 'err');
   pedidosCache = data || [];
   
+  // 🛡️ REPARACIÓN: Filtro por ID para que Tacos Lupita 1 no se mezcle con Tacos Lupita 2
   const sel = document.getElementById('filtro-neg-pedidos');
-  const negs = [...new Set(pedidosCache.map(p => p.negocios?.nombre).filter(Boolean))].sort();
-  sel.innerHTML = '<option value="">Todos los negocios</option>' + negs.map(n => `<option>${escapeHtml(n)}</option>`).join('');
+  const negsMap = new Map();
+  pedidosCache.forEach(p => {
+    if (p.negocio_id && p.negocios?.nombre) negsMap.set(p.negocio_id, p.negocios.nombre);
+  });
+  const negs = Array.from(negsMap.entries()).sort((a, b) => a[1].localeCompare(b[1]));
+  
+  sel.innerHTML = '<option value="">Todos los negocios</option>' + 
+    negs.map(([id, n]) => `<option value="${escapeHtml(id)}">${escapeHtml(n)}</option>`).join('');
   
   filtrarPedidos();
 }
@@ -1253,21 +1287,21 @@ function filtrarPedidos() {
   const fecha = document.getElementById('filtro-fecha-pedidos').value;
   
   let lista = pedidosCache;
-  if (neg) lista = lista.filter(p => p.negocios?.nombre === neg);
+  if (neg) lista = lista.filter(p => p.negocio_id === neg); 
   
   const ahora = new Date();
+  // 🛡️ REPARACIÓN: parseFecha evita que pedidos viejos sin fecha rompan las estadísticas
   if (fecha === 'hoy') {
     const inicio = new Date(); inicio.setHours(0, 0, 0, 0);
-    lista = lista.filter(p => new Date(p.fecha) >= inicio);
+    lista = lista.filter(p => { const f = parseFecha(p.fecha); return f && f >= inicio; });
   } else if (fecha === 'semana') {
     const inicio = new Date(); inicio.setDate(inicio.getDate() - 7);
-    lista = lista.filter(p => new Date(p.fecha) >= inicio);
+    lista = lista.filter(p => { const f = parseFecha(p.fecha); return f && f >= inicio; });
   } else if (fecha === 'mes') {
     const inicio = new Date(); inicio.setDate(inicio.getDate() - 30);
-    lista = lista.filter(p => new Date(p.fecha) >= inicio);
+    lista = lista.filter(p => { const f = parseFecha(p.fecha); return f && f >= inicio; });
   }
   
-  // Estadísticas
   const total = lista.reduce((s, p) => s + (parseFloat(p.total) || 0), 0);
   document.getElementById('pedidos-stat-num').textContent = lista.length;
   document.getElementById('pedidos-stat-monto').textContent = fmt$(total);
@@ -1278,28 +1312,43 @@ function filtrarPedidos() {
 
 function renderPedidos(list) {
   const t = document.getElementById('tabla-pedidos');
-  if (!list.length) return t.innerHTML = '<tr><td colspan="6" class="empty">Sin pedidos en este rango</td></tr>';
+  if (!list.length) return t.innerHTML = '<tr><td colspan="7" class="empty">Sin pedidos en este rango</td></tr>';
   
-  t.innerHTML = `<thead><tr><th>Cliente</th><th>Negocio</th><th>Items</th><th>Total</th><th>Fecha</th><th>Acciones</th></tr></thead><tbody>` +
+  const colores = { recibido:'tag-blue', preparando:'tag-yellow', listo:'tag-green', entregado:'tag-gray', cancelado:'tag-red' };
+
+  t.innerHTML = `<thead><tr><th>Cliente</th><th>Negocio</th><th>Items</th><th>Total</th><th>Estado</th><th>Fecha</th><th>Acciones</th></tr></thead><tbody>` +
     list.map(p => {
       const items = Array.isArray(p.items) ? p.items : [];
       const numItems = items.reduce((s, i) => s + (parseInt(i.cantidad) || 0), 0);
+      const estado = p.estado || 'recibido';
       return `
-      <tr>
+      <tr data-id="${escapeHtml(p.id)}">
         <td><strong>${escapeHtml(p.cliente_nombre || 'Cliente')}</strong>${p.cliente_direccion ? `<br><span class="muted" style="font-size:11px">📍 ${escapeHtml(p.cliente_direccion)}</span>` : ''}</td>
         <td class="muted">${escapeHtml(p.negocios?.nombre || '—')}</td>
         <td>${numItems} item${numItems === 1 ? '' : 's'}</td>
         <td style="color:var(--orange);font-weight:700">${fmt$(p.total)}</td>
+        <td><span class="tag ${colores[estado]}">${escapeHtml(estado)}</span></td>
         <td class="muted" style="font-size:11px">${fmtFecha(p.fecha)}</td>
-        <td><button class="btn btn-sm btn-ghost" onclick="verPedido(${p.id})">Ver</button></td>
+        <td><button class="btn btn-sm btn-ghost" data-action="ver-pedido">Ver</button></td>
       </tr>`;
     }).join('') + '</tbody>';
 }
 
+document.getElementById('tabla-pedidos').addEventListener('click', e => {
+  const btn = e.target.closest('button[data-action="ver-pedido"]');
+  if (!btn) return;
+  verPedido(btn.closest('tr').dataset.id);
+});
+
 function verPedido(id) {
-  const p = pedidosCache.find(x => x.id === id);
+  const p = pedidosCache.find(x => String(x.id) === String(id));
   if (!p) return;
   const items = Array.isArray(p.items) ? p.items : [];
+  
+  // 🌟 MEJORA: Sistema de Estados visual
+  const estados = ['recibido','preparando','listo','entregado','cancelado'];
+  const colores = { recibido:'tag-blue', preparando:'tag-yellow', listo:'tag-green', entregado:'tag-gray', cancelado:'tag-red' };
+
   document.getElementById('mped-body').innerHTML = `
     <div style="margin-bottom:14px">
       <div class="muted" style="font-size:11px;text-transform:uppercase;font-weight:700">Cliente</div>
@@ -1326,69 +1375,101 @@ function verPedido(id) {
       <span>Total</span><span>${fmt$(p.total)}</span>
     </div>
     <div class="muted" style="margin-top:10px;font-size:11px">${fmtFecha(p.fecha)}</div>
+
+    <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line)">
+      <div class="muted" style="font-size:11px;text-transform:uppercase;font-weight:700;margin-bottom:8px">Cambiar Estado</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        ${estados.map(e => `<button class="btn btn-sm ${e === p.estado ? 'btn-primary' : 'btn-ghost'}" data-action="cambiar-estado" data-pid="${p.id}" data-estado="${e}">${e}</button>`).join('')}
+      </div>
+    </div>
   `;
   abrirModal('modal-pedido');
 }
 
+// 🌟 MEJORA: Lógica para que al darle clic a los botones, se guarde el estado en la base de datos
+document.getElementById('mped-body').addEventListener('click', async e => {
+  const btn = e.target.closest('button[data-action="cambiar-estado"]');
+  if (!btn) return;
+  const r = await tryDB(() => db.from('pedidos').update({ estado: btn.dataset.estado }).eq('id', btn.dataset.pid), 'Error');
+  if (r) { 
+    await logAccion('actualizar','pedido',btn.dataset.pid,{estado:btn.dataset.estado}); 
+    toast('Estado actualizado ✓','ok'); 
+    cerrarModal('modal-pedido'); 
+    cargarPedidos(); 
+  }
+});
 // ============================================================================
-// SUSCRIPCIONES Y PAGOS
+// SUSCRIPCIONES Y PAGOS (Reparado: Fechas nulas y status)
 // ============================================================================
 async function cargarSuscripciones() {
   const filtro = document.getElementById('filtro-sub')?.value || '';
-  
+
   const [{ data: negs }, { data: pagos }] = await Promise.all([
     db.from('negocios').select('*').order('nombre'),
-    db.from('pagos').select('*, negocios(nombre)').order('creado', { ascending: false }).limit(100)
+    // Usamos created_at porque estandarizamos la base de datos en el paso 1
+    db.from('pagos').select('*, negocios(nombre)').order('created_at', { ascending: false }).limit(100)
   ]);
-  
+
   let lista = negs || [];
   const ahora = new Date();
   const en7 = new Date(); en7.setDate(en7.getDate() + 7);
-  
+
   if (filtro === 'activa') lista = lista.filter(n => n.suscripcion_activa);
   if (filtro === 'vencida') lista = lista.filter(n => n.suscripcion_vence && new Date(n.suscripcion_vence) < ahora);
   if (filtro === 'por-vencer') lista = lista.filter(n => n.suscripcion_vence && new Date(n.suscripcion_vence) > ahora && new Date(n.suscripcion_vence) < en7);
-  
+
   const ts = document.getElementById('tabla-subs');
   ts.innerHTML = `<thead><tr><th>Negocio</th><th>Plan</th><th>Estado</th><th>Vence</th><th>Acciones</th></tr></thead><tbody>` +
     (lista.length ? lista.map(n => `
-    <tr>
+    <tr data-id="${escapeHtml(n.id)}">
       <td><strong>${escapeHtml(n.nombre)}</strong></td>
       <td><span class="tag ${n.plan_id === 'pro' ? 'tag-orange' : 'tag-gray'}">${escapeHtml(n.plan_id || 'free')}</span></td>
       <td>${n.suscripcion_activa ? '<span class="tag tag-green">● Activa</span>' : '<span class="tag tag-red">● Inactiva</span>'}</td>
       <td class="muted">${n.suscripcion_vence ? fmtFecha(n.suscripcion_vence, false) : '—'}</td>
       <td>
-        <button class="btn btn-sm btn-primary" onclick="activarSub('${n.id}')">+30 días</button>
-        ${n.suscripcion_activa ? `<button class="btn btn-sm btn-danger" onclick="pausarSub('${n.id}')">Pausar</button>` : ''}
+        <button class="btn btn-sm btn-primary" data-action="activar-sub">+30 días</button>
+        ${n.suscripcion_activa ? `<button class="btn btn-sm btn-danger" data-action="pausar-sub">Pausar</button>` : ''}
       </td>
     </tr>`).join('') : '<tr><td colspan="5" class="empty">Sin resultados</td></tr>') + '</tbody>';
-  
-  // Llenar el select del modal de pago
+
   const selPago = document.getElementById('mp-negocio');
   selPago.innerHTML = (negs || []).map(n => `<option value="${n.id}">${escapeHtml(n.nombre)}</option>`).join('');
-  
-  // Tabla pagos
+
   const tp = document.getElementById('tabla-pagos');
   if (!pagos?.length) {
     tp.innerHTML = '<tr><td colspan="6" class="empty">Sin pagos registrados</td></tr>';
   } else {
     tp.innerHTML = `<thead><tr><th>Negocio</th><th>Plan</th><th>Monto</th><th>Método</th><th>Estado</th><th>Fecha</th></tr></thead><tbody>` +
-      pagos.map(p => `
+      pagos.map(p => {
+        // 🛡️ REPARACIÓN: Si el estado está vacío, ponerle 'pendiente' para que no se vea feo
+        const status = p.mp_status || 'pendiente';
+        const statusClass = status === 'aprobado' ? 'tag-green' : status === 'rechazado' ? 'tag-red' : 'tag-yellow';
+        return `
       <tr>
         <td>${escapeHtml(p.negocios?.nombre || '—')}</td>
         <td><span class="tag tag-gray">${escapeHtml(p.plan_id)}</span></td>
         <td style="font-weight:700">${fmt$(p.monto)}</td>
         <td class="muted">${escapeHtml(p.metodo || '—')}</td>
-        <td><span class="tag ${p.mp_status === 'aprobado' ? 'tag-green' : 'tag-yellow'}">${escapeHtml(p.mp_status)}</span></td>
-        <td class="muted">${fmtFecha(p.creado, false)}</td>
-      </tr>`).join('') + '</tbody>';
+        <td><span class="tag ${statusClass}">${escapeHtml(status)}</span></td>
+        <td class="muted">${fmtFecha(p.created_at, false)}</td>
+      </tr>`;
+      }).join('') + '</tbody>';
   }
 }
+
+document.getElementById('tabla-subs').addEventListener('click', e => {
+  const btn = e.target.closest('button[data-action]');
+  if (!btn) return;
+  const id = btn.closest('tr').dataset.id;
+  if (btn.dataset.action === 'activar-sub') activarSub(id);
+  else if (btn.dataset.action === 'pausar-sub') pausarSub(id);
+});
 
 async function pausarSub(id) {
   const ok = await customConfirm({ title:'Pausar suscripción', message:'El negocio quedará en plan free hasta nuevo pago.', okText:'Pausar', danger:true, icon:'⏸️' });
   if (!ok) return;
-  const r = await tryDB(() => db.from('negocios').update({ suscripcion_activa:false, plan_id:'free' }).eq('id', id), 'Error');
+  // 🛡️ REPARACIÓN: Limpiar fecha de vencimiento al pausar (suscripcion_vence: null)
+  const r = await tryDB(() => db.from('negocios').update({ suscripcion_activa:false, plan_id:'free', suscripcion_vence: null }).eq('id', id), 'Error');
   if (r) { await logAccion('actualizar', 'suscripcion', id, { pausada:true }); toast('Pausada', 'ok'); cargarSuscripciones(); }
 }
 
@@ -1399,27 +1480,28 @@ function abrirModalPago() {
 }
 
 async function guardarPago() {
+  if (!(await asegurarSesion())) return; // 🛡️ REPARACIÓN: Guard de seguridad
   const datos = {
     negocio_id: document.getElementById('mp-negocio').value,
     monto: parseFloat(document.getElementById('mp-monto').value),
     plan_id: document.getElementById('mp-plan').value,
     metodo: document.getElementById('mp-metodo').value,
     notas: document.getElementById('mp-notas').value.trim(),
-    mp_status: 'aprobado'
+    mp_status: 'aprobado',
+    created_at: new Date().toISOString() // 🛡️ REPARACIÓN: Fecha explícita
   };
   if (!datos.negocio_id || !datos.monto) return toast('Datos incompletos', 'err');
-  
+
   const btn = document.getElementById('mp-guardar');
   btn.disabled = true; btn.innerHTML = '<div class="spinner"></div>';
-  
+
   const r = await tryDB(() => db.from('pagos').insert(datos), 'Error');
   if (r) {
-    // Activar suscripción 30 días
     const v = new Date(); v.setMonth(v.getMonth() + 1);
     await db.from('negocios').update({
       suscripcion_activa: true, suscripcion_vence: v.toISOString(), plan_id: datos.plan_id
     }).eq('id', datos.negocio_id);
-    
+
     await logAccion('crear', 'pago', '', datos);
     toast('Pago registrado y suscripción activada ✓', 'ok');
     cerrarModal('modal-pago');
@@ -1439,31 +1521,40 @@ async function cargarClientes() {
   filtrarClientes();
 }
 
+document.getElementById('buscar-cli').addEventListener('input', debounce(filtrarClientes, 250));
+
 function filtrarClientes() {
   const q = document.getElementById('buscar-cli').value.toLowerCase().trim();
   const rol = document.getElementById('filtro-rol').value;
   let lista = clientesCache;
   if (q) lista = lista.filter(c => (c.nombre || '').toLowerCase().includes(q) || (c.whatsapp || '').includes(q));
   if (rol) lista = lista.filter(c => c.rol === rol);
-  
+
   const t = document.getElementById('tabla-clientes');
   if (!lista.length) return t.innerHTML = '<tr><td colspan="5" class="empty">Sin resultados</td></tr>';
-  
+
   t.innerHTML = `<thead><tr><th>Nombre</th><th>WhatsApp</th><th>Rol</th><th>Registro</th><th>Acciones</th></tr></thead><tbody>` +
     lista.map(c => `
-    <tr>
+    <tr data-id="${escapeHtml(c.id)}">
       <td><strong>${escapeHtml(c.nombre || 'Sin nombre')}</strong></td>
       <td class="muted">${escapeHtml(c.whatsapp || '—')}</td>
       <td><span class="tag ${c.rol === 'admin' ? 'tag-orange' : c.rol === 'negocio' ? 'tag-green' : 'tag-gray'}">${escapeHtml(c.rol || 'cliente')}</span></td>
       <td class="muted">${c.created_at ? fmtFecha(c.created_at, false) : '—'}</td>
       <td><div class="row">
-        ${c.rol !== 'admin' ? `<button class="btn btn-sm btn-orange" onclick="cambiarRol('${c.id}','admin')">Hacer admin</button>` : ''}
-        ${c.rol === 'admin' && c.id !== adminUser.id ? `<button class="btn btn-sm btn-ghost" onclick="cambiarRol('${c.id}','cliente')">Quitar admin</button>` : ''}
+        ${c.rol !== 'admin' ? `<button class="btn btn-sm btn-orange" data-action="rol" data-rol="admin">Hacer admin</button>` : ''}
+        ${c.rol === 'admin' && c.id !== adminUser?.id ? `<button class="btn btn-sm btn-ghost" data-action="rol" data-rol="cliente">Quitar admin</button>` : ''}
       </div></td>
     </tr>`).join('') + '</tbody>';
 }
 
+document.getElementById('tabla-clientes').addEventListener('click', e => {
+  const btn = e.target.closest('button[data-action="rol"]');
+  if (!btn) return;
+  cambiarRol(btn.closest('tr').dataset.id, btn.dataset.rol);
+});
+
 async function cambiarRol(id, nuevoRol) {
+  if (!(await asegurarSesion())) return;
   const ok = await customConfirm({
     title: 'Cambiar rol',
     message: `¿Cambiar el rol a "${nuevoRol}"?`,
@@ -1479,18 +1570,18 @@ async function cambiarRol(id, nuevoRol) {
 // ============================================================================
 async function cargarAuditoria() {
   const accion = document.getElementById('filtro-accion').value;
-  let q = db.from('admin_logs').select('*').order('creado', { ascending: false }).limit(200);
+  let q = db.from('admin_logs').select('*').order('created_at', { ascending: false }).limit(200);
   if (accion) q = q.eq('accion', accion);
-  
+
   const { data, error } = await q;
   const t = document.getElementById('tabla-auditoria');
   if (error) return t.innerHTML = `<tr><td colspan="5" class="empty">Error: ${error.message}</td></tr>`;
   if (!data?.length) return t.innerHTML = '<tr><td colspan="5" class="empty">Sin registros</td></tr>';
-  
+
   t.innerHTML = `<thead><tr><th>Fecha</th><th>Admin</th><th>Acción</th><th>Entidad</th><th>Detalles</th></tr></thead><tbody>` +
     data.map(l => `
     <tr>
-      <td class="muted" style="font-size:11px">${fmtFecha(l.creado)}</td>
+      <td class="muted" style="font-size:11px">${fmtFecha(l.created_at)}</td>
       <td><strong>${escapeHtml(l.admin_nombre || '—')}</strong></td>
       <td><span class="tag tag-blue">${escapeHtml(l.accion)}</span></td>
       <td>${escapeHtml(l.entidad || '—')}</td>
@@ -1504,7 +1595,7 @@ async function cargarAuditoria() {
 async function cargarConfig() {
   const { data, error } = await db.from('configuracion_global').select('*');
   if (error) return toast(error.message, 'err');
-  
+
   (data || []).forEach(c => {
     const el = document.getElementById('cfg-' + c.clave);
     if (!el) return;
@@ -1514,65 +1605,74 @@ async function cargarConfig() {
 }
 
 async function guardarConfig() {
+  if (!(await asegurarSesion())) return;
   const claves = ['app_nombre','ciudad','whatsapp_soporte','email_soporte','mensaje_global','auto_aprobar_productos','auto_aprobar_precios','auto_aprobar_promos'];
-  
+
   const btn = document.getElementById('btn-save-cfg');
   btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Guardando...';
-  
+
   const updates = claves.map(clave => {
     const el = document.getElementById('cfg-' + clave);
     if (!el) return null;
     const valor = el.type === 'checkbox' ? String(el.checked) : el.value;
     return { clave, valor, actualizado: new Date().toISOString(), actualizado_por: adminUser.id };
   }).filter(Boolean);
-  
+
   for (const u of updates) {
-    await db.from('configuracion_global').upsert(u, { onConflict: 'clave' });
+    await tryDB(() => db.from('configuracion_global').upsert(u, { onConflict: 'clave' }));
   }
-  
+
   await logAccion('actualizar', 'configuracion', '', { claves: claves.length });
   btn.disabled = false; btn.textContent = 'Guardar cambios';
   toast('Configuración guardada ✓', 'ok');
 }
 
 // ============================================================================
-// EXPORTAR CSV
+// EXPORTAR CSV (Reparado: Acentos en Excel y saltos de línea)
 // ============================================================================
 function exportarCSV(tipo) {
   let datos = [], headers = [], filename = '';
-  
+
   if (tipo === 'negocios') {
     datos = negociosCache;
-    headers = ['nombre','categoria','whatsapp','direccion','plan_id','suscripcion_activa','activo'];
-    filename = 'negocios.csv';
+    headers = ['id','nombre','categoria','whatsapp','direccion','plan_id','suscripcion_activa','activo'];
+    filename = 'negocios';
   } else if (tipo === 'productos') {
     datos = productosCache;
-    headers = ['titulo','precio','precio_antes','categoria_producto','activa','es_promo'];
-    filename = 'productos.csv';
+    headers = ['id','titulo','precio','precio_antes','categoria_producto','activa','es_promo'];
+    filename = 'productos';
   } else if (tipo === 'pedidos') {
     datos = pedidosCache;
-    headers = ['cliente_nombre','cliente_whatsapp','cliente_direccion','total','fecha'];
-    filename = 'pedidos.csv';
+    headers = ['id','cliente_nombre','cliente_whatsapp','cliente_direccion','total','estado','fecha'];
+    filename = 'pedidos';
   } else if (tipo === 'clientes') {
     datos = clientesCache;
-    headers = ['nombre','whatsapp','rol','created_at'];
-    filename = 'usuarios.csv';
+    headers = ['id','nombre','whatsapp','rol','created_at'];
+    filename = 'usuarios';
   }
-  
+
   if (!datos.length) return toast('Nada que exportar', 'err');
-  
-  const csv = [headers.join(',')].concat(
-    datos.map(d => headers.map(h => `"${(d[h] || '').toString().replace(/"/g, '""')}"`).join(','))
-  ).join('\n');
-  
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+
+  // 🛡️ REPARACIÓN: Escape inteligente y formato seguro para Excel
+  const escape = v => {
+    if (v == null) return '';
+    const s = String(v).replace(/"/g, '""');
+    return /[",\n\r]/.test(s) ? `"${s}"` : s;
+  };
+
+  const csv = [headers.join(',')]
+    .concat(datos.map(d => headers.map(h => escape(d[h])).join(',')))
+    .join('\r\n');
+
+  // 🛡️ REPARACIÓN: Agregar BOM (Byte Order Mark) para que Excel lea los acentos (UTF-8)
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
-  link.download = filename;
+  link.download = `${filename}_${new Date().toISOString().slice(0,10)}.csv`;
   link.click();
+  URL.revokeObjectURL(link.href);
   toast('CSV descargado ✓', 'ok');
 }
-
 // ============================================================================
 // DEMO DATA (corregida — solo campos que existen)
 // ============================================================================
