@@ -959,7 +959,7 @@ async function decidirApro(id, decision) {
 }
 
 // ============================================================================
-// NEGOCIOS
+// NEGOCIOS (Reparado: Seguridad Anti-Hackeos y Borrado Seguro)
 // ============================================================================
 async function cargarNegocios() {
   const { data, error } = await db.from('negocios').select('*').order('created_at', { ascending: false });
@@ -988,15 +988,16 @@ function filtrarNegs() {
   renderNegs(lista);
 }
 
+// 🛡️ REPARACIÓN: Generación de tabla segura (Evita que el código se rompa)
 function renderNegs(list) {
   const t = document.getElementById('tabla-negocios');
   if (!list.length) return t.innerHTML = '<tr><td colspan="7" class="empty">Sin resultados</td></tr>';
-  
+
   t.innerHTML = `<thead><tr><th>Negocio</th><th>Categoría</th><th>WhatsApp</th><th>Plan</th><th>Suscripción</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>` +
     list.map(n => `
-    <tr>
+    <tr data-id="${escapeHtml(n.id)}">
       <td><div class="biz-cell">
-        ${n.imagen_url ? `<img src="${n.imagen_url}" class="biz-dot">` : `<div class="biz-dot">${escapeHtml((n.nombre||'?')[0])}</div>`}
+        ${n.imagen_url ? `<img src="${escapeHtml(n.imagen_url)}" class="biz-dot">` : `<div class="biz-dot">${escapeHtml((n.nombre||'?')[0])}</div>`}
         <div>
           <strong>${escapeHtml(n.nombre)}</strong>${n.is_demo ? ' <span class="tag tag-orange" style="font-size:9px">DEMO</span>' : ''}
           <br><span class="muted" style="font-size:11px">${escapeHtml(n.direccion || '—')}</span>
@@ -1005,18 +1006,32 @@ function renderNegs(list) {
       <td><span class="tag tag-gray">${escapeHtml(n.categoria || '—')}</span></td>
       <td class="muted">${escapeHtml(n.whatsapp || '—')}</td>
       <td><span class="tag ${n.plan_id === 'pro' ? 'tag-orange' : 'tag-gray'}">${escapeHtml(n.plan_id || 'free')}</span></td>
-      <td>${n.suscripcion_activa 
+      <td>${n.suscripcion_activa
         ? `<span class="tag tag-green">● Activa</span>${n.suscripcion_vence ? `<br><span class="muted" style="font-size:10px">Vence ${fmtFecha(n.suscripcion_vence,false)}</span>` : ''}`
         : '<span class="tag tag-gray">● Trial</span>'}</td>
       <td>${n.activo !== false ? '<span class="tag tag-green">Activo</span>' : '<span class="tag tag-red">Pausado</span>'}</td>
       <td><div class="row">
-        <button class="btn btn-sm btn-ghost" onclick="abrirModalNegocio('${n.id}')">✏️</button>
-        <button class="btn btn-sm btn-ghost" onclick="toggleNeg('${n.id}', ${n.activo === false})">${n.activo === false ? '▶️' : '⏸️'}</button>
-        <button class="btn btn-sm btn-primary" onclick="activarSub('${n.id}')">+30d</button>
-        <button class="btn btn-sm btn-danger" onclick="eliminarNeg('${n.id}')">🗑</button>
+        <button class="btn btn-sm btn-ghost" data-action="editar">✏️</button>
+        <button class="btn btn-sm btn-ghost" data-action="toggle">${n.activo === false ? '▶️' : '⏸️'}</button>
+        <button class="btn btn-sm btn-primary" data-action="activarsub">+30d</button>
+        <button class="btn btn-sm btn-danger" data-action="eliminar">🗑</button>
       </div></td>
     </tr>`).join('') + '</tbody>';
 }
+
+// 🛡️ REPARACIÓN: Un solo "escuchador" de clics para toda la tabla (Más rápido y seguro)
+document.getElementById('tabla-negocios').addEventListener('click', e => {
+  const btn = e.target.closest('button[data-action]');
+  if (!btn) return;
+  const id = btn.closest('tr').dataset.id;
+  const accion = btn.dataset.action;
+  const neg = negociosCache.find(n => n.id === id);
+  
+  if (accion === 'editar') abrirModalNegocio(id);
+  else if (accion === 'toggle') toggleNeg(id, neg.activo === false);
+  else if (accion === 'activarsub') activarSub(id);
+  else if (accion === 'eliminar') eliminarNeg(id);
+});
 
 function abrirModalNegocio(id) {
   editandoNegocioId = id || null;
@@ -1046,7 +1061,11 @@ async function guardarNegocio() {
   };
   
   if (!datos.nombre) return toast('El nombre es obligatorio', 'err');
-  if (!datos.whatsapp || datos.whatsapp.length < 10) return toast('WhatsApp inválido (10 dígitos)', 'err');
+  
+  // 🛡️ REPARACIÓN: Validar WhatsApp correctamente para que no metan letras o espacios
+  const limpioWA = (datos.whatsapp || '').replace(/\D/g, ''); 
+  if (limpioWA.length !== 10) return toast('WhatsApp inválido (Debe ser de 10 dígitos, sin letras)', 'err');
+  datos.whatsapp = limpioWA;
   
   const btn = document.getElementById('mn-guardar');
   btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Guardando...';
@@ -1078,10 +1097,16 @@ async function toggleNeg(id, nuevoEstado) {
 }
 
 async function activarSub(id) {
-  const v = new Date(); v.setMonth(v.getMonth() + 1);
+  const neg = negociosCache.find(n => n.id === id);
+  const v = neg?.suscripcion_vence && new Date(neg.suscripcion_vence) > new Date()
+    ? new Date(neg.suscripcion_vence) 
+    : new Date();
+  v.setMonth(v.getMonth() + 1);
+
   const r = await tryDB(() => db.from('negocios').update({
     suscripcion_activa: true, suscripcion_vence: v.toISOString(), plan_id: 'pro'
   }).eq('id', id), 'Error');
+  
   if (r) {
     await logAccion('actualizar', 'suscripcion', id, { activada: true, vence: v.toISOString() });
     toast('Suscripción activa 30 días ✓', 'ok');
@@ -1089,6 +1114,7 @@ async function activarSub(id) {
   }
 }
 
+// 🛡️ REPARACIÓN: Borrado seguro para no dejar "productos huérfanos" 
 async function eliminarNeg(id) {
   const neg = negociosCache.find(n => n.id === id);
   const ok = await customConfirm({
@@ -1098,7 +1124,7 @@ async function eliminarNeg(id) {
   });
   if (!ok) return;
   
-  await db.from('ofertas').delete().eq('negocio_id', id);
+  // Como ya pusimos el candado en Supabase (CASCADE), un solo comando borra todo limpio
   const r = await tryDB(() => db.from('negocios').delete().eq('id', id), 'Error');
   if (r) {
     await logAccion('eliminar', 'negocio', id, { nombre: neg?.nombre });
@@ -1106,7 +1132,6 @@ async function eliminarNeg(id) {
     cargarNegocios(); cargarDashboard();
   }
 }
-
 // ============================================================================
 // PRODUCTOS / OFERTAS
 // ============================================================================
