@@ -424,33 +424,13 @@
                   <h2>Elige tu plan</h2>
                   <p class="sub">Empieza hoy. Puedes cambiarlo cuando quieras.</p>
                   
-                  <div class="plan-card" style="border-color:var(--green); background:linear-gradient(to bottom, #fff, var(--green-soft));" onclick="finalizarRegistroNegocio('prueba')">
-                      <div class="rib" style="background:var(--green); box-shadow: 0 4px 10px rgba(15,122,63,.3);">🎁 30 días gratis</div>
-                      <div class="pname">Prueba Inicial</div>
-                      <div class="pprice">$0 <small>/ primer mes</small></div>
-                      <ul class="plan-feats">
-                          <li><strong>Hasta 3 productos</strong> en el menú</li>
-                          <li>Perfil de negocio básico</li>
-                          <li>Botón directo a WhatsApp</li>
-                          <li class="x">Sin estadísticas avanzadas</li>
-                      </ul>
-                  </div>
-
-                  <div class="plan-card featured" onclick="finalizarRegistroNegocio('pro')">
-                      <div class="rib">⭐ Más Popular</div>
-                      <div class="pname">Plan Pro</div>
-                      <div class="pprice">$99 <small>MXN / mes</small></div>
-                      <ul class="plan-feats">
-                          <li><strong>Hasta 20 productos</strong> en el menú</li>
-                          <li>Insignia "Responde rápido ⭐"</li>
-                          <li>Estadísticas de clics y visitas</li>
-                          <li>Aparece en "Promociones del Día"</li>
-                      </ul>
+                  <div id="onb-planes-contenedor">
+                      <div class="empty-state"><div class="spinner"></div><p>Cargando planes...</p></div>
                   </div>
               </div>
           </div>
       </section>
-
+      
       <section id="panel-biz-dash" class="panel">
           <div style="max-width:900px; margin: 0 auto; width:100%;">
               <div style="display:flex; align-items:flex-start; gap:12px; margin-bottom:24px;">
@@ -741,6 +721,62 @@ let misVotosLocales = JSON.parse(localStorage.getItem('mg_votos') || '[]');
 let misFavoritosLocales = JSON.parse(localStorage.getItem('mg_favoritos') || '[]');
 let negocioEsperandoFeedback = null, tempNegocioData = {}, editandoProductoId = null;
 
+  // =========== PLANES DINÁMICOS ===========
+async function cargarPlanesSuscripcion() {
+  const cont = document.getElementById('onb-planes-contenedor');
+  cont.innerHTML = '<div class="empty-state"><div class="spinner"></div><p>Cargando planes...</p></div>';
+
+  const { data, error } = await db.from('planes_suscripcion').select('*').eq('activo', true).order('orden', { ascending: true });
+
+  if (error || !data || data.length === 0) {
+    cont.innerHTML = `<div class="empty-state"><p>Error al cargar los planes.</p></div>`;
+    return;
+  }
+
+  cont.innerHTML = data.map(plan => {
+    // Convertir las características (JSON) a una lista
+    const caracteristicas = Array.isArray(plan.caracteristicas) ? plan.caracteristicas : JSON.parse(plan.caracteristicas || '[]');
+    
+    // Determinar los colores y etiquetas según el diseño original
+    let cardStyle = "border-color:var(--line); background:#fff;";
+    let ribHtml = "";
+    let nameStyle = "";
+    
+    if (plan.destacado) {
+       cardStyle = "border-color:var(--orange); background:linear-gradient(to bottom, #fff, var(--orange-soft));";
+       ribHtml = `<div class="rib">⭐ Más Popular</div>`;
+    } else if (plan.color === 'green') {
+       cardStyle = "border-color:var(--green); background:linear-gradient(to bottom, #fff, var(--green-soft));";
+       ribHtml = `<div class="rib" style="background:var(--green); box-shadow: 0 4px 10px rgba(15,122,63,.3);">🎁 30 días gratis</div>`;
+    } else if (plan.color === 'purple') {
+       cardStyle = "border-color:#8b5cf6; background:linear-gradient(180deg,#fff,#f5f3ff);";
+       ribHtml = `<div class="rib" style="background:#8b5cf6; box-shadow: 0 4px 10px rgba(139,92,246,.3);">👑 Todo Desbloqueado</div>`;
+       nameStyle = `style="color:#8b5cf6"`;
+    }
+
+    // Dibujar la lista de palomitas y tachas
+    const featsHtml = caracteristicas.map(c => {
+        if (c.toLowerCase().startsWith('x ')) {
+            return `<li class="x">${escapeHtml(c.substring(2))}</li>`;
+        }
+        let text = escapeHtml(c);
+        text = text.replace(/Hasta (\d+) productos/i, '<strong>Hasta $1 productos</strong>');
+        text = text.replace(/Productos ILIMITADOS/i, '<strong>Productos ILIMITADOS</strong>');
+        return `<li>${text}</li>`;
+    }).join('');
+
+    return `
+    <div class="plan-card ${plan.destacado ? 'featured' : ''}" style="${cardStyle}" onclick="finalizarRegistroNegocio('${plan.id}')">
+        ${ribHtml}
+        <div class="pname" ${nameStyle}>${escapeHtml(plan.nombre)}</div>
+        <div class="pprice">${plan.precio == 0 ? '$0' : '$' + plan.precio} <small>${escapeHtml(plan.descripcion)}</small></div>
+        <ul class="plan-feats">
+            ${featsHtml}
+        </ul>
+    </div>
+    `;
+  }).join('');
+}
 // =========== UTILIDADES ===========
 
 function toast(msg, type='ok'){
@@ -1577,6 +1613,7 @@ function validarOnbPaso2() {
   if (!wa || wa.length < 10) return toast('WhatsApp inválido (10 dígitos)', 'err');
   if (!dir) return toast('Ingresa la dirección', 'err');
   tempNegocioData.whatsapp = wa; tempNegocioData.direccion = dir;
+  cargarPlanesSuscripcion();
   navegar('onb-3');
 }
 
