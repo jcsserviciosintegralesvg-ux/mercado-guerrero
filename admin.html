@@ -1739,7 +1739,6 @@ function abrirModalPlan(id) {
 }
 
 async function guardarPlanAdmin() {
-  if (!(await asegurarSesion())) return;
   const id = document.getElementById('edit-plan-id').value;
   const nombre = document.getElementById('edit-plan-nombre').value.trim();
   const precio = document.getElementById('edit-plan-precio').value;
@@ -1748,25 +1747,34 @@ async function guardarPlanAdmin() {
   
   if (!nombre) return toast('El nombre es obligatorio', 'err');
 
+  const btn = document.getElementById('btn-save-plan');
+  btn.disabled = true; 
+  btn.textContent = 'Guardando...';
+
+  // Convertimos el texto a formato de base de datos
   const caractsArray = caractsText.split('\n').map(l => l.trim()).filter(l => l !== '');
   const caractsJson = JSON.stringify(caractsArray);
 
-  const btn = document.getElementById('btn-save-plan');
-  btn.disabled = true; btn.textContent = 'Guardando...';
-
-  const r = await tryDB(() => db.from('planes_suscripcion').update({
+  // Guardamos directo sin intermediarios
+  const { error } = await db.from('planes_suscripcion').update({
     nombre: nombre,
     precio: parseFloat(precio) || 0,
     descripcion: desc,
     caracteristicas: caractsJson
-  }).eq('id', id), 'Error guardando plan');
+  }).eq('id', id);
 
-  if (r) {
-    toast('Plan actualizado exitosamente ✓', 'ok');
-    cerrarModal('modal-plan');
-    cargarPlanesAdmin();
+  btn.disabled = false; 
+  btn.textContent = 'Guardar Plan';
+
+  if (error) {
+    console.error(error);
+    return toast('Error al guardar: ' + error.message, 'err');
   }
-  
+
+  toast('Plan actualizado exitosamente ✓', 'ok');
+  cerrarModal('modal-plan');
+  cargarPlanesAdmin();
+}  
   btn.disabled = false; btn.textContent = 'Guardar Plan';
 }
   
