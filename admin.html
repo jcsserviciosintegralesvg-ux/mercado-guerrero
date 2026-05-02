@@ -1641,8 +1641,10 @@ async function cargarAuditoria() {
 // ============================================================================
 // CONFIGURACIÓN GLOBAL Y PLANES DE SUSCRIPCIÓN
 // ============================================================================
+let planesAdminCache = []; // 🔥 MOVIDO ARRIBA: Primero creamos la caja para evitar el error
+
 async function cargarConfig() {
-  // 🔥 TRUCO: Forzamos la carga de los planes primero, sin importar nada más
+  // Ahora sí, forzamos la carga de los planes
   cargarPlanesAdmin();
 
   const { data, error } = await db.from('configuracion_global').select('*');
@@ -1678,9 +1680,6 @@ async function guardarConfig() {
   btn.disabled = false; btn.textContent = 'Guardar cambios';
   toast('Configuración guardada ✓', 'ok');
 }
-
-// Lógica de Planes de Suscripción
-let planesAdminCache = [];
 
 async function cargarPlanesAdmin() {
   const t = document.getElementById('tabla-planes-admin');
@@ -1771,7 +1770,6 @@ async function guardarPlanAdmin() {
   
   btn.disabled = false; btn.textContent = 'Guardar Plan';
 }
-
 // ============================================================================
 // EXPORTAR CSV (Reparado: Acentos en Excel y saltos de línea)
 // ============================================================================
