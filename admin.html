@@ -1435,12 +1435,41 @@ document.getElementById('mped-body').addEventListener('click', async e => {
 async function cargarSuscripciones() {
   const filtro = document.getElementById('filtro-sub')?.value || '';
 
-  const [{ data: negs }, { data: pagos }] = await Promise.all([
+  // 1. TRAEMOS LOS NEGOCIOS, LOS PAGOS Y LOS PLANES DESDE SUPABASE
+  const [{ data: negs }, { data: pagos }, { data: planes }] = await Promise.all([
     db.from('negocios').select('*').order('nombre'),
-    // Usamos created_at porque estandarizamos la base de datos en el paso 1
-    db.from('pagos').select('*, negocios(nombre)').order('created_at', { ascending: false }).limit(100)
+    db.from('pagos').select('*, negocios(nombre)').order('created_at', { ascending: false }).limit(100),
+    db.from('planes_suscripcion').select('*').order('orden', { ascending: true })
   ]);
 
+  // 2. DIBUJAMOS LAS 3 TARJETAS DE PLANES EN LA PARTE DE ARRIBA
+  const planesContenedor = document.getElementById('admin-planes-cards');
+  if (planesContenedor && planes) {
+    planesContenedor.innerHTML = planes.map(p => {
+      let extraStyle = '';
+      let icon = '🌱';
+      if (p.destacado) icon = '⭐';
+      if (p.color === 'purple') {
+        extraStyle = 'border-color:#8b5cf6; background:linear-gradient(180deg,#fff,#f5f3ff);';
+        icon = '👑';
+      }
+      
+      let primeraCaract = '';
+      try {
+          const arr = JSON.parse(p.caracteristicas || '[]');
+          primeraCaract = arr[0] || 'Perfil básico';
+      } catch(e) {}
+
+      return `
+      <div class="plan-card ${p.destacado ? 'featured' : ''}" style="${extraStyle}">
+        <div class="pname" style="${p.color === 'purple' ? 'color:#8b5cf6' : ''}">${icon} ${escapeHtml(p.nombre)}</div>
+        <div class="pprice">$${p.precio} <span style="font-size:13px;color:var(--muted)">${escapeHtml(p.descripcion)}</span></div>
+        <div class="muted" style="font-size:12px">${escapeHtml(primeraCaract)}...</div>
+      </div>`;
+    }).join('');
+  }
+
+  // 3. LLENAMOS LA TABLA DE ESTADO DE SUSCRIPCIONES
   let lista = negs || [];
   const ahora = new Date();
   const en7 = new Date(); en7.setDate(en7.getDate() + 7);
@@ -1454,7 +1483,7 @@ async function cargarSuscripciones() {
     (lista.length ? lista.map(n => `
     <tr data-id="${escapeHtml(n.id)}">
       <td><strong>${escapeHtml(n.nombre)}</strong></td>
-      <td><span class="tag ${n.plan_id === 'pro' ? 'tag-orange' : 'tag-gray'}">${escapeHtml(n.plan_id || 'free')}</span></td>
+      <td><span class="tag ${n.plan_id === 'pro' ? 'tag-orange' : n.plan_id === 'premium' ? 'tag-purple' : 'tag-gray'}">${escapeHtml(n.plan_id || 'free')}</span></td>
       <td>${n.suscripcion_activa ? '<span class="tag tag-green">● Activa</span>' : '<span class="tag tag-red">● Inactiva</span>'}</td>
       <td class="muted">${n.suscripcion_vence ? fmtFecha(n.suscripcion_vence, false) : '—'}</td>
       <td>
@@ -1463,6 +1492,7 @@ async function cargarSuscripciones() {
       </td>
     </tr>`).join('') : '<tr><td colspan="5" class="empty">Sin resultados</td></tr>') + '</tbody>';
 
+  // 4. LLENAMOS EL SELECT DEL MODAL Y LA TABLA DE PAGOS
   const selPago = document.getElementById('mp-negocio');
   selPago.innerHTML = (negs || []).map(n => `<option value="${n.id}">${escapeHtml(n.nombre)}</option>`).join('');
 
@@ -1472,7 +1502,6 @@ async function cargarSuscripciones() {
   } else {
     tp.innerHTML = `<thead><tr><th>Negocio</th><th>Plan</th><th>Monto</th><th>Método</th><th>Estado</th><th>Fecha</th></tr></thead><tbody>` +
       pagos.map(p => {
-        // 🛡️ REPARACIÓN: Si el estado está vacío, ponerle 'pendiente' para que no se vea feo
         const status = p.mp_status || 'pendiente';
         const statusClass = status === 'aprobado' ? 'tag-green' : status === 'rechazado' ? 'tag-red' : 'tag-yellow';
         return `
@@ -1487,7 +1516,7 @@ async function cargarSuscripciones() {
       }).join('') + '</tbody>';
   }
 }
-
+ 
 document.getElementById('tabla-subs').addEventListener('click', e => {
   const btn = e.target.closest('button[data-action]');
   if (!btn) return;
