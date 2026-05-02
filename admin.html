@@ -472,11 +472,14 @@ tr:hover td{background:#fafafa}
             <button class="btn btn-primary" id="btn-save-cfg" style="margin-top:20px" onclick="guardarConfig()">Guardar cambios</button>
           </div>
         </div>
-      </div>
 
-    </div>
-  </div>
-</div>
+        <div class="card" style="margin-top:16px;">
+          <div class="card-head">
+            <div><h2>💳 Planes de Suscripción</h2><p>Edita los precios y beneficios que ven los clientes en la app.</p></div>
+          </div>
+          <div style="overflow-x:auto"><table id="tabla-planes-admin"><tr><td class="empty"><div class="spinner"></div> Cargando...</td></tr></table></div>
+        </div>
+      </div>
 
 <!-- ====== MODALES ====== -->
 
@@ -543,6 +546,34 @@ tr:hover td{background:#fafafa}
 </div>
 
 <!-- Modal pago manual -->
+<div id="modal-plan" class="modal-bg">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-head">
+      <h3>Editar Plan</h3>
+      <button class="modal-x" onclick="cerrarModal('modal-plan')">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-plan-id">
+      <div class="grid-2">
+        <div class="field"><label>Nombre del Plan *</label><input type="text" id="edit-plan-nombre"></div>
+        <div class="field"><label>Precio (MXN) *</label><input type="number" id="edit-plan-precio" step="0.01"></div>
+      </div>
+      <div class="field"><label>Descripción corta (Ej: / mes)</label><input type="text" id="edit-plan-desc"></div>
+      <div class="field">
+        <label>Características (Una por línea)</label>
+        <textarea id="edit-plan-caracteristicas" rows="6" placeholder="Ej:\nHasta 20 productos\nx Sin estadísticas"></textarea>
+        <div class="muted" style="font-size:11px; margin-top:4px; padding:10px; background:#f9fafb; border-radius:8px;">
+          💡 <strong>Tip:</strong> Si quieres que una característica salga con una "tacha roja" de que no está incluida, escribe una "x " (letra equis y un espacio) al inicio del renglón.
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="cerrarModal('modal-plan')">Cancelar</button>
+      <button class="btn btn-primary" id="btn-save-plan" onclick="guardarPlanAdmin()">Guardar Plan</button>
+    </div>
+  </div>
+</div>
+      
 <div id="modal-pago" class="modal-bg">
   <div class="modal" style="max-width:420px">
     <div class="modal-head">
@@ -1590,7 +1621,7 @@ async function cargarAuditoria() {
 }
 
 // ============================================================================
-// CONFIGURACIÓN GLOBAL
+// CONFIGURACIÓN GLOBAL Y PLANES DE SUSCRIPCIÓN
 // ============================================================================
 async function cargarConfig() {
   const { data, error } = await db.from('configuracion_global').select('*');
@@ -1602,6 +1633,9 @@ async function cargarConfig() {
     if (el.type === 'checkbox') el.checked = c.valor === 'true';
     else el.value = c.valor || '';
   });
+  
+  // 🔥 Mandamos llamar a los planes aquí
+  cargarPlanesAdmin();
 }
 
 async function guardarConfig() {
@@ -1625,6 +1659,77 @@ async function guardarConfig() {
   await logAccion('actualizar', 'configuracion', '', { claves: claves.length });
   btn.disabled = false; btn.textContent = 'Guardar cambios';
   toast('Configuración guardada ✓', 'ok');
+}
+
+// Lógica de Planes de Suscripción
+let planesAdminCache = [];
+
+async function cargarPlanesAdmin() {
+  const { data, error } = await db.from('planes_suscripcion').select('*').order('orden', { ascending: true });
+  if (error) return console.error('Error cargando planes:', error);
+  planesAdminCache = data || [];
+  
+  const t = document.getElementById('tabla-planes-admin');
+  if(!t) return;
+
+  t.innerHTML = `<thead><tr><th>Nombre</th><th>Precio</th><th>Beneficios</th><th>Acciones</th></tr></thead><tbody>` +
+    planesAdminCache.map(p => `
+    <tr>
+      <td><strong style="color:var(--${p.color})">${escapeHtml(p.nombre)}</strong></td>
+      <td><strong style="font-size:16px;">$${p.precio}</strong> <span class="muted">${escapeHtml(p.descripcion)}</span></td>
+      <td class="muted" style="font-size:12px;">${JSON.parse(p.caracteristicas || '[]').length} descripciones</td>
+      <td><button class="btn btn-sm btn-ghost" onclick="abrirModalPlan('${p.id}')">✏️ Editar</button></td>
+    </tr>`).join('') + '</tbody>';
+}
+
+function abrirModalPlan(id) {
+  const p = planesAdminCache.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('edit-plan-id').value = p.id;
+  document.getElementById('edit-plan-nombre').value = p.nombre;
+  document.getElementById('edit-plan-precio').value = p.precio;
+  document.getElementById('edit-plan-desc').value = p.descripcion;
+  
+  // Convertimos la lista de la base de datos a texto con saltos de línea
+  let caracts = [];
+  try { caracts = JSON.parse(p.caracteristicas || '[]'); } catch(e){}
+  document.getElementById('edit-plan-caracteristicas').value = caracts.join('\n');
+  
+  abrirModal('modal-plan');
+}
+
+async function guardarPlanAdmin() {
+  if (!(await asegurarSesion())) return;
+  const id = document.getElementById('edit-plan-id').value;
+  const nombre = document.getElementById('edit-plan-nombre').value.trim();
+  const precio = document.getElementById('edit-plan-precio').value;
+  const desc = document.getElementById('edit-plan-desc').value.trim();
+  const caractsText = document.getElementById('edit-plan-caracteristicas').value;
+  
+  if (!nombre) return toast('El nombre es obligatorio', 'err');
+
+  // Convertimos el texto multilínea al formato de la base de datos
+  const caractsArray = caractsText.split('\n').map(l => l.trim()).filter(l => l !== '');
+  const caractsJson = JSON.stringify(caractsArray);
+
+  const btn = document.getElementById('btn-save-plan');
+  btn.disabled = true; btn.textContent = 'Guardando...';
+
+  const r = await tryDB(() => db.from('planes_suscripcion').update({
+    nombre: nombre,
+    precio: parseFloat(precio) || 0,
+    descripcion: desc,
+    caracteristicas: caractsJson
+  }).eq('id', id), 'Error guardando plan');
+
+  if (r) {
+    await logAccion('actualizar', 'plan_suscripcion', id, { nombre, precio });
+    toast('Plan actualizado exitosamente ✓', 'ok');
+    cerrarModal('modal-plan');
+    cargarPlanesAdmin();
+  }
+  
+  btn.disabled = false; btn.textContent = 'Guardar Plan';
 }
 
 // ============================================================================
