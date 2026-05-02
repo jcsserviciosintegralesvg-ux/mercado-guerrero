@@ -1618,20 +1618,38 @@ function validarOnbPaso2() {
 }
 
 async function finalizarRegistroNegocio(planElegido) {
+  toast('Verificando tu cuenta...', 'ok');
+  
+  // 1. CANDADO: Evitar que hagan trampa creando otro negocio con el mismo correo
+  const { data: negociosPrevios } = await db.from('negocios').select('id').eq('user_id', currentUser.id);
+  if (negociosPrevios && negociosPrevios.length > 0) {
+     return toast('Ya tienes un negocio registrado con este correo.', 'err');
+  }
+
   toast('Configurando tu panel...', 'ok');
+  
+  // 2. LÓGICA: Calcular exactamente 30 días de prueba a partir de hoy
+  const fechaVence = new Date();
+  fechaVence.setDate(fechaVence.getDate() + 30);
+  
   const datosASubir = {
     user_id: currentUser.id,
     nombre: tempNegocioData.nombre,
     categoria: tempNegocioData.categoria,
     whatsapp: tempNegocioData.whatsapp,
     direccion: tempNegocioData.direccion,
-    activo: true
+    activo: true, 
+    suscripcion_activa: true,
+    plan_id: planElegido,
+    suscripcion_vence: fechaVence.toISOString() // Guardamos la fecha de expiración
   };
+  
   const { error } = await db.from('negocios').upsert(datosASubir, { onConflict: 'user_id' });
-  if (error) { toast('Error: ' + error.message, 'err'); }
-  else {
+  if (error) { 
+    toast('Error: ' + error.message, 'err'); 
+  } else {
     await db.from('profiles').update({ rol: 'negocio' }).eq('id', currentUser.id);
-    toast('¡Bienvenido! Tu negocio está listo.', 'ok');
+    toast('¡Bienvenido! Tu negocio está listo por 30 días.', 'ok');
     tempNegocioData = {};
     iniciarApp();
   }
@@ -1645,6 +1663,18 @@ async function abrirDashboardNegocio() {
   if (error) { console.error('Error dash:', error); toast('No pudimos cargar tu panel', 'err'); return; }
 
   if (data) {
+    // 3. AUTO-APAGADO: Si ya pasaron los 30 días, lo ocultamos del público
+    const ahora = new Date();
+    if (data.suscripcion_vence && new Date(data.suscripcion_vence) < ahora) {
+       toast('⚠️ Tu plan ha terminado. Tu negocio ya no es visible para el público.', 'err');
+       // Lo apagamos en la base de datos para que desaparezca de la app
+       await db.from('negocios').update({ activo: false, suscripcion_activa: false }).eq('id', data.id);
+       data.activo = false;
+       data.suscripcion_activa = false;
+    } else if (!data.activo) {
+       toast('⚠️ Tu negocio está pausado.', 'err');
+    }
+
     negocioActual = data;
     document.getElementById('dash-nombre-titulo').textContent = data.nombre;
     document.getElementById('stats-nombre').textContent = "Hola, " + data.nombre;
@@ -1666,7 +1696,6 @@ async function abrirDashboardNegocio() {
     document.getElementById('dash-track-code').textContent = generarCodigoRastreable(data.nombre, data.id);
     document.getElementById('dash-track-count').textContent = Math.floor(totalClics * 0.3);
 
-    // Pedidos del día
     const hoyInicio = new Date(); hoyInicio.setHours(0, 0, 0, 0);
     const { data: pedidosHoy } = await db.from('pedidos').select('id').eq('negocio_id', negocioActual.id).gte('fecha', hoyInicio.toISOString());
     const numHoy = pedidosHoy ? pedidosHoy.length : 0;
@@ -1689,7 +1718,6 @@ async function abrirDashboardNegocio() {
     toast('Aún no configuras tu negocio', 'err'); navegar('onb-0');
   }
 }
-
 // MEJORA #10: pedidos recibidos
 async function cargarPedidosRecibidos() {
   if (!negocioActual) return;
