@@ -1642,8 +1642,11 @@ async function cargarAuditoria() {
 // CONFIGURACIÓN GLOBAL Y PLANES DE SUSCRIPCIÓN
 // ============================================================================
 async function cargarConfig() {
+  // 🔥 TRUCO: Forzamos la carga de los planes primero, sin importar nada más
+  cargarPlanesAdmin();
+
   const { data, error } = await db.from('configuracion_global').select('*');
-  if (error) return toast(error.message, 'err');
+  if (error) return console.warn('Aviso: no se cargó config global', error);
 
   (data || []).forEach(c => {
     const el = document.getElementById('cfg-' + c.clave);
@@ -1651,9 +1654,6 @@ async function cargarConfig() {
     if (el.type === 'checkbox') el.checked = c.valor === 'true';
     else el.value = c.valor || '';
   });
-  
-  // 🔥 Mandamos llamar a los planes aquí
-  cargarPlanesAdmin();
 }
 
 async function guardarConfig() {
@@ -1686,32 +1686,41 @@ async function cargarPlanesAdmin() {
   const t = document.getElementById('tabla-planes-admin');
   if(!t) return;
 
-  const { data, error } = await db.from('planes_suscripcion').select('*').order('orden', { ascending: true });
-  if (error) {
-    console.error('Error cargando planes:', error);
-    t.innerHTML = `<tr><td colspan="4" class="empty">Error: ${error.message}</td></tr>`;
-    return;
+  try {
+    const { data, error } = await db.from('planes_suscripcion').select('*').order('orden', { ascending: true });
+    
+    if (error) {
+      t.innerHTML = `<tr><td colspan="4" class="empty">Error de conexión: ${error.message}</td></tr>`;
+      return;
+    }
+
+    planesAdminCache = data || [];
+
+    if (planesAdminCache.length === 0) {
+      t.innerHTML = `<tr><td colspan="4" class="empty">No hay planes.</td></tr>`;
+      return;
+    }
+
+    t.innerHTML = `<thead><tr><th>Nombre</th><th>Precio</th><th>Beneficios</th><th>Acciones</th></tr></thead><tbody>` +
+      planesAdminCache.map(p => {
+        let numeroBeneficios = 0;
+        try {
+           const arrayCaracts = typeof p.caracteristicas === 'string' ? JSON.parse(p.caracteristicas || '[]') : (p.caracteristicas || []);
+           numeroBeneficios = arrayCaracts.length;
+        } catch(e) {}
+
+        return `
+        <tr>
+          <td><strong style="color:var(--${p.color || 'gray'})">${escapeHtml(p.nombre)}</strong></td>
+          <td><strong style="font-size:16px;">$${p.precio}</strong> <span class="muted">${escapeHtml(p.descripcion)}</span></td>
+          <td class="muted" style="font-size:12px;">${numeroBeneficios} características</td>
+          <td><button class="btn btn-sm btn-ghost" onclick="abrirModalPlan('${p.id}')">✏️ Editar</button></td>
+        </tr>`;
+      }).join('') + '</tbody>';
+      
+  } catch(err) {
+    t.innerHTML = `<tr><td colspan="4" class="empty">Error interno: ${err.message}</td></tr>`;
   }
-  
-  planesAdminCache = data || [];
-
-  t.innerHTML = `<thead><tr><th>Nombre</th><th>Precio</th><th>Beneficios</th><th>Acciones</th></tr></thead><tbody>` +
-    planesAdminCache.map(p => {
-      let numeroBeneficios = 0;
-      try {
-         // TRUCO: Verificamos si Supabase ya nos dio la lista lista, o si hay que traducirla
-         const arrayCaracts = typeof p.caracteristicas === 'string' ? JSON.parse(p.caracteristicas || '[]') : (p.caracteristicas || []);
-         numeroBeneficios = arrayCaracts.length;
-      } catch(e) {}
-
-      return `
-      <tr>
-        <td><strong style="color:var(--${p.color})">${escapeHtml(p.nombre)}</strong></td>
-        <td><strong style="font-size:16px;">$${p.precio}</strong> <span class="muted">${escapeHtml(p.descripcion)}</span></td>
-        <td class="muted" style="font-size:12px;">${numeroBeneficios} características</td>
-        <td><button class="btn btn-sm btn-ghost" onclick="abrirModalPlan('${p.id}')">✏️ Editar</button></td>
-      </tr>`;
-    }).join('') + '</tbody>';
 }
 
 function abrirModalPlan(id) {
@@ -1722,7 +1731,6 @@ function abrirModalPlan(id) {
   document.getElementById('edit-plan-precio').value = p.precio;
   document.getElementById('edit-plan-desc').value = p.descripcion;
   
-  // Ponemos cada característica en un renglón diferente
   let caracts = [];
   try {
      caracts = typeof p.caracteristicas === 'string' ? JSON.parse(p.caracteristicas || '[]') : (p.caracteristicas || []);
@@ -1742,7 +1750,6 @@ async function guardarPlanAdmin() {
   
   if (!nombre) return toast('El nombre es obligatorio', 'err');
 
-  // Convertimos el texto multilínea al formato de la base de datos
   const caractsArray = caractsText.split('\n').map(l => l.trim()).filter(l => l !== '');
   const caractsJson = JSON.stringify(caractsArray);
 
@@ -1757,7 +1764,6 @@ async function guardarPlanAdmin() {
   }).eq('id', id), 'Error guardando plan');
 
   if (r) {
-    await logAccion('actualizar', 'plan_suscripcion', id, { nombre, precio });
     toast('Plan actualizado exitosamente ✓', 'ok');
     cerrarModal('modal-plan');
     cargarPlanesAdmin();
