@@ -359,18 +359,7 @@ tr:hover td{background:#fafafa}
 
       <!-- SUSCRIPCIONES -->
       <div class="section" id="sec-suscripciones">
-        <div class="grid-2" style="margin-bottom:16px">
-          <div class="plan-card">
-            <div class="pname">🌱 Plan Free</div>
-            <div class="pprice">$0 <span style="font-size:13px;color:var(--muted)">/mes</span></div>
-            <div class="muted" style="font-size:12px">Hasta 3 productos · Perfil básico · WhatsApp directo</div>
-          </div>
-          <div class="plan-card featured">
-            <div class="pname">⭐ Plan Pro</div>
-            <div class="pprice">$99 <span style="font-size:13px;color:var(--muted)">MXN /mes</span></div>
-            <div class="muted" style="font-size:12px">Hasta 20 productos · Insignia · Estadísticas · Promos</div>
-          </div>
-        </div>
+        <div id="admin-planes-cards" class="grid-3" style="margin-bottom:16px"></div>
 
         <div class="card">
           <div class="card-head">
@@ -1694,19 +1683,30 @@ async function guardarConfig() {
 let planesAdminCache = [];
 
 async function cargarPlanesAdmin() {
-  const { data, error } = await db.from('planes_suscripcion').select('*').order('orden', { ascending: true });
-  if (error) return console.error('Error cargando planes:', error);
-  planesAdminCache = data || [];
-  
   const t = document.getElementById('tabla-planes-admin');
-  if(!t) return;
+  if(!t) return; // 👈 Esto evita que el panel se detenga si no encuentra la tabla
 
+  const { data, error } = await db.from('planes_suscripcion').select('*').order('orden', { ascending: true });
+  
+  if (error) {
+    console.error('Error de Supabase:', error);
+    t.innerHTML = `<tr><td colspan="4" class="empty">Error: ${error.message}</td></tr>`;
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    t.innerHTML = `<tr><td colspan="4" class="empty">No se encontraron planes en la base de datos.</td></tr>`;
+    return;
+  }
+
+  planesAdminCache = data;
+  
   t.innerHTML = `<thead><tr><th>Nombre</th><th>Precio</th><th>Beneficios</th><th>Acciones</th></tr></thead><tbody>` +
-    planesAdminCache.map(p => `
+    data.map(p => `
     <tr>
-      <td><strong style="color:var(--${p.color})">${escapeHtml(p.nombre)}</strong></td>
+      <td><strong style="color:var(--${p.color || 'gray'})">${escapeHtml(p.nombre)}</strong></td>
       <td><strong style="font-size:16px;">$${p.precio}</strong> <span class="muted">${escapeHtml(p.descripcion)}</span></td>
-      <td class="muted" style="font-size:12px;">${JSON.parse(p.caracteristicas || '[]').length} descripciones</td>
+      <td class="muted" style="font-size:12px;">${Array.isArray(p.caracteristicas) ? p.caracteristicas.length : JSON.parse(p.caracteristicas || '[]').length} beneficios</td>
       <td><button class="btn btn-sm btn-ghost" onclick="abrirModalPlan('${p.id}')">✏️ Editar</button></td>
     </tr>`).join('') + '</tbody>';
 }
