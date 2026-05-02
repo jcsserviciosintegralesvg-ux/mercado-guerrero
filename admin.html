@@ -1684,31 +1684,34 @@ let planesAdminCache = [];
 
 async function cargarPlanesAdmin() {
   const t = document.getElementById('tabla-planes-admin');
-  if(!t) return; // 👈 Esto evita que el panel se detenga si no encuentra la tabla
+  if(!t) return;
 
   const { data, error } = await db.from('planes_suscripcion').select('*').order('orden', { ascending: true });
-  
   if (error) {
-    console.error('Error de Supabase:', error);
+    console.error('Error cargando planes:', error);
     t.innerHTML = `<tr><td colspan="4" class="empty">Error: ${error.message}</td></tr>`;
     return;
   }
-
-  if (!data || data.length === 0) {
-    t.innerHTML = `<tr><td colspan="4" class="empty">No se encontraron planes en la base de datos.</td></tr>`;
-    return;
-  }
-
-  planesAdminCache = data;
   
+  planesAdminCache = data || [];
+
   t.innerHTML = `<thead><tr><th>Nombre</th><th>Precio</th><th>Beneficios</th><th>Acciones</th></tr></thead><tbody>` +
-    data.map(p => `
-    <tr>
-      <td><strong style="color:var(--${p.color || 'gray'})">${escapeHtml(p.nombre)}</strong></td>
-      <td><strong style="font-size:16px;">$${p.precio}</strong> <span class="muted">${escapeHtml(p.descripcion)}</span></td>
-      <td class="muted" style="font-size:12px;">${Array.isArray(p.caracteristicas) ? p.caracteristicas.length : JSON.parse(p.caracteristicas || '[]').length} beneficios</td>
-      <td><button class="btn btn-sm btn-ghost" onclick="abrirModalPlan('${p.id}')">✏️ Editar</button></td>
-    </tr>`).join('') + '</tbody>';
+    planesAdminCache.map(p => {
+      let numeroBeneficios = 0;
+      try {
+         // TRUCO: Verificamos si Supabase ya nos dio la lista lista, o si hay que traducirla
+         const arrayCaracts = typeof p.caracteristicas === 'string' ? JSON.parse(p.caracteristicas || '[]') : (p.caracteristicas || []);
+         numeroBeneficios = arrayCaracts.length;
+      } catch(e) {}
+
+      return `
+      <tr>
+        <td><strong style="color:var(--${p.color})">${escapeHtml(p.nombre)}</strong></td>
+        <td><strong style="font-size:16px;">$${p.precio}</strong> <span class="muted">${escapeHtml(p.descripcion)}</span></td>
+        <td class="muted" style="font-size:12px;">${numeroBeneficios} características</td>
+        <td><button class="btn btn-sm btn-ghost" onclick="abrirModalPlan('${p.id}')">✏️ Editar</button></td>
+      </tr>`;
+    }).join('') + '</tbody>';
 }
 
 function abrirModalPlan(id) {
@@ -1719,9 +1722,11 @@ function abrirModalPlan(id) {
   document.getElementById('edit-plan-precio').value = p.precio;
   document.getElementById('edit-plan-desc').value = p.descripcion;
   
-  // Convertimos la lista de la base de datos a texto con saltos de línea
+  // Ponemos cada característica en un renglón diferente
   let caracts = [];
-  try { caracts = JSON.parse(p.caracteristicas || '[]'); } catch(e){}
+  try {
+     caracts = typeof p.caracteristicas === 'string' ? JSON.parse(p.caracteristicas || '[]') : (p.caracteristicas || []);
+  } catch(e){}
   document.getElementById('edit-plan-caracteristicas').value = caracts.join('\n');
   
   abrirModal('modal-plan');
