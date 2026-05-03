@@ -1718,6 +1718,50 @@ async function abrirDashboardNegocio() {
     toast('Aún no configuras tu negocio', 'err'); navegar('onb-0');
   }
 }
+
+    negocioActual = data;
+    document.getElementById('dash-nombre-titulo').textContent = data.nombre;
+    document.getElementById('stats-nombre').textContent = "Hola, " + data.nombre;
+
+    const estado = estaAbiertoAhora(data.horarios);
+    const dashPill = document.getElementById('dash-estado-pill');
+    dashPill.textContent = estado.mensaje;
+    dashPill.className = 'estado-pill ' + (estado.abierto ? 'abierto' : 'cerrado');
+
+    cargarHorariosUI();
+
+    const hace7 = new Date(); hace7.setDate(hace7.getDate() - 7);
+    const { data: clicsData, error: clicsErr } = await db.from('estadisticas_clics').select('fecha').eq('negocio_id', negocioActual.id);
+    if (clicsErr) console.error('Error clics:', clicsErr);
+    const totalClics = clicsData ? clicsData.length : 0;
+    document.getElementById('stats-clics-count').textContent = totalClics;
+    const clicsRecientes = clicsData ? clicsData.filter(c => new Date(c.fecha) >= hace7) : [];
+
+    document.getElementById('dash-track-code').textContent = generarCodigoRastreable(data.nombre, data.id);
+    document.getElementById('dash-track-count').textContent = Math.floor(totalClics * 0.3);
+
+    const hoyInicio = new Date(); hoyInicio.setHours(0, 0, 0, 0);
+    const { data: pedidosHoy } = await db.from('pedidos').select('id').eq('negocio_id', negocioActual.id).gte('fecha', hoyInicio.toISOString());
+    const numHoy = pedidosHoy ? pedidosHoy.length : 0;
+    const labelPed = document.getElementById('dash-pedidos-count');
+    if (labelPed) labelPed.textContent = numHoy === 0 ? 'Sin pedidos hoy' : `${numHoy} pedido${numHoy === 1 ? '' : 's'} hoy`;
+
+    generarGraficaEstadisticas(clicsRecientes);
+
+    const calif = await obtenerCalificacion(negocioActual.id);
+    const badgeTexto = calif.responde_rapido ? `⭐ ${calif.estrellas} · Responde rápido` : `⭐ ${calif.estrellas} · Debe mejorar`;
+    const pastilla = document.querySelector('#panel-biz-dash .rating-pill');
+    if (pastilla) {
+      pastilla.textContent = badgeTexto;
+      if (!calif.responde_rapido) { pastilla.style.background = '#fef2f2'; pastilla.style.color = '#dc2626'; }
+      else { pastilla.style.background = '#fef3c7'; pastilla.style.color = '#92400e'; }
+    }
+
+    navegar('biz-dash');
+  } else {
+    toast('Aún no configuras tu negocio', 'err'); navegar('onb-0');
+  }
+}
 // MEJORA #10: pedidos recibidos
 async function cargarPedidosRecibidos() {
   if (!negocioActual) return;
