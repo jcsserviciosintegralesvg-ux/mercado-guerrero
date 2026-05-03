@@ -534,7 +534,7 @@ tr:hover td{background:#fafafa}
   </div>
 </div>
 
-<!-- Modal pago manual -->
+<!-- Modal editar plan -->
 <div id="modal-plan" class="modal-bg">
   <div class="modal" style="max-width:500px">
     <div class="modal-head">
@@ -653,6 +653,30 @@ function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 }
 
+// ✅ FIX 1: parseFecha definida correctamente
+function parseFecha(s) {
+  if (!s) return null;
+  const d = new Date(s);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+// ✅ FIX 2: debounce definida correctamente
+function debounce(fn, ms) {
+  let t;
+  return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+}
+
+// ✅ FIX 3: asegurarSesion definida correctamente
+async function asegurarSesion() {
+  const { data: { session } } = await db.auth.getSession();
+  if (!session) {
+    toast('Sesión expirada. Recarga la página.', 'err');
+    return false;
+  }
+  adminUser = session.user;
+  return true;
+}
+
 function customConfirm({ title='¿Confirmar?', message='', okText='Confirmar', cancelText='Cancelar', danger=false, icon='⚠️' } = {}) {
   return new Promise(resolve => {
     document.getElementById('confirm-ico').textContent = icon;
@@ -676,7 +700,6 @@ function customConfirm({ title='¿Confirmar?', message='', okText='Confirmar', c
 function abrirModal(id) { document.getElementById(id).classList.add('show'); }
 function cerrarModal(id) { document.getElementById(id).classList.remove('show'); }
 
-// Logger de auditoría — registra cada acción admin
 async function logAccion(accion, entidad, entidad_id, detalles = {}) {
   if (!adminUser) return;
   try {
@@ -689,7 +712,6 @@ async function logAccion(accion, entidad, entidad_id, detalles = {}) {
   } catch (e) { console.warn('No se pudo registrar log:', e); }
 }
 
-// Wrapper para llamadas a BD con manejo de errores
 async function tryDB(fn, mensajeError = 'Error de BD') {
   try {
     const result = await fn();
@@ -799,7 +821,6 @@ async function verificarAdmin() {
 // DASHBOARD
 // ============================================================================
 async function cargarDashboard() {
-  // Totales
   const [ngs, ofs, prfs, peds] = await Promise.all([
     db.from('negocios').select('*'),
     db.from('ofertas').select('*', { count: 'exact', head: true }),
@@ -826,7 +847,6 @@ async function cargarDashboard() {
   document.getElementById('kpi-users').textContent = totalUsers;
   document.getElementById('kpi-users-sub').textContent = `${negocioCount} con negocio`;
   
-  // Pedidos
   const pedidos = peds.data || [];
   const hoyInicio = new Date(); hoyInicio.setHours(0, 0, 0, 0);
   const mesInicio = new Date(); mesInicio.setDate(1); mesInicio.setHours(0, 0, 0, 0);
@@ -840,7 +860,6 @@ async function cargarDashboard() {
   document.getElementById('kpi-pedidos-hoy-sub').textContent = facturadoHoy > 0 ? fmt$(facturadoHoy) : 'Sin facturar';
   document.getElementById('kpi-facturado').textContent = fmt$(facturadoMes);
   
-  // Gráfica 7 días
   const ahora = new Date();
   const datos7 = [0, 0, 0, 0, 0, 0, 0];
   pedidos.forEach(p => {
@@ -864,7 +883,6 @@ async function cargarDashboard() {
     </div>
   `).join('');
   
-  // Top 5 negocios
   const conteo = {};
   pedidos.forEach(p => { if (p.negocio_id) conteo[p.negocio_id] = (conteo[p.negocio_id] || 0) + 1; });
   const top = Object.entries(conteo)
@@ -885,7 +903,6 @@ async function cargarDashboard() {
     </div>
   `).join('');
   
-  // Alertas: suscripciones por vencer, sin productos, etc.
   const alertas = [];
   const en7d = new Date(); en7d.setDate(en7d.getDate() + 7);
   negocios.forEach(n => {
@@ -913,7 +930,6 @@ async function cargarDashboard() {
     </div>
   `).join('');
   
-  // Actividad reciente — últimos logs
   const { data: logs } = await db.from('admin_logs').select('*').order('creado', { ascending: false }).limit(8);
   const actEl = document.getElementById('lista-actividad');
   if (!logs?.length) actEl.innerHTML = '<div class="empty">Sin actividad reciente</div>';
@@ -929,7 +945,6 @@ async function cargarDashboard() {
       </div>`;
   }).join('');
   
-  // Badge de aprobaciones
   const { count: aproCount } = await db.from('aprobaciones').select('*', { count:'exact', head:true }).eq('estado', 'pendiente');
   const badge = document.getElementById('badge-apro');
   if (aproCount > 0) { badge.textContent = aproCount; badge.classList.remove('hidden'); }
@@ -979,7 +994,7 @@ async function decidirApro(id, decision) {
 }
 
 // ============================================================================
-// NEGOCIOS (Reparado: Seguridad Anti-Hackeos y Borrado Seguro)
+// NEGOCIOS
 // ============================================================================
 async function cargarNegocios() {
   const { data, error } = await db.from('negocios').select('*').order('created_at', { ascending: false });
@@ -1008,7 +1023,6 @@ function filtrarNegs() {
   renderNegs(lista);
 }
 
-// 🛡️ REPARACIÓN: Generación de tabla segura (Evita que el código se rompa)
 function renderNegs(list) {
   const t = document.getElementById('tabla-negocios');
   if (!list.length) return t.innerHTML = '<tr><td colspan="7" class="empty">Sin resultados</td></tr>';
@@ -1039,7 +1053,6 @@ function renderNegs(list) {
     </tr>`).join('') + '</tbody>';
 }
 
-// 🛡️ REPARACIÓN: Un solo "escuchador" de clics para toda la tabla (Más rápido y seguro)
 document.getElementById('tabla-negocios').addEventListener('click', e => {
   const btn = e.target.closest('button[data-action]');
   if (!btn) return;
@@ -1082,7 +1095,6 @@ async function guardarNegocio() {
   
   if (!datos.nombre) return toast('El nombre es obligatorio', 'err');
   
-  // 🛡️ REPARACIÓN: Validar WhatsApp correctamente para que no metan letras o espacios
   const limpioWA = (datos.whatsapp || '').replace(/\D/g, ''); 
   if (limpioWA.length !== 10) return toast('WhatsApp inválido (Debe ser de 10 dígitos, sin letras)', 'err');
   datos.whatsapp = limpioWA;
@@ -1134,7 +1146,6 @@ async function activarSub(id) {
   }
 }
 
-// 🛡️ REPARACIÓN: Borrado seguro para no dejar "productos huérfanos" 
 async function eliminarNeg(id) {
   const neg = negociosCache.find(n => n.id === id);
   const ok = await customConfirm({
@@ -1144,7 +1155,6 @@ async function eliminarNeg(id) {
   });
   if (!ok) return;
   
-  // Como ya pusimos el candado en Supabase (CASCADE), un solo comando borra todo limpio
   const r = await tryDB(() => db.from('negocios').delete().eq('id', id), 'Error');
   if (r) {
     await logAccion('eliminar', 'negocio', id, { nombre: neg?.nombre });
@@ -1152,8 +1162,9 @@ async function eliminarNeg(id) {
     cargarNegocios(); cargarDashboard();
   }
 }
+
 // ============================================================================
-// PRODUCTOS / OFERTAS (Reparado: Buscador exacto y Botones estables)
+// PRODUCTOS / OFERTAS
 // ============================================================================
 async function cargarOfertas() {
   const { data, error } = await db.from('ofertas').select('*, negocios(nombre)').order('created_at', { ascending: false });
@@ -1161,7 +1172,6 @@ async function cargarOfertas() {
   productosCache = data || [];
   document.getElementById('productos-count').textContent = `${productosCache.length} productos`;
   
-  // 🛡️ REPARACIÓN: Filtrar por ID del negocio (para no confundir nombres repetidos)
   const sel = document.getElementById('filtro-neg-prod');
   const negsMap = new Map();
   productosCache.forEach(p => {
@@ -1182,7 +1192,6 @@ function filtrarProds() {
   
   let lista = productosCache;
   if (q) lista = lista.filter(p => (p.titulo || '').toLowerCase().includes(q));
-  // 🛡️ REPARACIÓN: Buscar por ID en vez de nombre
   if (neg) lista = lista.filter(p => p.negocio_id === neg);
   if (est === 'activa') lista = lista.filter(p => p.activa);
   if (est === 'pausada') lista = lista.filter(p => !p.activa);
@@ -1191,7 +1200,6 @@ function filtrarProds() {
   renderProds(lista);
 }
 
-// 🛡️ REPARACIÓN: Generación de tabla segura (Anti-Hackeos)
 function renderProds(list) {
   const t = document.getElementById('tabla-ofertas');
   if (!list.length) return t.innerHTML = '<tr><td colspan="7" class="empty">Sin resultados</td></tr>';
@@ -1218,7 +1226,6 @@ function renderProds(list) {
     </tr>`).join('') + '</tbody>';
 }
 
-// 🛡️ REPARACIÓN: Un solo "escuchador" de clics para los botones (Evita parpadeos y errores)
 document.getElementById('tabla-ofertas').addEventListener('click', async e => {
   const btn = e.target.closest('button[data-action]');
   if (!btn) return;
@@ -1246,8 +1253,9 @@ async function eliminarOferta(id) {
   const r = await tryDB(() => db.from('ofertas').delete().eq('id', id), 'Error');
   if (r) { await logAccion('eliminar', 'oferta', id); toast('Eliminado', 'ok'); cargarOfertas(); }
 }
+
 // ============================================================================
-// PROMOS (vista cards)
+// PROMOS
 // ============================================================================
 async function cargarPromos() {
   const { data } = await db.from('ofertas').select('*, negocios(nombre)').eq('activa', true).or('es_promo.eq.true,precio_antes.not.is.null');
@@ -1272,7 +1280,6 @@ async function cargarPromos() {
     }).join('') + '</div>';
 }
 
-// 🛡️ REPARACIÓN: Escuchador seguro para promos
 document.getElementById('cont-promos').addEventListener('click', async e => {
   const btn = e.target.closest('button[data-action="quitar-promo"]');
   if (!btn) return;
@@ -1281,14 +1288,13 @@ document.getElementById('cont-promos').addEventListener('click', async e => {
 });
 
 // ============================================================================
-// PEDIDOS (Reparado: Filtros exactos, fechas seguras y Estados de Pedido)
+// PEDIDOS
 // ============================================================================
-async function cargarPedidos(reset = true) {
+async function cargarPedidos() {
   const { data, error } = await db.from('pedidos').select('*, negocios(nombre, id)').order('fecha', { ascending: false });
   if (error) return toast(error.message, 'err');
   pedidosCache = data || [];
   
-  // 🛡️ REPARACIÓN: Filtro por ID para que Tacos Lupita 1 no se mezcle con Tacos Lupita 2
   const sel = document.getElementById('filtro-neg-pedidos');
   const negsMap = new Map();
   pedidosCache.forEach(p => {
@@ -1309,8 +1315,6 @@ function filtrarPedidos() {
   let lista = pedidosCache;
   if (neg) lista = lista.filter(p => p.negocio_id === neg); 
   
-  const ahora = new Date();
-  // 🛡️ REPARACIÓN: parseFecha evita que pedidos viejos sin fecha rompan las estadísticas
   if (fecha === 'hoy') {
     const inicio = new Date(); inicio.setHours(0, 0, 0, 0);
     lista = lista.filter(p => { const f = parseFecha(p.fecha); return f && f >= inicio; });
@@ -1365,9 +1369,7 @@ function verPedido(id) {
   if (!p) return;
   const items = Array.isArray(p.items) ? p.items : [];
   
-  // 🌟 MEJORA: Sistema de Estados visual
   const estados = ['recibido','preparando','listo','entregado','cancelado'];
-  const colores = { recibido:'tag-blue', preparando:'tag-yellow', listo:'tag-green', entregado:'tag-gray', cancelado:'tag-red' };
 
   document.getElementById('mped-body').innerHTML = `
     <div style="margin-bottom:14px">
@@ -1406,7 +1408,6 @@ function verPedido(id) {
   abrirModal('modal-pedido');
 }
 
-// 🌟 MEJORA: Lógica para que al darle clic a los botones, se guarde el estado en la base de datos
 document.getElementById('mped-body').addEventListener('click', async e => {
   const btn = e.target.closest('button[data-action="cambiar-estado"]');
   if (!btn) return;
@@ -1418,20 +1419,19 @@ document.getElementById('mped-body').addEventListener('click', async e => {
     cargarPedidos(); 
   }
 });
+
 // ============================================================================
-// SUSCRIPCIONES Y PAGOS (Reparado: Fechas nulas y status)
+// SUSCRIPCIONES Y PAGOS
 // ============================================================================
 async function cargarSuscripciones() {
   const filtro = document.getElementById('filtro-sub')?.value || '';
 
-  // 1. TRAEMOS LOS NEGOCIOS, LOS PAGOS Y LOS PLANES DESDE SUPABASE
   const [{ data: negs }, { data: pagos }, { data: planes }] = await Promise.all([
     db.from('negocios').select('*').order('nombre'),
     db.from('pagos').select('*, negocios(nombre)').order('created_at', { ascending: false }).limit(100),
     db.from('planes_suscripcion').select('*').order('orden', { ascending: true })
   ]);
 
-  // 2. DIBUJAMOS LAS 3 TARJETAS DE PLANES EN LA PARTE DE ARRIBA
   const planesContenedor = document.getElementById('admin-planes-cards');
   if (planesContenedor && planes) {
     planesContenedor.innerHTML = planes.map(p => {
@@ -1458,7 +1458,6 @@ async function cargarSuscripciones() {
     }).join('');
   }
 
-  // 3. LLENAMOS LA TABLA DE ESTADO DE SUSCRIPCIONES
   let lista = negs || [];
   const ahora = new Date();
   const en7 = new Date(); en7.setDate(en7.getDate() + 7);
@@ -1472,7 +1471,7 @@ async function cargarSuscripciones() {
     (lista.length ? lista.map(n => `
     <tr data-id="${escapeHtml(n.id)}">
       <td><strong>${escapeHtml(n.nombre)}</strong></td>
-      <td><span class="tag ${n.plan_id === 'pro' ? 'tag-orange' : n.plan_id === 'premium' ? 'tag-purple' : 'tag-gray'}">${escapeHtml(n.plan_id || 'free')}</span></td>
+      <td><span class="tag ${n.plan_id === 'pro' ? 'tag-orange' : n.plan_id === 'premium' ? 'tag-blue' : 'tag-gray'}">${escapeHtml(n.plan_id || 'free')}</span></td>
       <td>${n.suscripcion_activa ? '<span class="tag tag-green">● Activa</span>' : '<span class="tag tag-red">● Inactiva</span>'}</td>
       <td class="muted">${n.suscripcion_vence ? fmtFecha(n.suscripcion_vence, false) : '—'}</td>
       <td>
@@ -1481,7 +1480,6 @@ async function cargarSuscripciones() {
       </td>
     </tr>`).join('') : '<tr><td colspan="5" class="empty">Sin resultados</td></tr>') + '</tbody>';
 
-  // 4. LLENAMOS EL SELECT DEL MODAL Y LA TABLA DE PAGOS
   const selPago = document.getElementById('mp-negocio');
   selPago.innerHTML = (negs || []).map(n => `<option value="${n.id}">${escapeHtml(n.nombre)}</option>`).join('');
 
@@ -1517,7 +1515,6 @@ document.getElementById('tabla-subs').addEventListener('click', e => {
 async function pausarSub(id) {
   const ok = await customConfirm({ title:'Pausar suscripción', message:'El negocio quedará en plan free hasta nuevo pago.', okText:'Pausar', danger:true, icon:'⏸️' });
   if (!ok) return;
-  // 🛡️ REPARACIÓN: Limpiar fecha de vencimiento al pausar (suscripcion_vence: null)
   const r = await tryDB(() => db.from('negocios').update({ suscripcion_activa:false, plan_id:'free', suscripcion_vence: null }).eq('id', id), 'Error');
   if (r) { await logAccion('actualizar', 'suscripcion', id, { pausada:true }); toast('Pausada', 'ok'); cargarSuscripciones(); }
 }
@@ -1529,7 +1526,7 @@ function abrirModalPago() {
 }
 
 async function guardarPago() {
-  if (!(await asegurarSesion())) return; // 🛡️ REPARACIÓN: Guard de seguridad
+  if (!(await asegurarSesion())) return;
   const datos = {
     negocio_id: document.getElementById('mp-negocio').value,
     monto: parseFloat(document.getElementById('mp-monto').value),
@@ -1537,7 +1534,7 @@ async function guardarPago() {
     metodo: document.getElementById('mp-metodo').value,
     notas: document.getElementById('mp-notas').value.trim(),
     mp_status: 'aprobado',
-    created_at: new Date().toISOString() // 🛡️ REPARACIÓN: Fecha explícita
+    created_at: new Date().toISOString()
   };
   if (!datos.negocio_id || !datos.monto) return toast('Datos incompletos', 'err');
 
@@ -1641,7 +1638,7 @@ async function cargarAuditoria() {
 // ============================================================================
 // CONFIGURACIÓN GLOBAL Y PLANES DE SUSCRIPCIÓN
 // ============================================================================
-var planesAdminCache = []; // 🔥 TRUCO DEFINITIVO: 'var' obliga al sistema a reconocerlo desde el milisegundo cero
+var planesAdminCache = [];
 
 async function cargarConfig() {
   await cargarPlanesAdmin();
@@ -1738,6 +1735,7 @@ function abrirModalPlan(id) {
   abrirModal('modal-plan');
 }
 
+// ✅ FIX PRINCIPAL: función guardarPlanAdmin sin código suelto al final
 async function guardarPlanAdmin() {
   const id = document.getElementById('edit-plan-id').value;
   const nombre = document.getElementById('edit-plan-nombre').value.trim();
@@ -1751,11 +1749,9 @@ async function guardarPlanAdmin() {
   btn.disabled = true; 
   btn.textContent = 'Guardando...';
 
-  // Convertimos el texto a formato de base de datos
   const caractsArray = caractsText.split('\n').map(l => l.trim()).filter(l => l !== '');
   const caractsJson = JSON.stringify(caractsArray);
 
-  // Guardamos directo sin intermediarios
   const { error } = await db.from('planes_suscripcion').update({
     nombre: nombre,
     precio: parseFloat(precio) || 0,
@@ -1774,12 +1770,10 @@ async function guardarPlanAdmin() {
   toast('Plan actualizado exitosamente ✓', 'ok');
   cerrarModal('modal-plan');
   cargarPlanesAdmin();
-}  
-  btn.disabled = false; btn.textContent = 'Guardar Plan';
 }
-  
+
 // ============================================================================
-// EXPORTAR CSV (Reparado: Acentos en Excel y saltos de línea)
+// EXPORTAR CSV
 // ============================================================================
 function exportarCSV(tipo) {
   let datos = [], headers = [], filename = '';
@@ -1804,7 +1798,6 @@ function exportarCSV(tipo) {
 
   if (!datos.length) return toast('Nada que exportar', 'err');
 
-  // 🛡️ REPARACIÓN: Escape inteligente y formato seguro para Excel
   const escape = v => {
     if (v == null) return '';
     const s = String(v).replace(/"/g, '""');
@@ -1815,7 +1808,6 @@ function exportarCSV(tipo) {
     .concat(datos.map(d => headers.map(h => escape(d[h])).join(',')))
     .join('\r\n');
 
-  // 🛡️ REPARACIÓN: Agregar BOM (Byte Order Mark) para que Excel lea los acentos (UTF-8)
   const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
@@ -1824,8 +1816,9 @@ function exportarCSV(tipo) {
   URL.revokeObjectURL(link.href);
   toast('CSV descargado ✓', 'ok');
 }
+
 // ============================================================================
-// DEMO DATA (corregida — solo campos que existen)
+// DEMO DATA
 // ============================================================================
 const DEMO = [
   {nombre:'Pollos El Güero',categoria:'Comida',whatsapp:'6181234567',direccion:'Calle Juárez #45',descripcion:'Pollo asado a la leña',imagen_url:'https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=600',ofertas:[{titulo:'Pollo Entero Asado',precio:150,precio_antes:180,es_promo:true,categoria_producto:'Platos fuertes',imagen_url:'https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=400'},{titulo:'Medio Pollo',precio:95,categoria_producto:'Platos fuertes',imagen_url:'https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=400'}]},
@@ -1867,7 +1860,7 @@ async function borrarDemo() {
 }
 
 // ============================================================================
-// REALTIME — escucha cambios en negocios y pedidos para actualizar el panel
+// REALTIME
 // ============================================================================
 function suscribirRealtime() {
   db.channel('admin-realtime')
